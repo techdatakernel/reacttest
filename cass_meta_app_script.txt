@@ -1,0 +1,172 @@
+function copyDataWithoutFormulasMetav2() {
+  console.log("스크립트 실행 시작");
+  
+  try {
+    var sourceSpreadsheetId = "1kpz-UONsOieiusTtYWKlYSF59We9O20as1hYPPvallo";
+    var sourceSheetName = "Facebook Cass";
+    var targetSpreadsheetId = "14E_PqjhbnWd47q-WZmfanhUAC-eiSDkf94XzU1CTjQs";
+    var targetSheetName = "Meta_API";
+    const filterColumn = 46; // V열
+
+    var spreadsheetId = "1nwWLGJPL8I8UAd7Cq2rHLUnOciCOhWeHylDgD0Nelho";
+    var sheetName = "브랜딩";
+    var startTime = new Date();
+
+    // 설정할 WEEK 범위
+    const validWeeks = ["WK32", "WK33", "WK34", "WK35"];
+
+    // 필터링할 값 (어제 날짜 기준 Weeknum 계산)
+    const filterValue1 = getLastWeekWeeknum();
+    console.log("필터링할 값:", filterValue1);
+
+    // 필터링할 값이 설정된 WEEK 범위에 포함되지 않으면 스크립트 종료
+    if (!validWeeks.includes(filterValue1)) {
+      console.log("필터링할 값이 유효한 WEEK 범위에 포함되지 않으므로 스크립트를 종료합니다.");
+      return; // 스크립트 종료
+    }
+
+    const BATCH_SIZE = 5000; // 한번에 처리할 행 수
+
+    console.log("스프레드시트 및 시트 열기 시작");
+    
+    // 시트 열기 전 유효성 검사
+    var sourceSheet, targetSheet;
+    try {
+      sourceSheet = SpreadsheetApp.openById(sourceSpreadsheetId).getSheetByName(sourceSheetName);
+      if (!sourceSheet) {
+        throw new Error(`소스 시트를 찾을 수 없습니다: ${sourceSheetName}`);
+      }
+      
+      targetSheet = SpreadsheetApp.openById(targetSpreadsheetId).getSheetByName(targetSheetName);
+      if (!targetSheet) {
+        throw new Error(`타겟 시트를 찾을 수 없습니다: ${targetSheetName}`);
+      }
+      
+      console.log("스프레드시트 및 시트 열기 완료");
+    } catch (sheetError) {
+      console.error("시트 열기 오류:", sheetError.message);
+      throw sheetError;
+    }
+
+    console.log("기존 공식 저장 시작");
+    var formulaRange = targetSheet.getRange("CC1:CO1");
+    var originalFormulas = formulaRange.getFormulas()[0];
+    console.log("기존 공식 저장 완료");
+
+    console.log("기존 공식 임시 제거 시작");
+    formulaRange.clearContent();
+    console.log("기존 공식 임시 제거 완료");
+
+    console.log("타겟 시트에서 필터링된 데이터 삭제 시작");
+    try {
+      deleteFilteredRowsMetav2(targetSheet, filterColumn, filterValue1);
+      console.log("타겟 시트에서 필터링된 데이터 삭제 완료");
+    } catch (deleteError) {
+      console.error("데이터 삭제 중 오류:", deleteError.message);
+      // 삭제 실패해도 계속 진행
+    }
+
+    console.log("소스 데이터 가져오기 시작");
+    var sourceData;
+    try {
+      const sourceLastRow = sourceSheet.getLastRow();
+      if (sourceLastRow < 3) {
+        throw new Error("소스 시트에 충분한 데이터가 없습니다.");
+      }
+      
+      sourceData = sourceSheet.getRange("A3:CA" + sourceLastRow).getValues();
+      console.log("소스 데이터 가져오기 완료. 총 " + sourceData.length + "행의 데이터");
+    } catch (sourceError) {
+      console.error("소스 데이터 가져오기 오류:", sourceError.message);
+      throw sourceError;
+    }
+
+    console.log("필터링된 소스 데이터 준비 시작");
+    var filteredSourceData = sourceData.filter(function(row) {
+      return row && row.length > filterColumn - 1 && row[filterColumn - 1] === filterValue1;
+    }).map(function(row) {
+      // 날짜 열의 인덱스를 찾아 형식 변환
+      var dateColumnIndex = 0;
+      if (row[dateColumnIndex]) {
+        row[dateColumnIndex] = formatDate(row[dateColumnIndex]);
+      }
+      return row;
+    });
+    console.log("필터링된 소스 데이터 준비 완료. 총 " + filteredSourceData.length + "행의 데이터");
+
+    console.log("필터링된 데이터 추가 시작");
+    var lastRow = targetSheet.getLastRow();
+    
+    if (filteredSourceData.length > 0) {
+      // 데이터를 분할하여 추가
+      for (var i = 0; i < filteredSourceData.length; i += BATCH_SIZE) {
+        try {
+          var batchData = filteredSourceData.slice(i, i + BATCH_SIZE);
+          if (batchData.length > 0 && batchData[0].length > 0) {
+            targetSheet.getRange(lastRow + 1, 1, batchData.length, batchData[0].length).setValues(batchData);
+            lastRow += batchData.length;
+            console.log("추가된 행 수: " + batchData.length);
+            Utilities.sleep(500); // 0.5초 대기
+          }
+        } catch (batchError) {
+          console.error(`배치 ${i} 처리 중 오류:`, batchError.message);
+          // 배치 실패해도 다음 배치 계속 처리
+        }
+      }
+    }
+    console.log("필터링된 데이터 추가 완료");
+
+    console.log("공식 복원 시작");
+    try {
+      for (var i = 0; i < originalFormulas.length; i++) {
+        if (originalFormulas[i] !== "") {
+          targetSheet.getRange(1, 81 + i).setFormula(originalFormulas[i]);
+        }
+      }
+      console.log("공식 복원 완료");
+    } catch (formulaError) {
+      console.error("공식 복원 중 오류:", formulaError.message);
+    }
+
+    console.log("최종 행 수 확인: " + lastRow);
+    console.log("스크립트 실행 완료");
+
+    // 로그 기록
+    var endTime = new Date();
+    var executionTime = endTime - startTime;
+
+    var results = [
+      filterValue1 + "Cass Meta Data",
+      lastRow,
+      startTime,
+      endTime,
+      executionTime
+    ];
+
+    // 로그 시트에 기록
+    try {
+      var spreadsheetLogId = "1x_Bka1skHPQDUey1R51UN1rfmkWO3CTnIfkTPHdUYsk";
+      var logSheetName = "Log";
+      var spreadsheetLog = SpreadsheetApp.openById(spreadsheetLogId);
+      var sheetLog = spreadsheetLog.getSheetByName(logSheetName);
+
+      var Today2 = getFormattedDate();
+      var results2 = [Today2, startTime];
+      
+      sheetLog.appendRow(results2);
+
+      var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+      var sheet = spreadsheet.getSheetByName(sheetName);
+      sheet.appendRow(results);
+      
+      console.log("로그 기록 완료");
+    } catch (logError) {
+      console.error("로그 기록 중 오류:", logError.message);
+    }
+
+  } catch (mainError) {
+    console.error("메인 스크립트 에러:", mainError.message);
+    console.error("에러 스택:", mainError.stack);
+    throw mainError;
+  }
+}
