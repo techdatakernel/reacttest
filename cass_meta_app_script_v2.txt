@@ -1,0 +1,340 @@
+function copyDataWithoutFormulasMetav3() {
+  console.log("스크립트 실행 시작");
+  
+  var startTime = new Date();
+  var sourceSpreadsheetId = "1kpz-UONsOieiusTtYWKlYSF59We9O20as1hYPPvallo";
+  var sourceSheetName = "Facebook Cass";
+  var targetSpreadsheetId = "1FP9DCAv2NzdiHLySmYRy4tB4tx9ak_wGFA4e0jwuenE";
+  var targetSheetName = "Meta_API";
+  const filterColumn = 46; // V열
+
+  var spreadsheetId = "1nwWLGJPL8I8UAd7Cq2rHLUnOciCOhWeHylDgD0Nelho";
+  var sheetName = "브랜딩";
+  
+  // 에러 추적을 위한 변수들
+  var currentStep = "초기화";
+  var errorDetails = [];
+
+  try {
+    // 설정할 WEEK 범위
+    const validWeeks = ["WK27", "WK28", "WK29", "WK30", "WK31"];
+
+    // 필터링할 값 (어제 날짜 기준 Weeknum 계산)
+    currentStep = "주차 계산";
+ 
+
+         const filterValue1 = getLastWeekWeeknum();
+
+//const filterValue1 = "WK30"
+
+    console.log("필터링할 값:", filterValue1);
+
+    // 필터링할 값이 설정된 WEEK 범위에 포함되지 않으면 스크립트 종료
+    if (!validWeeks.includes(filterValue1)) {
+      var endReason = "필터링할 값이 유효한 WEEK 범위에 포함되지 않으므로 스크립트를 종료합니다.";
+      console.log(endReason);
+      
+      // 종료 알림 메일 발송
+      sendErrorNotification("스크립트 조기 종료", endReason, currentStep, startTime);
+      return;
+    }
+
+    const BATCH_SIZE = 5000; // 한번에 처리할 행 수
+
+    currentStep = "스프레드시트 열기";
+    console.log("스프레드시트 및 시트 열기 시작");
+    
+    var sourceSheet, targetSheet;
+    try {
+      sourceSheet = SpreadsheetApp.openById(sourceSpreadsheetId).getSheetByName(sourceSheetName);
+      if (!sourceSheet) {
+        throw new Error(`소스 시트를 찾을 수 없습니다: ${sourceSheetName}`);
+      }
+      
+      targetSheet = SpreadsheetApp.openById(targetSpreadsheetId).getSheetByName(targetSheetName);
+      if (!targetSheet) {
+        throw new Error(`타겟 시트를 찾을 수 없습니다: ${targetSheetName}`);
+      }
+      
+      console.log("스프레드시트 및 시트 열기 완료");
+    } catch (sheetError) {
+      throw new Error(`시트 열기 실패: ${sheetError.message}`);
+    }
+
+    currentStep = "공식 백업";
+    console.log("기존 공식 저장 시작");
+    var formulaRange = targetSheet.getRange("CC1:CO1");
+    var originalFormulas = formulaRange.getFormulas()[0];
+    console.log("기존 공식 저장 완료");
+
+    console.log("기존 공식 임시 제거 시작");
+    formulaRange.clearContent();
+    console.log("기존 공식 임시 제거 완료");
+
+    currentStep = "데이터 삭제";
+    console.log("타겟 시트에서 필터링된 데이터 삭제 시작");
+    try {
+      deleteFilteredRowsMetav2(targetSheet, filterColumn, filterValue1);
+      console.log("타겟 시트에서 필터링된 데이터 삭제 완료");
+    } catch (deleteError) {
+      // 삭제 실패해도 계속 진행하되 에러 기록
+      errorDetails.push(`데이터 삭제 중 오류: ${deleteError.message}`);
+      console.error("데이터 삭제 중 오류:", deleteError.message);
+    }
+
+    currentStep = "소스 데이터 가져오기";
+    console.log("소스 데이터 가져오기 시작");
+    var sourceData;
+    try {
+      const sourceLastRow = sourceSheet.getLastRow();
+      if (sourceLastRow < 3) {
+        throw new Error("소스 시트에 충분한 데이터가 없습니다.");
+      }
+      
+      sourceData = sourceSheet.getRange("A3:CA" + sourceLastRow).getValues();
+      console.log("소스 데이터 가져오기 완료. 총 " + sourceData.length + "행의 데이터");
+    } catch (sourceError) {
+      throw new Error(`소스 데이터 가져오기 실패: ${sourceError.message}`);
+    }
+
+    currentStep = "데이터 필터링";
+    console.log("필터링된 소스 데이터 준비 시작");
+    var filteredSourceData = sourceData.filter(function(row) {
+      return row && row.length > filterColumn - 1 && row[filterColumn - 1] === filterValue1;
+    }).map(function(row) {
+      // 날짜 열의 인덱스를 찾아 형식 변환
+      var dateColumnIndex = 0;
+      if (row[dateColumnIndex]) {
+        row[dateColumnIndex] = formatDate(row[dateColumnIndex]);
+      }
+      return row;
+    });
+    console.log("필터링된 소스 데이터 준비 완료. 총 " + filteredSourceData.length + "행의 데이터");
+
+    currentStep = "데이터 추가";
+    console.log("필터링된 데이터 추가 시작");
+    var lastRow = targetSheet.getLastRow();
+    
+    if (filteredSourceData.length > 0) {
+      // 데이터를 분할하여 추가
+      for (var i = 0; i < filteredSourceData.length; i += BATCH_SIZE) {
+        try {
+          var batchData = filteredSourceData.slice(i, i + BATCH_SIZE);
+          if (batchData.length > 0 && batchData[0].length > 0) {
+            targetSheet.getRange(lastRow + 1, 1, batchData.length, batchData[0].length).setValues(batchData);
+            lastRow += batchData.length;
+            console.log("추가된 행 수: " + batchData.length);
+            Utilities.sleep(500); // 0.5초 대기
+          }
+        } catch (batchError) {
+          errorDetails.push(`배치 ${i} 처리 중 오류: ${batchError.message}`);
+          console.error(`배치 ${i} 처리 중 오류:`, batchError.message);
+          // 배치 실패해도 다음 배치 계속 처리
+        }
+      }
+    }
+    console.log("필터링된 데이터 추가 완료");
+
+    currentStep = "공식 복원";
+    console.log("공식 복원 시작");
+    try {
+      for (var i = 0; i < originalFormulas.length; i++) {
+        if (originalFormulas[i] !== "") {
+          targetSheet.getRange(1, 81 + i).setFormula(originalFormulas[i]);
+        }
+      }
+      console.log("공식 복원 완료");
+    } catch (formulaError) {
+      errorDetails.push(`공식 복원 중 오류: ${formulaError.message}`);
+      console.error("공식 복원 중 오류:", formulaError.message);
+    }
+
+    console.log("최종 행 수 확인: " + lastRow);
+    console.log("스크립트 실행 완료");
+
+    // 성공 완료 로그 및 메일
+    currentStep = "완료 처리";
+    var endTime = new Date();
+    var executionTime = endTime - startTime;
+
+    var results = [
+      filterValue1 + "한맥 Meta Data",
+      lastRow,
+      startTime,
+      endTime,
+      executionTime
+    ];
+
+    // 로그 시트에 기록
+    try {
+      var spreadsheetLogId = "1x_Bka1skHPQDUey1R51UN1rfmkWO3CTnIfkTPHdUYsk";
+      var logSheetName = "Log";
+      var spreadsheetLog = SpreadsheetApp.openById(spreadsheetLogId);
+      var sheetLog = spreadsheetLog.getSheetByName(logSheetName);
+
+      var Today2 = getFormattedDate();
+      var results2 = [Today2, startTime];
+      
+      sheetLog.appendRow(results2);
+
+      var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+      var sheet = spreadsheet.getSheetByName(sheetName);
+      sheet.appendRow(results);
+      
+      console.log("로그 기록 완료");
+    } catch (logError) {
+      console.error("로그 기록 중 오류:", logError.message);
+    }
+
+    // 성공 알림 메일 발송
+    var successBody = "✅ 스크립트가 성공적으로 완료되었습니다.\n\n";
+    successBody += "실행 결과:\n";
+    successBody += "- 필터 값: " + filterValue1 + "\n";
+    successBody += "- 처리된 행 수: " + lastRow + "\n";
+    successBody += "- 실행 시간: " + (executionTime / 1000).toFixed(2) + "초\n";
+    
+    if (errorDetails.length > 0) {
+      successBody += "\n⚠️ 경고사항:\n";
+      errorDetails.forEach(function(error, index) {
+        successBody += (index + 1) + ". " + error + "\n";
+      });
+    }
+    
+    sendEmailResult("스크립트 실행 성공", successBody);
+
+  } catch (mainError) {
+    // 메인 에러 처리 및 알림
+    console.error("메인 스크립트 에러:", mainError.message);
+    console.error("에러 스택:", mainError.stack);
+    
+    sendErrorNotification("스크립트 실행 실패", mainError.message, currentStep, startTime, errorDetails);
+    
+    // 에러 로그도 기록
+    try {
+      var endTime = new Date();
+      var executionTime = endTime - startTime;
+      
+      var errorResults = [
+        "❌ ERROR: " + currentStep,
+        mainError.message,
+        startTime,
+        endTime,
+        executionTime
+      ];
+      
+      var spreadsheetLogId = "1x_Bka1skHPQDUey1R51UN1rfmkWO3CTnIfkTPHdUYsk";
+      var spreadsheetLog = SpreadsheetApp.openById(spreadsheetLogId);
+      var sheetLog = spreadsheetLog.getSheetByName("Log");
+      sheetLog.appendRow(errorResults);
+      
+    } catch (logError) {
+      console.error("에러 로그 기록 실패:", logError.message);
+    }
+    
+    throw mainError;
+  }
+}
+
+// 에러 알림 메일 발송 함수
+function sendErrorNotification(errorType, errorMessage, currentStep, startTime, additionalErrors) {
+  try {
+    var endTime = new Date();
+    var executionTime = endTime - startTime;
+    
+    var subject = "🚨 " + errorType + " - Google Apps Script";
+    
+    var body = "❌ 스크립트 실행 중 오류가 발생했습니다.\n\n";
+    body += "📍 오류 발생 단계: " + currentStep + "\n";
+    body += "🕐 시작 시간: " + startTime.toLocaleString() + "\n";
+    body += "🕐 오류 발생 시간: " + endTime.toLocaleString() + "\n";
+    body += "⏱️ 실행 시간: " + (executionTime / 1000).toFixed(2) + "초\n\n";
+    
+    body += "🔍 주요 오류:\n";
+    body += errorMessage + "\n\n";
+    
+    if (additionalErrors && additionalErrors.length > 0) {
+      body += "⚠️ 추가 오류 사항:\n";
+      additionalErrors.forEach(function(error, index) {
+        body += (index + 1) + ". " + error + "\n";
+      });
+      body += "\n";
+    }
+    
+    body += "🔧 조치 방법:\n";
+    body += "1. Google Apps Script 콘솔에서 로그를 확인하세요\n";
+    body += "2. 스프레드시트 권한을 확인하세요\n";
+    body += "3. 네트워크 연결 상태를 확인하세요\n";
+    body += "4. 필요시 수동으로 스크립트를 재실행하세요\n\n";
+    
+    body += "📊 시스템 정보:\n";
+    body += "- 스크립트명: copyDataWithoutFormulasMeta\n";
+    body += "- 실행 ID: " + Session.getTemporaryActiveUserKey() + "\n";
+    
+    MailApp.sendEmail("adminpmp@miraepmp.com", subject, body);
+    console.log("에러 알림 메일 발송 완료");
+    
+  } catch (mailError) {
+    console.error("에러 알림 메일 발송 실패:", mailError.message);
+  }
+}
+
+// 성공 알림 메일 발송 함수 (기존 함수 개선)
+function sendEmailResult(subject, body) {
+  try {
+    var fullSubject = subject || "Google Apps Script 실행 결과";
+    MailApp.sendEmail("adminpmp@miraepmp.com", fullSubject, body);
+    console.log("결과 알림 메일 발송 완료");
+  } catch (mailError) {
+    console.error("결과 알림 메일 발송 실패:", mailError.message);
+  }
+}
+
+// 즉시 에러 알림을 위한 헬퍼 함수
+function notifyError(step, error) {
+  try {
+    var quickSubject = "🚨 즉시 알림 - " + step + " 실패";
+    var quickBody = "단계: " + step + "\n";
+    quickBody += "시간: " + new Date().toLocaleString() + "\n";
+    quickBody += "오류: " + error.message + "\n\n";
+    quickBody += "상세 정보는 곧 별도 메일로 발송됩니다.";
+    
+    MailApp.sendEmail("adminpmp@miraepmp.com", quickSubject, quickBody);
+  } catch (e) {
+    console.error("즉시 알림 발송 실패:", e.message);
+  }
+}
+
+// 기존 함수들 (getLastWeekWeeknum, getWeekNumber, formatDate, getFormattedDate)은 그대로 유지
+function getLastWeekWeeknum() {
+  const today = new Date();
+  today.setHours(today.getHours() + 9); // KST로 시간대 조정
+  const lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+  const weeknum = getWeekNumber(lastWeek);
+  return "WK" + weeknum;
+}
+
+function getWeekNumber(date) {
+  date.setHours(date.getHours() + 9); // KST로 시간대 조정
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const daysPassed = Math.floor((date - firstDayOfYear) / (24 * 60 * 60 * 1000));
+  const weeknum = Math.ceil((daysPassed + firstDayOfYear.getDay() + 1) / 7);
+  return weeknum;
+}
+
+function formatDate(date) {
+  var d = new Date(date);
+  var year = d.getFullYear();
+  var month = (d.getMonth() + 1).toString().padStart(2, '0');
+  var day = d.getDate().toString().padStart(2, '0');
+  return year + '-' + month + '-' + day;
+}
+
+function getFormattedDate() {
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = ("0" + (today.getMonth() + 1)).slice(-2);
+  var day = ("0" + today.getDate()).slice(-2);
+  var formattedDate = year + "-" + month + "-" + day;
+  Logger.log(formattedDate);
+  return formattedDate;
+}
