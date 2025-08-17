@@ -1,0 +1,394 @@
+function copyDataWithoutFormulasV2() {
+  var startTime = new Date();
+  var currentStep = "초기화";
+  var errorDetails = [];
+  
+  try {
+    console.log("스크립트 실행 시작");
+    
+    var sourceSpreadsheetId = "1l6t4onrNJg8YyePZV18Yg4319z6PT1Zp4mbaaTwjcuY";
+    var sheetName = "세스코키워드_0820";
+    var targetSpreadsheetId = "1T75q8crvVwrD6UFC9I6LqWFw-YU38pXLu4J4u5F2yB0";
+    var targetSheetName = "세스코키워드v2_0715";
+
+    var spreadsheetId = "1nwWLGJPL8I8UAd7Cq2rHLUnOciCOhWeHylDgD0Nelho";
+    var logSheetName = "Log";
+
+    currentStep = "스프레드시트 열기";
+    console.log("소스 및 타겟 시트 열기");
+    
+    var sourceSpreadsheet, targetSpreadsheet, sourceSheet, targetSheet;
+    try {
+      sourceSpreadsheet = SpreadsheetApp.openById(sourceSpreadsheetId);
+      targetSpreadsheet = SpreadsheetApp.openById(targetSpreadsheetId);
+      sourceSheet = sourceSpreadsheet.getSheetByName(sheetName);
+      targetSheet = targetSpreadsheet.getSheetByName(targetSheetName);
+      
+      if (!sourceSheet) {
+        throw new Error(`소스 시트를 찾을 수 없습니다: ${sheetName}`);
+      }
+      if (!targetSheet) {
+        throw new Error(`타겟 시트를 찾을 수 없습니다: ${targetSheetName}`);
+      }
+    } catch (sheetError) {
+      throw new Error(`시트 열기 실패: ${sheetError.message}`);
+    }
+
+    currentStep = "공식 백업";
+    console.log("공식 제거 시작");
+    var formulaRange = targetSheet.getRange("K1:M1");
+    var originalFormulas = formulaRange.getFormulas()[0];
+    formulaRange.clearContent();
+
+    currentStep = "날짜 계산";
+    console.log("어제 날짜 계산");
+    var yesterday = new Date(new Date().getTime() - 24*60*60*1000);
+    yesterday.setHours(0, 0, 0, 0);
+    var yesterdayString = Utilities.formatDate(yesterday, "Asia/Seoul", "yyyy-MM-dd");
+    
+    // 테스트용 고정 날짜
+   // var yesterdayString = "2025-08-11";
+
+    console.log("어제 날짜: " + yesterdayString);
+
+    currentStep = "소스 데이터 가져오기";
+    console.log("소스 시트에서 데이터 가져오기 시작");
+    var data;
+    try {
+      data = sourceSheet.getDataRange().getValues();
+      if (!data || data.length === 0) {
+        throw new Error("소스 시트에 데이터가 없습니다.");
+      }
+    } catch (dataError) {
+      throw new Error(`소스 데이터 가져오기 실패: ${dataError.message}`);
+    }
+
+    currentStep = "데이터 필터링";
+    console.log("어제 날짜의 데이터 필터링");
+    var yesterdayData = data.filter(function(row) {
+      try {
+        var date = new Date(row[0]);
+        var dateString = Utilities.formatDate(date, "Asia/Seoul", "yyyy-MM-dd");
+        return dateString === yesterdayString;
+      } catch (filterError) {
+        console.warn("날짜 필터링 중 오류:", filterError.message);
+        return false;
+      }
+    });
+
+    console.log("어제 날짜의 데이터 " + yesterdayData.length + "개!");
+
+    // 데이터가 없는 경우 처리
+    if (yesterdayData.length === 0) {
+      console.log("어제 날짜의 데이터가 없습니다.");
+
+      var endTime = new Date();
+      var executionTime = endTime - startTime;
+      var results = [
+        "09 Keyword 수집 Data",
+        "어제 날짜의 데이터가 없습니다.",
+        startTime,
+        endTime,
+        executionTime
+      ];
+
+      // 로그 기록
+      try {
+        var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+        var sheet = spreadsheet.getSheetByName(logSheetName);
+        sheet.appendRow(results);
+      } catch (logError) {
+        console.error("로그 기록 실패:", logError.message);
+      }
+
+      var body = "⚠️ 어제 날짜의 데이터가 없습니다.\n\n";
+      body += "실행 정보:\n";
+      body += "- 대상 날짜: " + yesterdayString + "\n";
+      body += "- 실행 시간: " + startTime.toLocaleString() + "\n";
+      body += "- 소스 시트: " + sheetName + "\n";
+      body += "- 전체 데이터 수: " + data.length + "개\n\n";
+      body += "조치사항:\n";
+      body += "1. 소스 데이터에 해당 날짜 데이터가 있는지 확인\n";
+      body += "2. 날짜 형식이 올바른지 확인\n";
+      body += "3. 필요시 수동으로 데이터를 확인해주세요";
+
+      // 메일 전송
+      sendEmailResult2WithSubject("⚠️ 세스코 키워드 스크립트 - 데이터 없음", body);
+      
+      return;
+    }
+
+    currentStep = "기존 데이터 삭제";
+    console.log("타겟 시트에서 어제 날짜의 데이터 삭제 시작");
+    try {
+      deleteFilteredRows(targetSheet, 1, yesterdayString);
+    } catch (deleteError) {
+      errorDetails.push(`기존 데이터 삭제 중 오류: ${deleteError.message}`);
+      console.error("기존 데이터 삭제 중 오류:", deleteError.message);
+      // 삭제 실패해도 계속 진행
+    }
+
+    currentStep = "새 데이터 추가";
+    console.log("타겟 시트에 새 데이터 추가");
+    try {
+      var lastRow = targetSheet.getLastRow();
+      if (yesterdayData.length > 0 && yesterdayData[0].length > 0) {
+        targetSheet.getRange(lastRow + 1, 1, yesterdayData.length, yesterdayData[0].length).setValues(yesterdayData);
+      }
+    } catch (addError) {
+      throw new Error(`새 데이터 추가 실패: ${addError.message}`);
+    }
+
+    currentStep = "공식 복원";
+    console.log("공식 복원 시작");
+    try {
+      originalFormulas.forEach((formula, index) => {
+        if (formula !== "") {
+          targetSheet.getRange(1, 11 + index).setFormula(formula);
+        }
+      });
+    } catch (formulaError) {
+      errorDetails.push(`공식 복원 중 오류: ${formulaError.message}`);
+      console.error("공식 복원 중 오류:", formulaError.message);
+    }
+
+    console.log("스크립트 실행 완료");
+
+    currentStep = "완료 처리";
+    var endTime = new Date();
+    var executionTime = endTime - startTime;
+    var results = [
+      "09 Keyword Yesterday Data",
+      yesterdayData.length,
+      startTime,
+      endTime,
+      executionTime
+    ];
+
+    // 로그 기록
+    try {
+      var spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+      var sheet = spreadsheet.getSheetByName(logSheetName);
+      sheet.appendRow(results);
+    } catch (logError) {
+      console.error("로그 기록 실패:", logError.message);
+    }
+
+    // 성공 메일 발송
+    var successBody = "✅ 세스코 키워드 스크립트가 성공적으로 완료되었습니다.\n\n";
+    successBody += "실행 결과:\n";
+    successBody += "- 처리 날짜: " + yesterdayString + "\n";
+    successBody += "- 처리된 데이터 수: " + yesterdayData.length + "개\n";
+    successBody += "- 실행 시간: " + (executionTime / 1000).toFixed(2) + "초\n";
+    successBody += "- 시작 시간: " + startTime.toLocaleString() + "\n";
+    successBody += "- 완료 시간: " + endTime.toLocaleString() + "\n";
+    
+    if (errorDetails.length > 0) {
+      successBody += "\n⚠️ 경고사항:\n";
+      errorDetails.forEach(function(error, index) {
+        successBody += (index + 1) + ". " + error + "\n";
+      });
+    }
+
+    // 메일 전송
+    sendEmailResult2WithSubject("✅ 세스코 키워드 스크립트 실행 성공", successBody);
+
+    // 다음 함수 예약
+    scheduleNextFunction('mergeAndUpdateSheetsLastDate', 1);
+
+  } catch (error) {
+    console.error("오류 발생: " + error.message);
+    
+    // 에러 알림 메일 발송
+    sendErrorNotification2(error.message, currentStep, startTime, errorDetails);
+    
+    // 에러 로그 기록
+    try {
+      var endTime = new Date();
+      var executionTime = endTime - startTime;
+      
+      var errorResults = [
+        "❌ ERROR: " + currentStep,
+        error.message,
+        startTime,
+        endTime,
+        executionTime
+      ];
+      
+      var spreadsheet = SpreadsheetApp.openById("1nwWLGJPL8I8UAd7Cq2rHLUnOciCOhWeHylDgD0Nelho");
+      var sheet = spreadsheet.getSheetByName("Log");
+      sheet.appendRow(errorResults);
+      
+    } catch (logError) {
+      console.error("에러 로그 기록 실패:", logError.message);
+    }
+    
+    // 에러를 다시 던져서 스크립트 실행이 실패로 기록되도록 함
+    throw error;
+  }
+}
+
+// 에러 알림 메일 발송 함수
+function sendErrorNotification2(errorMessage, currentStep, startTime, additionalErrors) {
+  try {
+    var endTime = new Date();
+    var executionTime = endTime - startTime;
+    
+    var subject = "🚨 세스코 키워드 스크립트 실행 실패";
+    
+    var body = "❌ 세스코 키워드 스크립트 실행 중 오류가 발생했습니다.\n\n";
+    body += "📍 오류 발생 단계: " + currentStep + "\n";
+    body += "🕐 시작 시간: " + startTime.toLocaleString() + "\n";
+    body += "🕐 오류 발생 시간: " + endTime.toLocaleString() + "\n";
+    body += "⏱️ 실행 시간: " + (executionTime / 1000).toFixed(2) + "초\n\n";
+    
+    body += "🔍 주요 오류:\n";
+    body += errorMessage + "\n\n";
+    
+    if (additionalErrors && additionalErrors.length > 0) {
+      body += "⚠️ 추가 오류 사항:\n";
+      additionalErrors.forEach(function(error, index) {
+        body += (index + 1) + ". " + error + "\n";
+      });
+      body += "\n";
+    }
+    
+    body += "🔧 조치 방법:\n";
+    body += "1. Google Apps Script 콘솔에서 로그를 확인하세요\n";
+    body += "2. 소스 스프레드시트 접근 권한을 확인하세요\n";
+    body += "3. 타겟 스프레드시트 접근 권한을 확인하세요\n";
+    body += "4. 네트워크 연결 상태를 확인하세요\n";
+    body += "5. 필요시 수동으로 스크립트를 재실행하세요\n\n";
+    
+    body += "📊 시스템 정보:\n";
+    body += "- 스크립트명: copyDataWithoutFormulas2\n";
+    body += "- 소스 시트: 세스코키워드_0731\n";
+    body += "- 타겟 시트: 세스코키워드v2_0715\n";
+    
+    MailApp.sendEmail("adminpmp@aaa.com", subject, body);
+    console.log("에러 알림 메일 발송 완료");
+    
+  } catch (mailError) {
+    console.error("에러 알림 메일 발송 실패:", mailError.message);
+  }
+}
+
+// 제목을 지정할 수 있는 메일 발송 함수
+function sendEmailResult2WithSubject(subject, body) {
+  try {
+    MailApp.sendEmail("adminpmp@miraepmp.com", subject, body);
+    console.log("결과 알림 메일 발송 완료:", subject);
+  } catch (mailError) {
+    console.error("결과 알림 메일 발송 실패:", mailError.message);
+  }
+}
+
+// 기존 메일 발송 함수 (호환성 유지)
+function sendEmailResult2(body) { 
+  var subject = "세스코 키워드 스크립트 실행 결과";
+  sendEmailResult2WithSubject(subject, body);
+}
+
+// 즉시 에러 알림을 위한 헬퍼 함수
+function notifyError2(step, error) {
+  try {
+    var quickSubject = "🚨 즉시 알림 - " + step + " 실패";
+    var quickBody = "단계: " + step + "\n";
+    quickBody += "시간: " + new Date().toLocaleString() + "\n";
+    quickBody += "오류: " + error.message + "\n\n";
+    quickBody += "상세 정보는 곧 별도 메일로 발송됩니다.";
+    
+    MailApp.sendEmail("adminpmp@aaa.com", quickSubject, quickBody);
+  } catch (e) {
+    console.error("즉시 알림 발송 실패:", e.message);
+  }
+}
+
+// 기존 함수들 (scheduleNextFunction, deleteTriggerByFunctionName, mergeAndUpdateSheetsLastDate, deleteFilteredRows)
+function scheduleNextFunction(functionName, delayInMinutes) {
+  console.log(`${functionName} 실행 예약 시작`);
+  
+  // 기존 트리거 삭제
+  deleteTriggerByFunctionName(functionName);
+  
+  // 새 트리거 생성
+  ScriptApp.newTrigger(functionName)
+    .timeBased()
+    .after(delayInMinutes * 60 * 1000)
+    .create();
+  
+  console.log(`${functionName} 실행이 ${delayInMinutes}분 후로 예약되었습니다.`);
+}
+
+function deleteTriggerByFunctionName(functionName) {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() == functionName) {
+      ScriptApp.deleteTrigger(triggers[i]);
+      console.log(`${functionName}에 대한 기존 트리거가 삭제되었습니다.`);
+    }
+  }
+}
+
+function mergeAndUpdateSheetsLastDate() {
+  console.log("2단계 스크립트 함수 실행 시작: mergeAndUpdateSheetsLastDate");
+  // 함수 로직
+  console.log("2단계 스크립트 함수 실행 완료: mergeAndUpdateSheetsLastDate");
+  
+  // 이 함수의 트리거 삭제
+  deleteTriggerByFunctionName('mergeAndUpdateSheetsLastDate');
+}
+
+function deleteFilteredRows(targetSheet, filterColumn, filterValue) {
+  try {
+    const targetLastRow = targetSheet.getLastRow();
+    if (targetLastRow <= 1) return; // 데이터가 없으면 종료
+
+    const targetData = targetSheet.getRange(2, 1, targetLastRow - 1, targetSheet.getLastColumn()).getValues(); // 첫 번째 행 제외
+    let rowsToDelete = [];
+    let startRow = null;
+
+    for (let i = 0; i < targetData.length; i++) {
+      try {
+        var date = new Date(targetData[i][filterColumn - 1]);
+        var dateString = Utilities.formatDate(date, "Asia/Seoul", "yyyy-MM-dd");
+        if (dateString === filterValue) {
+          if (startRow === null) startRow = i + 2; // 2행부터 시작하므로 2를 더함
+        } else {
+          if (startRow !== null) {
+            rowsToDelete.push({start: startRow, end: i + 1});
+            startRow = null;
+          }
+        }
+      } catch (dateError) {
+        console.warn(`행 ${i + 2} 날짜 처리 중 오류:`, dateError.message);
+        continue;
+      }
+    }
+
+    // 마지막 범위 처리
+    if (startRow !== null) {
+      rowsToDelete.push({start: startRow, end: targetData.length + 1});
+    }
+
+    // 뒤에서부터 삭제
+    let totalDeletedRows = 0;
+    for (let i = rowsToDelete.length - 1; i >= 0; i--) {
+      const range = rowsToDelete[i];
+      const rowsCount = range.end - range.start + 1;
+      try {
+        targetSheet.deleteRows(range.start, rowsCount);
+        totalDeletedRows += rowsCount;
+      } catch (deleteError) {
+        console.error(`행 삭제 중 오류: ${deleteError.message}`);
+        throw deleteError;
+      }
+    }
+
+    console.log(`삭제된 행 수: ${totalDeletedRows}`);
+    
+  } catch (error) {
+    console.error("deleteFilteredRows 함수 오류:", error.message);
+    throw error;
+  }
+}
