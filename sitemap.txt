@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://hanmac.ob.co.kr/</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/index.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hanmac/map.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/extracreamydraftcan.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/smoooooooth.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/smoothsmooth2.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/foamparadise.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/smoothsmooth.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/smoothhoesik.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/hipmacplace.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/hanmac.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/recipe.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/archive.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/campaign/foammakerset.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/pr/tv.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/policy/privacy.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hanmac/seller_1.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/store.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/store_busan.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/store_all.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/rec_sub01.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/rec_sub02.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/rec_sub03.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/hipmacplace/rec_sub04.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/policy/privacy_v.0.1.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://hanmac.ob.co.kr/policy/privacy_v.0.0.php</loc>
+  <lastmod>2025-08-20T03:59:51+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+
+
+</urlset>
