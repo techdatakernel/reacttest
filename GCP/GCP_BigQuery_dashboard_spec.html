@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP BigQuery 데이터 대시보드 기술명세서</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem 1rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .toc {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc a {
+            color: #4a5568;
+            text-decoration: none;
+            padding: 0.5rem;
+            display: block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .toc a:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .toc .sub-item {
+            margin-left: 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-header h2 {
+            color: #4a5568;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        h3 {
+            color: #2d3748;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+        }
+
+        h4 {
+            color: #4a5568;
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        h5 {
+            color: #718096;
+            margin: 0.8rem 0 0.4rem 0;
+            font-size: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        /* 코드 블록 */
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        code {
+            background: #edf2f7;
+            color: #2d3748;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* 테이블 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        /* 리스트 */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* 특별 박스 */
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border: 1px solid #f6e05e;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .error-box {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        /* 체크리스트 */
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .checklist li {
+            padding: 0.3rem 0;
+        }
+
+        .checklist li:before {
+            content: '✅';
+            margin-right: 0.5rem;
+        }
+
+        /* 아키텍처 다이어그램 */
+        .architecture {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-family: monospace;
+            line-height: 2;
+        }
+
+        /* 파일 구조 */
+        .file-tree {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+            margin: 1rem 0;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* 프린트 스타일 */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .container {
+                background: white;
+                box-shadow: none;
+            }
+            
+            .section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* 스크롤바 커스터마이징 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+
+        /* 애니메이션 */
+        .section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 사이드바 목차 -->
+        <nav class="sidebar">
+            <h2>📋 목차</h2>
+            <ul class="toc">
+                <li><a href="#overview">📋 프로젝트 개요</a></li>
+                <li><a href="#architecture">🏗️ 시스템 아키텍처</a></li>
+                <li><a href="#gcp-setup">⚙️ GCP API 연동 준비</a>
+                    <ul class="sub-item">
+                        <li><a href="#project-setup">프로젝트 설정</a></li>
+                        <li><a href="#service-account">서비스 계정</a></li>
+                        <li><a href="#bigquery-setup">BigQuery 설정</a></li>
+                    </ul>
+                </li>
+                <li><a href="#source-structure">📁 소스 코드 구조</a></li>
+                <li><a href="#installation">🔧 설치 및 설정</a></li>
+                <li><a href="#features">🎯 기능 명세</a></li>
+                <li><a href="#optimization">💰 비용 최적화</a></li>
+                <li><a href="#security">🛡️ 보안 고려사항</a></li>
+                <li><a href="#troubleshooting">🐛 트러블슈팅</a></li>
+                <li><a href="#future-plans">🚀 향후 계획</a></li>
+            </ul>
+        </nav>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 헤더 -->
+            <div class="header">
+                <h1>GCP BigQuery 데이터 대시보드</h1>
+                <p class="subtitle">기술명세서 및 구축 가이드</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">
+                    📅 작성일: 2024.08.21 | 📝 버전: v1.0.0 | 🔧 상태: 운영 중
+                </p>
+            </div>
+
+            <!-- 프로젝트 개요 -->
+            <section id="overview" class="section">
+                <div class="section-header">
+                    <h2>📋 프로젝트 개요</h2>
+                </div>
+                <div class="section-content">
+                    <h3>프로젝트명</h3>
+                    <p><strong>SESCO 데이터 대시보드 - GCP BigQuery 연동 분석 플랫폼</strong></p>
+
+                    <h3>목적</h3>
+                    <ul>
+                        <li>Google Cloud Platform BigQuery API를 활용한 실시간 데이터 분석 대시보드</li>
+                        <li>기존 Looker Studio 대체 솔루션</li>
+                        <li>비용 최적화된 데이터 조회 및 시각화</li>
+                    </ul>
+
+                    <h3>주요 특징</h3>
+                    <ul class="checklist">
+                        <li><strong>서비스 계정 기반 인증</strong>: OAuth2 JWT 토큰 방식</li>
+                        <li><strong>비용 최적화</strong>: 최대 1,000행 제한, 캐시 시스템</li>
+                        <li><strong>Google Sheets 독립</strong>: 네이티브 BigQuery 테이블 사용</li>
+                        <li><strong>실시간 분석</strong>: 일별/키워드/디바이스/캠페인 분석</li>
+                        <li><strong>반응형 UI</strong>: 모바일 호환 글래스모피즘 디자인</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 시스템 아키텍처 -->
+            <section id="architecture" class="section">
+                <div class="section-header">
+                    <h2>🏗️ 시스템 아키텍처</h2>
+                </div>
+                <div class="section-content">
+                    <h3>전체 구조</h3>
+                    <div class="architecture">
+                        Frontend (PHP/HTML/CSS/JS)<br>
+                        ↓<br>
+                        BigQuery API (OAuth2 인증)<br>
+                        ↓<br>
+                        GCP BigQuery (sesco3_sample 테이블)<br>
+                        ↓<br>
+                        캐시 시스템 (파일 기반, 10분)
+                    </div>
+
+                    <h3>기술 스택</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>분야</th>
+                                    <th>기술</th>
+                                    <th>버전</th>
+                                    <th>용도</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Backend</td>
+                                    <td>PHP, cURL, OpenSSL</td>
+                                    <td>7.4+</td>
+                                    <td>서버 로직, API 통신</td>
+                                </tr>
+                                <tr>
+                                    <td>Frontend</td>
+                                    <td>HTML5, CSS3, JavaScript</td>
+                                    <td>ES6+</td>
+                                    <td>사용자 인터페이스</td>
+                                </tr>
+                                <tr>
+                                    <td>차트</td>
+                                    <td>Chart.js</td>
+                                    <td>3.x</td>
+                                    <td>데이터 시각화</td>
+                                </tr>
+                                <tr>
+                                    <td>인증</td>
+                                    <td>JWT</td>
+                                    <td>-</td>
+                                    <td>BigQuery 인증</td>
+                                </tr>
+                                <tr>
+                                    <td>데이터베이스</td>
+                                    <td>GCP BigQuery</td>
+                                    <td>v2</td>
+                                    <td>데이터 저장/조회</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GCP API 연동 준비사항 -->
+            <section id="gcp-setup" class="section">
+                <div class="section-header">
+                    <h2>⚙️ GCP API 연동 사전 준비사항</h2>
+                </div>
+                <div class="section-content">
+                    <h3 id="project-setup">1. GCP 프로젝트 설정</h3>
+                    
+                    <h4>1.1 프로젝트 정보</h4>
+                    <ul>
+                        <li><strong>프로젝트 ID</strong>: <code>nimble-mode-415514</code></li>
+                        <li><strong>프로젝트 이름</strong>: <code>My First Project</code></li>
+                        <li><strong>지역</strong>: <code>asia-northeast3</code> (서울)</li>
+                    </ul>
+
+                    <h4>1.2 필수 API 활성화</h4>
+                    <div class="info-box">
+                        <strong>📍 경로:</strong> GCP Console → API 및 서비스 → 라이브러리
+                    </div>
+                    <ul class="checklist">
+                        <li>BigQuery API</li>
+                        <li>BigQuery Data Transfer API</li>
+                        <li>BigQuery Connection API</li>
+                        <li>Google Drive API (선택사항)</li>
+                        <li>Google Sheets API (선택사항)</li>
+                    </ul>
+
+                    <h3 id="service-account">2. 서비스 계정 생성 및 설정</h3>
+
+                    <h4>2.1 서비스 계정 생성</h4>
+                    <div class="info-box">
+                        <strong>📍 경로:</strong> GCP Console → IAM 및 관리 → 서비스 계정
+                    </div>
+                    <ol>
+                        <li><strong>서비스 계정 만들기</strong> 클릭</li>
+                        <li><strong>서비스 계정 세부정보</strong> 입력:
+                            <ul>
+                                <li>이름: <code>bigquery-dashboard</code></li>
+                                <li>설명: <code>BigQuery 대시보드용 서비스 계정</code></li>
+                                <li>이메일: <code>bigquery-dashboard@nimble-mode-415514.iam.gserviceaccount.com</code></li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>2.2 IAM 권한 할당</h4>
+                    <div class="info-box">
+                        <strong>📍 경로:</strong> GCP Console → IAM 및 관리 → IAM
+                    </div>
+                    <p>서비스 계정에 다음 역할을 부여하세요:</p>
+                    <ul class="checklist">
+                        <li>BigQuery 관리자 (roles/bigquery.admin)</li>
+                        <li>BigQuery 데이터 뷰어 (roles/bigquery.dataViewer)</li>
+                        <li>BigQuery 데이터 편집자 (roles/bigquery.dataEditor)</li>
+                        <li>BigQuery 작업 사용자 (roles/bigquery.jobUser)</li>
+                        <li>서비스 계정 사용자 (roles/iam.serviceAccountUser)</li>
+                        <li>프로젝트 뷰어 (roles/viewer)</li>
+                    </ul>
+
+                    <h4>2.3 JSON 키 파일 생성</h4>
+                    <div class="info-box">
+                        <strong>📍 경로:</strong> 서비스 계정 상세 → 키 탭
+                    </div>
+                    <ol>
+                        <li><strong>키 추가</strong> → <strong>새 키 만들기</strong></li>
+                        <li><strong>키 유형</strong>: JSON 선택</li>
+                        <li><strong>만들기</strong> 클릭</li>
+                        <li>자동 다운로드된 파일명: <code>nimble-mode-415514-ed2ecc37e8f4.json</code></li>
+                    </ol>
+
+                    <h4>2.4 보안 설정</h4>
+                    <pre><code># 파일 권한 설정
+chmod 600 nimble-mode-415514-ed2ecc37e8f4.json
+
+# .htaccess 파일에 웹 접근 차단
+echo '&lt;Files "*.json"&gt;
+    Order deny,allow
+    Deny from all
+&lt;/Files&gt;' &gt;&gt; .htaccess</code></pre>
+
+                    <h3 id="bigquery-setup">3. BigQuery 데이터셋 및 테이블 설정</h3>
+
+                    <h4>3.1 데이터셋 정보</h4>
+                    <ul>
+                        <li><strong>데이터셋 ID</strong>: <code>bqml_tutorial</code></li>
+                        <li><strong>위치</strong>: <code>US</code> (미국)</li>
+                        <li><strong>설명</strong>: SESCO 마케팅 데이터 분석용</li>
+                    </ul>
+
+                    <h4>3.2 샘플 테이블 생성 (비용 최적화)</h4>
+                    <div class="info-box">
+                        <strong>📍 경로:</strong> BigQuery Console → SQL 작업공간
+                    </div>
+                    <pre><code>CREATE TABLE `nimble-mode-415514.bqml_tutorial.sesco3_sample` AS
+SELECT 
+  CAST(report_date AS DATE) as report_date,
+  CAST(media_product AS STRING) as media_product,
+  CAST(device_type AS STRING) as device_type,
+  CAST(campaign_name AS STRING) as campaign_name,
+  CAST(group_name AS STRING) as group_name,
+  CAST(keyword_name AS STRING) as keyword_name,
+  CAST(impression AS INT64) as impression,
+  CAST(click AS INT64) as click,
+  CAST(cost AS FLOAT64) as cost,
+  CAST(rank AS FLOAT64) as rank
+FROM `nimble-mode-415514.bqml_tutorial.sesco3`
+ORDER BY report_date DESC, impression DESC
+LIMIT 1000;</code></pre>
+
+                    <h4>3.3 테이블 스키마</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>컬럼명</th>
+                                    <th>데이터 타입</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>report_date</td><td>DATE</td><td>리포트 날짜</td></tr>
+                                <tr><td>media_product</td><td>STRING</td><td>매체 상품</td></tr>
+                                <tr><td>device_type</td><td>STRING</td><td>디바이스 유형</td></tr>
+                                <tr><td>campaign_name</td><td>STRING</td><td>캠페인명</td></tr>
+                                <tr><td>group_name</td><td>STRING</td><td>그룹명</td></tr>
+                                <tr><td>keyword_name</td><td>STRING</td><td>키워드명</td></tr>
+                                <tr><td>impression</td><td>INT64</td><td>노출수</td></tr>
+                                <tr><td>click</td><td>INT64</td><td>클릭수</td></tr>
+                                <tr><td>cost</td><td>FLOAT64</td><td>비용</td></tr>
+                                <tr><td>rank</td><td>FLOAT64</td><td>순위</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 소스 코드 구조 -->
+            <section id="source-structure" class="section">
+                <div class="section-header">
+                    <h2>📁 소스 코드 구조</h2>
+                </div>
+                <div class="section-content">
+                    <h3>디렉토리 구조</h3>
+                    <div class="file-tree">
+project-root/
+├── config.php                                    # 설정 파일
+├── bigquery.php                                  # BigQuery API 클래스
+├── login.php                                     # 로그인 페이지
+├── dashboard.php                                 # 메인 대시보드
+├── api.php                                       # API 엔드포인트
+├── logout.php                                    # 로그아웃 처리
+├── nimble-mode-415514-ed2ecc37e8f4.json         # 서비스 계정 키 (보안)
+├── cache/                                        # 캐시 디렉토리
+│   └── dashboard_2024-08-21-14.json             # 캐시 파일들
+└── assets/
+    ├── style.css                                 # 스타일시트
+    └── script.js                                 # 자바스크립트
+                    </div>
+
+                    <h3>주요 파일 설명</h3>
+                    
+                    <h4>config.php</h4>
+                    <ul>
+                        <li><strong>목적</strong>: 전역 설정 관리</li>
+                        <li><strong>포함 내용</strong>: GCP 프로젝트 정보, 서비스 계정 파일 경로, 로그인 정보 (해시된 비밀번호), 비용 최적화 설정</li>
+                    </ul>
+
+                    <h4>bigquery.php</h4>
+                    <ul>
+                        <li><strong>목적</strong>: BigQuery API 연동 클래스</li>
+                        <li><strong>주요 기능</strong>: JWT 토큰 기반 OAuth2 인증, SQL 쿼리 실행, 데이터 조회 및 집계, 오류 처리</li>
+                    </ul>
+
+                    <h4>dashboard.php</h4>
+                    <ul>
+                        <li><strong>목적</strong>: 메인 대시보드 UI</li>
+                        <li><strong>기능</strong>: 탭 기반 인터페이스, 실시간 통계 표시, 차트 및 테이블 렌더링, 캐시 시스템 활용</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 설치 및 설정 -->
+            <section id="installation" class="section">
+                <div class="section-header">
+                    <h2>🔧 설치 및 설정 가이드</h2>
+                </div>
+                <div class="section-content">
+                    <h3>1. 시스템 요구사항</h3>
+                    <ul class="checklist">
+                        <li>PHP 7.4 이상</li>
+                        <li>cURL 확장</li>
+                        <li>OpenSSL 확장</li>
+                        <li>JSON 확장</li>
+                        <li>웹서버 (Apache/Nginx)</li>
+                    </ul>
+
+                    <h3>2. 파일 배치</h3>
+                    <pre><code># 1. 프로젝트 파일들을 웹서버 디렉토리에 업로드
+/var/www/html/gcp/
+
+# 2. 캐시 디렉토리 생성 및 권한 설정
+mkdir cache
+chmod 755 cache
+
+# 3. 서비스 계정 키 파일 배치 및 보안 설정
+chmod 600 nimble-mode-415514-ed2ecc37e8f4.json</code></pre>
+
+                    <h3>3. config.php 설정 확인</h3>
+                    <pre><code>return [
+    'gcp_service_account_file' => __DIR__ . '/nimble-mode-415514-ed2ecc37e8f4.json',
+    'gcp_project_id' => 'nimble-mode-415514',
+    'dataset_id' => 'bqml_tutorial',
+    'table_id' => 'sesco3_sample',
+    'max_query_rows' => 1000,
+];</code></pre>
+
+                    <h3>4. 접속 및 테스트</h3>
+                    <ol>
+                        <li><strong>대시보드 접속</strong>: <code>http://yourdomain.com/login.php</code></li>
+                        <li><strong>로그인 정보</strong>: admin / admin123</li>
+                        <li><strong>기능 테스트</strong>: 모든 탭에서 데이터 표시 확인</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- 기능 명세 -->
+            <section id="features" class="section">
+                <div class="section-header">
+                    <h2>🎯 기능 명세</h2>
+                </div>
+                <div class="section-content">
+                    <h3>로그인 시스템</h3>
+                    <ul>
+                        <li><strong>인증 방식</strong>: 세션 기반</li>
+                        <li><strong>비밀번호</strong>: bcrypt 해시</li>
+                        <li><strong>세션 타임아웃</strong>: 1시간</li>
+                        <li><strong>보안</strong>: 브루트포스 방지 (1초 지연)</li>
+                    </ul>
+
+                    <h3>대시보드 기능</h3>
+
+                    <h4>📈 개요 탭</h4>
+                    <ul>
+                        <li><strong>통계 카드</strong>: 총 노출수, 클릭수, 비용, 평균 CTR</li>
+                        <li><strong>일별 추이 차트</strong>: Chart.js 라인 차트</li>
+                        <li><strong>데이터 범위</strong>: 전체 기간 (30일)</li>
+                    </ul>
+
+                    <h4>🔍 키워드 분석 탭</h4>
+                    <ul>
+                        <li><strong>상위 키워드</strong>: 노출수 기준 정렬</li>
+                        <li><strong>성과 지표</strong>: CTR, CPC, 활성 일수</li>
+                        <li><strong>표시 개수</strong>: 최대 15개</li>
+                    </ul>
+
+                    <h4>📱 디바이스 분석 탭</h4>
+                    <ul>
+                        <li><strong>분포 차트</strong>: 도넛 차트 (Chart.js)</li>
+                        <li><strong>성과 테이블</strong>: 디바이스별 상세 통계</li>
+                        <li><strong>지원 디바이스</strong>: Mobile, Desktop 등</li>
+                    </ul>
+
+                    <h4>📢 캠페인 분석 탭</h4>
+                    <ul>
+                        <li><strong>성과 순위</strong>: 노출수 기준</li>
+                        <li><strong>ROI 분석</strong>: 비용 대비 성과</li>
+                        <li><strong>표시 개수</strong>: 최대 10개</li>
+                    </ul>
+
+                    <h4>📋 원본 데이터 탭</h4>
+                    <ul>
+                        <li><strong>데이터 테이블</strong>: 페이지네이션 지원</li>
+                        <li><strong>필터링</strong>: 디바이스, 캠페인별</li>
+                        <li><strong>표시 제한</strong>: 100개/페이지</li>
+                    </ul>
+
+                    <h3>API 엔드포인트</h3>
+                    <pre><code>GET /api.php?action=raw_data         # 원본 데이터 조회
+GET /api.php?action=daily_stats      # 일별 통계
+GET /api.php?action=keyword_analysis # 키워드 분석
+GET /api.php?action=device_analysis  # 디바이스 분석
+GET /api.php?action=campaign_analysis # 캠페인 분석</code></pre>
+                </div>
+            </section>
+
+            <!-- 비용 최적화 -->
+            <section id="optimization" class="section">
+                <div class="section-header">
+                    <h2>💰 비용 최적화 전략</h2>
+                </div>
+                <div class="section-content">
+                    <h3>데이터 제한</h3>
+                    <ul>
+                        <li><strong>최대 조회 행</strong>: 1,000개/쿼리</li>
+                        <li><strong>샘플 테이블</strong>: 310개 (전체 10만개 대비 99.7% 절감)</li>
+                        <li><strong>페이지네이션</strong>: 50개/페이지</li>
+                    </ul>
+
+                    <h3>캐시 시스템</h3>
+                    <ul>
+                        <li><strong>캐시 방식</strong>: 파일 기반 JSON</li>
+                        <li><strong>캐시 기간</strong>: 10분</li>
+                        <li><strong>캐시 키</strong>: 날짜-시간 기반</li>
+                        <li><strong>효과</strong>: API 호출 90% 감소</li>
+                    </ul>
+
+                    <h3>쿼리 최적화</h3>
+                    <pre><code>-- 효율적인 집계 쿼리 예시
+SELECT 
+    report_date,
+    SUM(impression) as total_impressions,
+    COUNT(*) as total_records
+FROM table 
+GROUP BY report_date 
+ORDER BY report_date DESC 
+LIMIT 50;</code></pre>
+
+                    <h3>예상 비용 (월간)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>항목</th>
+                                    <th>예상 비용</th>
+                                    <th>설명</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>쿼리 비용</td>
+                                    <td>~$1-5</td>
+                                    <td>1000행 제한</td>
+                                </tr>
+                                <tr>
+                                    <td>저장 비용</td>
+                                    <td>~$0.01</td>
+                                    <td>샘플 테이블</td>
+                                </tr>
+                                <tr>
+                                    <td>네트워크 비용</td>
+                                    <td>~$0.1</td>
+                                    <td>API 호출</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>총 예상 비용</strong></td>
+                                    <td><strong>~$5/월</strong></td>
+                                    <td>캐시 적용 시</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 보안 고려사항 -->
+            <section id="security" class="section">
+                <div class="section-header">
+                    <h2>🛡️ 보안 고려사항</h2>
+                </div>
+                <div class="section-content">
+                    <h3>인증 및 권한</h3>
+                    <ul>
+                        <li><strong>서비스 계정</strong>: 최소 권한 원칙</li>
+                        <li><strong>JWT 토큰</strong>: 1시간 만료</li>
+                        <li><strong>세션 관리</strong>: 타임아웃 처리</li>
+                    </ul>
+
+                    <h3>파일 보안</h3>
+                    <pre><code># .htaccess 보안 설정
+&lt;Files "*.json"&gt;
+    Order deny,allow
+    Deny from all
+&lt;/Files&gt;
+
+&lt;Files "config.php"&gt;
+    Order deny,allow
+    Deny from all
+&lt;/Files&gt;</code></pre>
+
+                    <h3>SQL 인젝션 방지</h3>
+                    <ul>
+                        <li><strong>파라미터 바인딩</strong>: addslashes() 적용</li>
+                        <li><strong>입력 검증</strong>: 화이트리스트 방식</li>
+                        <li><strong>오류 메시지</strong>: 민감 정보 노출 방지</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 트러블슈팅 -->
+            <section id="troubleshooting" class="section">
+                <div class="section-header">
+                    <h2>🐛 트러블슈팅</h2>
+                </div>
+                <div class="section-content">
+                    <h3>일반적인 문제</h3>
+
+                    <h4>1. "Permission denied while getting Drive credentials"</h4>
+                    <div class="error-box">
+                        <strong>원인:</strong> Google Sheets 연결 테이블 접근 권한 부족<br>
+                        <strong>해결:</strong> 네이티브 테이블 생성으로 해결
+                    </div>
+                    <pre><code>-- 네이티브 테이블 생성으로 해결
+CREATE TABLE sesco3_sample AS SELECT * FROM sesco3 LIMIT 1000;</code></pre>
+
+                    <h4>2. "HTTP 403 Access Denied"</h4>
+                    <div class="error-box">
+                        <strong>원인:</strong> BigQuery 권한 부족<br>
+                        <strong>해결:</strong> IAM에서 BigQuery 관리자 역할 추가
+                    </div>
+
+                    <h4>3. "서비스 계정 JSON 파일을 찾을 수 없습니다"</h4>
+                    <div class="error-box">
+                        <strong>원인:</strong> 파일 경로 오류<br>
+                        <strong>해결:</strong> config.php에서 절대 경로 확인
+                    </div>
+
+                    <h4>4. 캐시 파일 생성 실패</h4>
+                    <div class="error-box">
+                        <strong>원인:</strong> cache/ 디렉토리 권한 부족<br>
+                        <strong>해결:</strong> 권한 설정
+                    </div>
+                    <pre><code>chmod 755 cache/
+chown www-data:www-data cache/</code></pre>
+
+                    <h3>로그 및 디버깅</h3>
+                    <pre><code>// 디버그 모드 활성화
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// BigQuery API 응답 로깅
+file_put_contents('debug.log', json_encode($response));</code></pre>
+                </div>
+            </section>
+
+            <!-- 향후 계획 -->
+            <section id="future-plans" class="section">
+                <div class="section-header">
+                    <h2>🚀 향후 개선 계획</h2>
+                </div>
+                <div class="section-content">
+                    <h3>Phase 2 (중기)</h3>
+                    <ul>
+                        <li><strong>실시간 업데이트</strong>: WebSocket 연동</li>
+                        <li><strong>고급 필터링</strong>: 날짜 범위, 복합 조건</li>
+                        <li><strong>데이터 내보내기</strong>: Excel, CSV 다운로드</li>
+                        <li><strong>알림 시스템</strong>: 임계값 기반 알림</li>
+                    </ul>
+
+                    <h3>Phase 3 (장기)</h3>
+                    <ul>
+                        <li><strong>Vertex AI 연동</strong>: 머신러닝 예측</li>
+                        <li><strong>Cloud Functions</strong>: 서버리스 ETL</li>
+                        <li><strong>BigQuery ML</strong>: 자동 인사이트 생성</li>
+                        <li><strong>멀티 테넌트</strong>: 다중 고객 지원</li>
+                    </ul>
+
+                    <div class="success-box">
+                        <h4>📞 지원 및 문의</h4>
+                        <ul>
+                            <li><strong>프로젝트</strong>: SESCO BigQuery 대시보드</li>
+                            <li><strong>개발 기간</strong>: 2024.08.20 - 2024.08.21</li>
+                            <li><strong>버전</strong>: v1.0.0</li>
+                            <li><strong>라이선스</strong>: MIT License</li>
+                        </ul>
+                    </div>
+
+                    <h3>기술 지원</h3>
+                    <ul>
+                        <li><strong>GCP 공식 문서</strong>: <a href="https://cloud.google.com/bigquery/docs" target="_blank">https://cloud.google.com/bigquery/docs</a></li>
+                        <li><strong>BigQuery API 참조</strong>: <a href="https://cloud.google.com/bigquery/docs/reference/rest" target="_blank">https://cloud.google.com/bigquery/docs/reference/rest</a></li>
+                        <li><strong>PHP cURL 문서</strong>: <a href="https://www.php.net/manual/en/book.curl.php" target="_blank">https://www.php.net/manual/en/book.curl.php</a></li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // 사이드바 네비게이션 스크롤 동기화
+        document.addEventListener('DOMContentLoaded', function() {
+            const tocLinks = document.querySelectorAll('.toc a');
+            const sections = document.querySelectorAll('.section');
+
+            // 링크 클릭 시 부드러운 스크롤
+            tocLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // 스크롤 시 현재 섹션 하이라이트
+            window.addEventListener('scroll', function() {
+                let current = '';
+                sections.forEach(section => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // 코드 블록 복사 기능
+        document.querySelectorAll('pre code').forEach(block => {
+            const button = document.createElement('button');
+            button.innerText = '📋 복사';
+            button.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #4a5568;
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 3px;
+                cursor: pointer;
+                font-size: 12px;
+            `;
+            
+            block.parentElement.style.position = 'relative';
+            block.parentElement.appendChild(button);
+            
+            button.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent).then(() => {
+                    button.innerText = '✅ 복사됨';
+                    setTimeout(() => {
+                        button.innerText = '📋 복사';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
