@@ -1,88 +1,176 @@
 <?php
-// config.php - 비용 모니터링 설정이 포함된 완전한 설정 파일
+/**
+ * GCP BigQuery 대시보드 설정 파일
+ * 완전한 비용 모니터링 및 보안 설정 포함
+ */
+
 return [
-    // 로그인 설정
-    'username' => 'admin',
-    'password_hash' => password_hash('admin123', PASSWORD_DEFAULT),
-    'session_timeout' => 3600, // 1시간
-    
-    // GCP BigQuery 설정
+    // === GCP 기본 설정 ===
     'gcp_service_account_file' => __DIR__ . '/nimble-mode-415514-ed2ecc37e8f4.json',
     'gcp_project_id' => 'nimble-mode-415514',
     'dataset_id' => 'bqml_tutorial',
     'table_id' => 'sesco3_sample',
-    
-    // 비용 최적화 설정
     'max_query_rows' => 1000,
-    'default_page_size' => 50,
-    'cache_duration' => 600, // 10분
     
-    // 비용 모니터링 설정
+    // === 캐시 설정 ===
+    'cache_duration' => 3600, // 1시간 (초 단위)
+    'cache_enabled' => true,
+    
+    // === 보안 설정 ===
+   'username' => 'admin',  // login.php에서 참조하는 키 이름으로 변경
+    'password_hash' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+    'session_timeout' => 7200, // 2시간 (초 단위)
+    'max_login_attempts' => 5,
+    'lockout_duration' => 1800, // 30분 (초 단위)
+    
+    // === 비용 모니터링 설정 ===
     'cost_monitoring' => [
         'enabled' => true,
-        'daily_limit' => 5.00,      // $5 일일 한도
-        'weekly_limit' => 20.00,    // $20 주간 한도
-        'monthly_limit' => 80.00,   // $80 월간 한도
-        'monthly_budget' => 100.00, // $100 월간 예산
-        'budget_warning_threshold' => 0.90, // 90% 경고
+        'daily_limit' => 1.0,      // $1.00 per day
+        'weekly_limit' => 5.0,     // $5.00 per week
+        'monthly_limit' => 20.0,   // $20.00 per month
+        'monthly_budget' => 50.0,  // $50.00 monthly budget
         
-        // 알림 설정
-        'notifications' => [
-            'email' => [
-                'enabled' => true,
-                'recipients' => ['admin@sesco.com']
+        // 알림 임계값
+        'warning_threshold' => 80, // 80% 사용 시 경고
+        'critical_threshold' => 95, // 95% 사용 시 심각 경고
+        
+        // 자동 제한 설정
+        'auto_suspend_on_limit' => true,
+        'auto_restrict_queries' => true,
+    ],
+    
+    // === 비용 추적 파일 경로 ===
+    'cost_tracking' => [
+        'usage_file' => __DIR__ . '/logs/daily_usage.json',
+        'log_file' => __DIR__ . '/logs/cost_monitoring.log',
+        'alerts_file' => __DIR__ . '/logs/cost_alerts.log',
+        'user_actions_file' => __DIR__ . '/logs/user_actions.log',
+    ],
+    
+    // === 알림 설정 ===
+    'notifications' => [
+        'email' => [
+            'enabled' => false, // 이메일 알림 비활성화 (SMTP 설정 필요 시 true로 변경)
+            'recipients' => [
+                'admin@example.com',
+                'manager@example.com'
             ],
-            'slack' => [
-                'enabled' => false,
-                'webhook_url' => ''
-            ]
+            'smtp_host' => 'smtp.gmail.com',
+            'smtp_port' => 587,
+            'smtp_username' => '',
+            'smtp_password' => '',
+            'smtp_encryption' => 'tls'
         ],
-        
-        // 자동 제어 설정
-        'auto_controls' => [
-            'enable_cache_mode_at_90_percent' => true,
-            'restrict_queries_at_weekly_limit' => true,
-            'suspend_service_at_monthly_limit' => true
+        'slack' => [
+            'enabled' => false,
+            'webhook_url' => '',
+            'channel' => '#alerts'
         ]
     ],
     
-    // 비용 추적 파일 경로
-    'cost_tracking' => [
-        'log_file' => __DIR__ . '/logs/cost_monitoring.log',
-        'usage_file' => __DIR__ . '/logs/daily_usage.json',
-        'alerts_file' => __DIR__ . '/logs/cost_alerts.log'
-    ],
-    
-    // BigQuery 비용 계산 설정
-    'bigquery_pricing' => [
-        'query_cost_per_tb' => 6.00, // $6 per TB processed
-        'storage_cost_per_gb_month' => 0.02, // $0.02 per GB/month
-        'bytes_per_tb' => 1099511627776 // 1TB in bytes
-    ],
-    
-    // 캐시 설정
-    'cache' => [
-        'enabled' => true,
-        'directory' => __DIR__ . '/cache',
-        'cleanup_interval' => 3600, // 1시간마다 정리
-        'max_cache_age' => 86400 // 24시간
-    ],
-    
-    // 로그 설정
+    // === 로깅 설정 ===
     'logging' => [
         'enabled' => true,
-        'level' => 'INFO', // DEBUG, INFO, WARNING, ERROR
-        'max_file_size' => 10485760, // 10MB
-        'rotate_files' => true
+        'log_level' => 'INFO', // DEBUG, INFO, WARNING, ERROR
+        'max_log_size' => 10485760, // 10MB
+        'log_rotation' => true,
+        'keep_logs_days' => 30
     ],
     
-    // 보안 설정
+    // === 쿼리 최적화 설정 ===
+    'query_optimization' => [
+        'use_cache' => true,
+        'cache_ttl' => 3600,
+        'max_concurrent_queries' => 3,
+        'query_timeout' => 30,
+        'auto_retry' => true,
+        'max_retries' => 3
+    ],
+    
+    // === 대시보드 UI 설정 ===
+    'dashboard' => [
+        'refresh_interval' => 300, // 5분 (초 단위)
+        'auto_refresh' => true,
+        'show_debug_info' => false,
+        'chart_animation' => true,
+        'chart_height' => 400,
+        'rows_per_page' => 50
+    ],
+    
+    // === 데이터 보존 설정 ===
+    'data_retention' => [
+        'cache_cleanup_days' => 7,
+        'log_cleanup_days' => 30,
+        'usage_data_cleanup_days' => 90
+    ],
+    
+    // === API 설정 ===
+    'api' => [
+        'rate_limit' => 100, // 시간당 요청 수
+        'enable_cors' => false,
+        'allowed_origins' => [],
+        'api_key_required' => false,
+        'api_key' => ''
+    ],
+    
+    // === 개발/디버그 설정 ===
+    'debug' => [
+        'enabled' => false, // 운영 환경에서는 false
+        'show_sql_queries' => false,
+        'log_all_requests' => false,
+        'simulate_costs' => true, // 실제 비용 대신 시뮬레이션 사용
+        'mock_data' => false
+    ],
+    
+    // === 백업 설정 ===
+    'backup' => [
+        'enabled' => false,
+        'backup_interval' => 86400, // 24시간 (초 단위)
+        'backup_retention_days' => 30,
+        'backup_location' => __DIR__ . '/backups/',
+        'include_logs' => true
+    ],
+    
+    // === 성능 모니터링 ===
+    'performance' => [
+        'track_query_time' => true,
+        'track_memory_usage' => true,
+        'slow_query_threshold' => 5.0, // 초
+        'memory_limit_warning' => 128 // MB
+    ],
+    
+    // === 환경별 설정 ===
+    'environment' => 'production', // development, staging, production
+    
+    // === 버전 정보 ===
+    'version' => '2.0.0',
+    'last_updated' => '2024-08-22',
+    
+    // === 추가 보안 설정 ===
     'security' => [
-        'csrf_protection' => true,
-        'rate_limiting' => [
-            'enabled' => true,
-            'max_requests_per_minute' => 60,
-            'max_queries_per_hour' => 100
+        'enable_ip_whitelist' => false,
+        'allowed_ips' => [
+            '127.0.0.1',
+            '::1'
+        ],
+        'enable_2fa' => false,
+        'password_min_length' => 8,
+        'password_require_special_chars' => true,
+        'session_regenerate_id' => true,
+        'secure_cookies' => true,
+        'csrf_protection' => true
+    ],
+    
+    // === 외부 서비스 통합 ===
+    'integrations' => [
+        'google_analytics' => [
+            'enabled' => false,
+            'tracking_id' => ''
+        ],
+        'datadog' => [
+            'enabled' => false,
+            'api_key' => ''
         ]
     ]
 ];
