@@ -1,0 +1,155 @@
+# GCP BigQuery 대시보드 - Docker 이미지
+FROM php:8.1-apache
+
+LABEL maintainer="your-email@company.com"
+LABEL version="2.0"
+LABEL description="GCP BigQuery Dashboard with Real-time Cost Monitoring"
+
+# 환경 변수 설정
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
+ENV PHP_MEMORY_LIMIT=256M
+ENV PHP_MAX_EXECUTION_TIME=60
+
+# 시스템 패키지 업데이트 및 설치
+RUN apt-get update && apt-get install -y \
+    # 기본 유틸리티
+    curl \
+    wget \
+    git \
+    unzip \
+    zip \
+    vim \
+    htop \
+    # 이미지 처리
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    # SSL 및 암호화
+    libssl-dev \
+    libcurl4-openssl-dev \
+    # 압축
+    zlib1g-dev \
+    libzip-dev \
+    # 국제화
+    libicu-dev \
+    # 데이터베이스
+    libpq-dev \
+    # 기타
+    libonig-dev \
+    libxml2-dev \
+    # 시스템 모니터링
+    procps \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP 확장 모듈 설치
+RUN docker-php-ext-configure gd \
+    --with-freetype \
+    --with-jpeg \
+    --with-webp \
+    && docker-php-ext-install -j$(nproc) \
+    # 필수 확장
+    curl \
+    json \
+    mbstring \
+    openssl \
+    zip \
+    # 이미지 처리
+    gd \
+    # 데이터베이스
+    pdo \
+    pdo_mysql \
+    # 국제화
+    intl \
+    # 기타
+    xml \
+    dom \
+    session \
+    # 성능
+    opcache
+
+# Composer 설치
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Apache 모듈 활성화
+RUN a2enmod rewrite \
+    && a2enmod ssl \
+    && a2enmod headers \
+    && a2enmod deflate \
+    && a2enmod expires \
+    && a2enmod security2
+
+# Apache 설정
+COPY docker/apache/apache2.conf /etc/apache2/apache2.conf
+COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY docker/apache/ssl-default.conf /etc/apache2/sites-available/ssl-default.conf
+
+# SSL 사이트 활성화 (운영환경용)
+RUN a2ensite ssl-default
+
+# PHP 설정
+COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+# 작업 디렉토리 설정
+WORKDIR /var/www/html
+
+# 애플리케이션 파일 복사
+COPY --chown=www-data:www-data . .
+
+# 필요한 디렉토리 생성 및 권한 설정
+RUN mkdir -p logs cache backups \
+    && chmod 755 logs cache backups \
+    && chmod 644 *.php *.html *.css *.js \
+    && chmod 600 *.json 2>/dev/null || true \
+    && chown -R www-data:www-data .
+
+# 보안 설정 - 민감한 파일 보호
+RUN chmod 600 config.php 2>/dev/null || true \
+    && chmod 600 service-account-key.json 2>/dev/null || true
+
+# Composer 의존성 설치 (있는 경우)
+RUN if [ -f composer.json ]; then \
+    composer install --no-dev --optimize-autoloader --no-interaction; \
+    fi
+
+# 헬스체크 스크립트 생성
+RUN echo '#!/bin/bash\ncurl -f http://localhost/health-check.php || exit 1' > /usr/local/bin/healthcheck \
+    && chmod +x /usr/local/bin/healthcheck
+
+# 백업 스크립트 생성
+RUN echo '#!/bin/bash\nphp /var/www/html/backup.php' > /usr/local/bin/backup \
+    && chmod +x /usr/local/bin/backup
+
+# 로그 로테이션 설정
+COPY docker/logrotate/dashboard /etc/logrotate.d/dashboard
+
+# 크론탭 설정
+COPY docker/cron/dashboard-cron /etc/cron.d/dashboard-cron
+RUN chmod 0644 /etc/cron.d/dashboard-cron \
+    && crontab /etc/cron.d/dashboard-cron
+
+# 시작 스크립트 생성
+COPY docker/scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# 포트 노출
+EXPOSE 80 443
+
+# 헬스체크 설정
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD /usr/local/bin/healthcheck
+
+# 볼륨 설정
+VOLUME ["/var/www/html/logs", "/var/www/html/cache", "/var/www/html/backups"]
+
+# 시작 명령
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["apache2-foreground"]
+
+# 메타데이터
+LABEL org.opencontainers.image.source="https://github.com/your-repo/gcp-bigquery-dashboard"
+LABEL org.opencontainers.image.documentation="https://github.com/your-repo/gcp-bigquery-dashboard#readme"
+LABEL org.opencontainers.image.licenses="MIT"
