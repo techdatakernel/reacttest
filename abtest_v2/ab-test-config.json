@@ -1,0 +1,20 @@
+{
+  "testName": "한맥 판매처 순서 최적화",
+  "startDate": "2025-11-01",
+  "endDate": null,
+  "targetPages": [
+    "/products/hanmac-extracreamydraftcan-handle-package"
+  ],
+  "variants": {
+    "A": {
+      "name": "카카오 선물하기 우선",
+      "order": ["kakao-gift", "cu-pocket", "gs-25", "daily-shot", "emart-24", "seven-eleven"]
+    },
+    "B": {
+      "name": "CU 포켓 우선",
+      "order": ["cu-pocket", "gs-25", "kakao-gift", "emart-24", "seven-eleven", "daily-shot"]
+    }
+  },
+  "trafficSplit": 50,
+  "cookieExpiry": 30
+}

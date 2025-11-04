@@ -1,0 +1,26 @@
+[
+  {
+    "id": "click_671a2b3c4d5e6f",
+    "variant": "A",
+    "elementId": "dtc-dwcr-kakao-gift",
+    "href": "https://kko.kakao.com/Sn9n9e87U5",
+    "pagePath": "/products/hanmac-extracreamydraftcan-handle-package",
+    "timestamp": "2025-10-31T14:23:15.123Z",
+    "userAgent": "Mozilla/5.0...",
+    "referrer": "https://www.google.com",
+    "ipAddress": "127.0.0.1",
+    "serverTimestamp": "2025-10-31T23:23:15+09:00"
+  },
+  {
+    "id": "click_671a2b3c4d5e70",
+    "variant": "B",
+    "elementId": "dtc-dwcr-cu-pocket",
+    "href": "https://www.pocketcu.co.kr/...",
+    "pagePath": "/products/hanmac-extracreamydraftcan-handle-package",
+    "timestamp": "2025-10-31T14:25:30.456Z",
+    "userAgent": "Mozilla/5.0...",
+    "referrer": "",
+    "ipAddress": "127.0.0.1",
+    "serverTimestamp": "2025-10-31T23:25:30+09:00"
+  }
+]
