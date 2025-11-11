@@ -1,8 +1,8 @@
-// ab-test-tracker.js - 설정 기반 Variant 제어
+// ab-test-tracker.js - Multi-page A/B Test Tracker
 
 (function() {
     'use strict';
-    
+
     const ABTestTracker = {
         config: {
             cookieName: 'ab_version',
@@ -13,6 +13,7 @@
         },
 
         serverConfig: null,  // 서버 설정 저장
+        currentPagePath: null,  // 현재 페이지 경로
 
         cookies: {
             set: function(name, value, days) {
@@ -21,7 +22,7 @@
                 const expires = "expires=" + date.toUTCString();
                 document.cookie = name + "=" + value + ";" + expires + ";path=/;SameSite=Lax";
             },
-            
+
             get: function(name) {
                 const nameEQ = name + "=";
                 const ca = document.cookie.split(';');
@@ -38,16 +39,53 @@
             }
         },
 
-        // 서버 설정 로드
+        // 서버 설정 로드 (현재 페이지 경로 기반)
         async loadServerConfig() {
             try {
-                const response = await fetch(this.config.configEndpoint);
-                this.serverConfig = await response.json();
-                console.log('📋 [AB Test] 서버 설정 로드:', this.serverConfig);
+                this.currentPagePath = window.location.pathname;
+
+                // 현재 페이지 경로를 파라미터로 전달
+                const url = `${this.config.configEndpoint}?pagePath=${encodeURIComponent(this.currentPagePath)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                console.log('📋 [AB Test] 서버 응답:', data);
+
+                // 페이지별 설정이 없으면 기본값 사용
+                if (!data.config) {
+                    console.log('⚠️ [AB Test] 페이지 설정 없음, 전역 설정 사용');
+                    this.serverConfig = {
+                        enabled: false,
+                        mode: data.global?.defaultMode || 'ab_test',
+                        schedule: { enabled: false }
+                    };
+                    return this.serverConfig;
+                }
+
+                // 페이지가 비활성화되어 있으면
+                if (!data.config.enabled) {
+                    console.log('🚫 [AB Test] 페이지 비활성화됨');
+                    this.serverConfig = { enabled: false };
+                    return this.serverConfig;
+                }
+
+                this.serverConfig = data.config;
+                this.serverConfig.enabled = true;
+
+                // 쿠키 만료일 업데이트
+                if (data.global?.cookieExpiry) {
+                    this.config.cookieExpiry = data.global.cookieExpiry;
+                }
+
+                console.log('📋 [AB Test] 페이지 설정 로드:', this.serverConfig);
                 return this.serverConfig;
+
             } catch (error) {
                 console.error('❌ [AB Test] 설정 로드 실패:', error);
-                this.serverConfig = { mode: 'ab_test' };  // 기본값
+                this.serverConfig = {
+                    enabled: false,
+                    mode: 'ab_test'
+                };
                 return this.serverConfig;
             }
         },
@@ -80,6 +118,12 @@
                 await this.loadServerConfig();
             }
 
+            // 페이지가 비활성화되어 있으면 중단
+            if (!this.serverConfig.enabled) {
+                console.log('⏭️ [AB Test] 비활성화된 페이지, 스킵');
+                return null;
+            }
+
             const mode = this.serverConfig.mode;
             console.log('🎯 [AB Test] 모드:', mode);
 
@@ -106,7 +150,7 @@
 
             // 3. 일반 A/B 테스트 모드
             let variant = this.cookies.get(this.config.cookieName);
-            
+
             if (!variant) {
                 variant = Math.random() < 0.5 ? 'A' : 'B';
                 this.cookies.set(this.config.cookieName, variant, this.config.cookieExpiry);
@@ -114,14 +158,21 @@
             } else {
                 console.log('🍪 [AB Test] 쿠키 사용 - Variant:', variant);
             }
-            
+
             return variant;
         },
 
         async applyVariant() {
             const variant = await this.getVariant();
+
+            // 비활성화된 페이지면 중단
+            if (!variant) {
+                console.log('⏭️ [AB Test] Variant 적용 스킵');
+                return null;
+            }
+
             const lists = document.querySelectorAll('.dtc-dwcr-list');
-            
+
             lists.forEach(list => {
                 if (list.getAttribute('data-variant') === variant) {
                     list.style.display = 'grid';
@@ -130,6 +181,7 @@
                 }
             });
 
+            console.log('✅ [AB Test] Variant 적용 완료:', variant);
             return variant;
         },
 
@@ -163,9 +215,9 @@
 
         attachListeners: function() {
             const trackedLinks = document.querySelectorAll(`a[id^="${this.config.trackingPrefix}"]`);
-            
+
             console.log('🔗 [AB Test] 추적 링크:', trackedLinks.length + '개');
-            
+
             trackedLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     console.log('🖱️ [AB Test] 클릭:', link.id);
@@ -175,14 +227,21 @@
         },
 
         async init(targetPath) {
-            console.log('🧪 [AB Test] 초기화 시작');
-            
+            console.log('🧪 [AB Test] 초기화 시작 - 페이지:', window.location.pathname);
+
+            // targetPath가 지정되어 있으면 확인 (하위 호환성)
             if (targetPath && !window.location.pathname.includes(targetPath)) {
                 console.log('⏭️ [AB Test] 타겟 페이지 아님');
                 return;
             }
 
             const variant = await this.applyVariant();
+
+            if (!variant) {
+                console.log('⏭️ [AB Test] 초기화 중단 (비활성화된 페이지)');
+                return;
+            }
+
             console.log('✅ [AB Test] Variant 적용:', variant);
 
             if (document.readyState === 'loading') {
@@ -196,6 +255,6 @@
     };
 
     window.ABTestTracker = ABTestTracker;
-    console.log('✅ ABTestTracker 로드 완료');
+    console.log('✅ ABTestTracker 로드 완료 (Multi-page 지원)');
 
 })();
