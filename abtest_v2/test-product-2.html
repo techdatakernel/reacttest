@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 제품 2 - 배너 레이아웃 A/B 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .dtc-dwcr-list {
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .variant-label {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Variant A - 세로 레이아웃 */
+        .banner-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .banner-image-vertical {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 64px;
+        }
+
+        .banner-content-vertical {
+            padding: 20px 0;
+        }
+
+        /* Variant B - 가로 레이아웃 */
+        .banner-horizontal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .banner-image-horizontal {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 64px;
+        }
+
+        .banner-content-horizontal {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .product-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a472a;
+            margin-bottom: 20px;
+        }
+
+        .cta-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #1a472a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .cta-link:hover {
+            background: #2d5a3f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 71, 42, 0.3);
+        }
+
+        .test-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #1a472a;
+        }
+
+        .test-info h3 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .test-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ 테스트 제품 2</h1>
+        <p style="color: #999; margin-bottom: 30px;">배너 레이아웃 A/B 테스트</p>
+
+        <!-- Variant A: 세로 레이아웃 -->
+        <div class="dtc-dwcr-list" data-variant="A">
+            <span class="variant-label">🅰️ Variant A - 세로 레이아웃</span>
+            <div class="banner-vertical">
+                <div class="banner-image-vertical">🌟</div>
+                <div class="banner-content-vertical">
+                    <h2 class="product-title">프리미엄 제품 컬렉션</h2>
+                    <p class="product-desc">
+                        세로 레이아웃으로 먼저 이미지를 강조하고,<br>
+                        그 다음 제품 정보를 제공하는 전통적인 방식입니다.
+                    </p>
+                    <div class="price">₩79,900</div>
+                    <a id="dtc-dwcr-banner-vertical" href="#" class="cta-link">
+                        상세 정보 보기
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variant B: 가로 레이아웃 -->
+        <div class="dtc-dwcr-list" data-variant="B">
+            <span class="variant-label">🅱️ Variant B - 가로 레이아웃</span>
+            <div class="banner-horizontal">
+                <div class="banner-content-horizontal">
+                    <h2 class="product-title">프리미엄 제품 컬렉션</h2>
+                    <p class="product-desc">
+                        가로 레이아웃으로 이미지와 정보를 동시에 보여주어<br>
+                        빠른 정보 파악이 가능한 현대적인 방식입니다.
+                    </p>
+                    <div class="price">₩79,900</div>
+                    <a id="dtc-dwcr-banner-horizontal" href="#" class="cta-link">
+                        상세 정보 보기
+                    </a>
+                </div>
+                <div class="banner-image-horizontal">⭐</div>
+            </div>
+        </div>
+
+        <div class="test-info">
+            <h3>📊 A/B 테스트 정보</h3>
+            <p><strong>테스트 목표:</strong> 어떤 배너 레이아웃이 더 높은 참여율을 기록하는가?</p>
+            <p><strong>Variant A:</strong> 세로 레이아웃 (이미지 → 정보 순서)</p>
+            <p><strong>Variant B:</strong> 가로 레이아웃 (이미지 + 정보 동시 표시)</p>
+            <p><strong>측정 지표:</strong> CTA 링크 클릭수</p>
+        </div>
+    </div>
+
+    <!-- AB Test Tracker 로드 -->
+    <script src="./ab-test-tracker.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            ABTestTracker.init();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 제품 3 - 정보 순서 A/B 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .product-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .product-image-main {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+        }
+
+        .product-title-main {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .product-subtitle {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .dtc-dwcr-list {
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .variant-label {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-section h3 {
+            color: #1a472a;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .info-section p {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .info-section ul li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .price-box {
+            background: #1a472a;
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .price-box .price-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .price-box .price {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .cta-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .cta-btn {
+            display: block;
+            padding: 15px;
+            border: 2px solid #1a472a;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .cta-btn-primary {
+            background: #1a472a;
+            color: white;
+        }
+
+        .cta-btn-primary:hover {
+            background: #2d5a3f;
+            transform: translateY(-2px);
+        }
+
+        .cta-btn-secondary {
+            background: white;
+            color: #1a472a;
+        }
+
+        .cta-btn-secondary:hover {
+            background: #f0f7f0;
+            transform: translateY(-2px);
+        }
+
+        .test-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #1a472a;
+        }
+
+        .test-info h3 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .test-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 테스트 제품 3</h1>
+        <p style="color: #999; margin-bottom: 30px;">제품 정보 순서 A/B 테스트</p>
+
+        <div class="product-header">
+            <div class="product-image-main">🎁</div>
+            <h2 class="product-title-main">프리미엄 스페셜 에디션</h2>
+            <p class="product-subtitle">2025 한정판</p>
+        </div>
+
+        <!-- Variant A: 가격 먼저 → 혜택 → 상세정보 -->
+        <div class="dtc-dwcr-list" data-variant="A">
+            <span class="variant-label">🅰️ Variant A - 가격 우선 노출</span>
+
+            <div class="price-box">
+                <div class="price-label">특별 할인가</div>
+                <div class="price">₩99,900</div>
+            </div>
+
+            <div class="info-section">
+                <h3>💎 구매 혜택</h3>
+                <ul>
+                    <li>무료 배송 (전국 어디든)</li>
+                    <li>30일 무료 반품 보장</li>
+                    <li>1년 품질 보증</li>
+                    <li>포인트 5% 적립</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3>📦 제품 상세 정보</h3>
+                <p>
+                    이 제품은 최고급 소재로 제작된 프리미엄 에디션입니다.
+                    엄격한 품질 관리를 거쳐 완성된 제품으로, 오랜 시간 사용해도
+                    변함없는 품질을 자랑합니다.
+                </p>
+            </div>
+
+            <div class="cta-buttons">
+                <a id="dtc-dwcr-order-a1" href="#" class="cta-btn cta-btn-primary">
+                    바로 구매하기
+                </a>
+                <a id="dtc-dwcr-order-a2" href="#" class="cta-btn cta-btn-secondary">
+                    장바구니 담기
+                </a>
+            </div>
+        </div>
+
+        <!-- Variant B: 상세정보 먼저 → 혜택 → 가격 -->
+        <div class="dtc-dwcr-list" data-variant="B">
+            <span class="variant-label">🅱️ Variant B - 정보 우선 노출</span>
+
+            <div class="info-section">
+                <h3>📦 제품 상세 정보</h3>
+                <p>
+                    이 제품은 최고급 소재로 제작된 프리미엄 에디션입니다.
+                    엄격한 품질 관리를 거쳐 완성된 제품으로, 오랜 시간 사용해도
+                    변함없는 품질을 자랑합니다.
+                </p>
+            </div>
+
+            <div class="info-section">
+                <h3>💎 구매 혜택</h3>
+                <ul>
+                    <li>무료 배송 (전국 어디든)</li>
+                    <li>30일 무료 반품 보장</li>
+                    <li>1년 품질 보증</li>
+                    <li>포인트 5% 적립</li>
+                </ul>
+            </div>
+
+            <div class="price-box">
+                <div class="price-label">특별 할인가</div>
+                <div class="price">₩99,900</div>
+            </div>
+
+            <div class="cta-buttons">
+                <a id="dtc-dwcr-order-b1" href="#" class="cta-btn cta-btn-primary">
+                    바로 구매하기
+                </a>
+                <a id="dtc-dwcr-order-b2" href="#" class="cta-btn cta-btn-secondary">
+                    장바구니 담기
+                </a>
+            </div>
+        </div>
+
+        <div class="test-info">
+            <h3>📊 A/B 테스트 정보</h3>
+            <p><strong>테스트 목표:</strong> 정보 제공 순서가 구매 전환율에 미치는 영향</p>
+            <p><strong>Variant A:</strong> 가격 → 혜택 → 상세정보 (가격 강조)</p>
+            <p><strong>Variant B:</strong> 상세정보 → 혜택 → 가격 (품질 강조)</p>
+            <p><strong>측정 지표:</strong> CTA 버튼 클릭수 (구매/장바구니)</p>
+        </div>
+    </div>
+
+    <!-- AB Test Tracker 로드 -->
+    <script src="./ab-test-tracker.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            ABTestTracker.init();
+        });
+    </script>
+</body>
+</html>
