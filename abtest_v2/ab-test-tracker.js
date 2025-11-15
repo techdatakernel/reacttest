@@ -1,4 +1,4 @@
-// ab-test-tracker.js - Multi-page A/B Test Tracker
+// ab-test-tracker.js - Multi-page A/B Test Tracker (개선 버전)
 
 (function() {
     'use strict';
@@ -7,13 +7,14 @@
         config: {
             cookieName: 'ab_version',
             cookieExpiry: 30,
-            apiEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest/api/ab-test-log.php',
-            configEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest/api/ab-test-config.php',
+            apiEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-log.php',
+            configEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-config.php',
             trackingPrefix: 'dtc-dwcr-'
         },
 
-        serverConfig: null,  // 서버 설정 저장
-        currentPagePath: null,  // 현재 페이지 경로
+        serverConfig: null,
+        currentPagePath: null,
+        variantApplied: false,
 
         cookies: {
             set: function(name, value, days) {
@@ -39,19 +40,18 @@
             }
         },
 
-        // 서버 설정 로드 (현재 페이지 경로 기반)
         async loadServerConfig() {
             try {
                 this.currentPagePath = window.location.pathname;
-
-                // 현재 페이지 경로를 파라미터로 전달
                 const url = `${this.config.configEndpoint}?pagePath=${encodeURIComponent(this.currentPagePath)}`;
+                
+                console.log('📋 [AB Test] 설정 로드 요청:', url);
+                
                 const response = await fetch(url);
                 const data = await response.json();
 
                 console.log('📋 [AB Test] 서버 응답:', data);
 
-                // 페이지별 설정이 없으면 기본값 사용
                 if (!data.config) {
                     console.log('⚠️ [AB Test] 페이지 설정 없음, 전역 설정 사용');
                     this.serverConfig = {
@@ -62,7 +62,6 @@
                     return this.serverConfig;
                 }
 
-                // 페이지가 비활성화되어 있으면
                 if (!data.config.enabled) {
                     console.log('🚫 [AB Test] 페이지 비활성화됨');
                     this.serverConfig = { enabled: false };
@@ -72,12 +71,11 @@
                 this.serverConfig = data.config;
                 this.serverConfig.enabled = true;
 
-                // 쿠키 만료일 업데이트
                 if (data.global?.cookieExpiry) {
                     this.config.cookieExpiry = data.global.cookieExpiry;
                 }
 
-                console.log('📋 [AB Test] 페이지 설정 로드:', this.serverConfig);
+                console.log('✅ [AB Test] 설정 로드 완료:', this.serverConfig);
                 return this.serverConfig;
 
             } catch (error) {
@@ -90,7 +88,6 @@
             }
         },
 
-        // 스케줄 확인
         isScheduleActive() {
             if (!this.serverConfig || !this.serverConfig.schedule || !this.serverConfig.schedule.enabled) {
                 return false;
@@ -100,34 +97,25 @@
             const startDate = this.serverConfig.schedule.startDate ? new Date(this.serverConfig.schedule.startDate) : null;
             const endDate = this.serverConfig.schedule.endDate ? new Date(this.serverConfig.schedule.endDate) : null;
 
-            if (startDate && now < startDate) {
-                return false;
-            }
-
-            if (endDate && now > endDate) {
-                return false;
-            }
+            if (startDate && now < startDate) return false;
+            if (endDate && now > endDate) return false;
 
             return true;
         },
 
-        // Variant 결정 (설정 기반)
         async getVariant() {
-            // 서버 설정이 없으면 로드
             if (!this.serverConfig) {
                 await this.loadServerConfig();
             }
 
-            // 페이지가 비활성화되어 있으면 중단
             if (!this.serverConfig.enabled) {
-                console.log('⏭️ [AB Test] 비활성화된 페이지, 스킵');
+                console.log('⭐️ [AB Test] 비활성화된 페이지, 스킵');
                 return null;
             }
 
             const mode = this.serverConfig.mode;
             console.log('🎯 [AB Test] 모드:', mode);
 
-            // 1. 스케줄 모드 확인
             if (mode === 'scheduled' && this.isScheduleActive()) {
                 const scheduledVariant = this.serverConfig.schedule.variant;
                 console.log('📅 [AB Test] 스케줄 활성 - Variant:', scheduledVariant);
@@ -135,20 +123,18 @@
                 return scheduledVariant;
             }
 
-            // 2. 강제 모드
             if (mode === 'force_a') {
-                console.log('🔒 [AB Test] 강제 모드 - Variant A');
+                console.log('🔓 [AB Test] 강제 모드 - Variant A');
                 this.cookies.set(this.config.cookieName, 'A', this.config.cookieExpiry);
                 return 'A';
             }
 
             if (mode === 'force_b') {
-                console.log('🔒 [AB Test] 강제 모드 - Variant B');
+                console.log('🔓 [AB Test] 강제 모드 - Variant B');
                 this.cookies.set(this.config.cookieName, 'B', this.config.cookieExpiry);
                 return 'B';
             }
 
-            // 3. 일반 A/B 테스트 모드
             let variant = this.cookies.get(this.config.cookieName);
 
             if (!variant) {
@@ -156,7 +142,7 @@
                 this.cookies.set(this.config.cookieName, variant, this.config.cookieExpiry);
                 console.log('🎲 [AB Test] 신규 할당 - Variant:', variant);
             } else {
-                console.log('🍪 [AB Test] 쿠키 사용 - Variant:', variant);
+                console.log('🔖 [AB Test] 쿠키 사용 - Variant:', variant);
             }
 
             return variant;
@@ -165,22 +151,41 @@
         async applyVariant() {
             const variant = await this.getVariant();
 
-            // 비활성화된 페이지면 중단
             if (!variant) {
-                console.log('⏭️ [AB Test] Variant 적용 스킵');
+                console.log('⭐️ [AB Test] Variant 적용 스킵');
                 return null;
             }
 
+            // ⭐ DOM 로드 대기
+            if (document.readyState === 'loading') {
+                console.log('⏳ [AB Test] DOM 로드 대기...');
+                await new Promise(resolve => {
+                    document.addEventListener('DOMContentLoaded', resolve);
+                });
+            }
+
             const lists = document.querySelectorAll('.dtc-dwcr-list');
+            console.log('🔍 [AB Test] 찾은 리스트 요소:', lists.length);
+
+            if (lists.length === 0) {
+                console.warn('⚠️ [AB Test] .dtc-dwcr-list 요소가 없습니다');
+                return null;
+            }
 
             lists.forEach(list => {
-                if (list.getAttribute('data-variant') === variant) {
+                const listVariant = list.getAttribute('data-variant');
+                console.log('📝 [AB Test] 리스트 체크 - Expected:', variant, 'Found:', listVariant);
+                
+                if (listVariant === variant) {
                     list.style.display = 'grid';
+                    console.log('✅ [AB Test] 표시됨:', listVariant);
                 } else {
                     list.style.display = 'none';
+                    console.log('❌ [AB Test] 숨김:', listVariant);
                 }
             });
 
+            this.variantApplied = true;
             console.log('✅ [AB Test] Variant 적용 완료:', variant);
             return variant;
         },
@@ -229,27 +234,28 @@
         async init(targetPath) {
             console.log('🧪 [AB Test] 초기화 시작 - 페이지:', window.location.pathname);
 
-            // targetPath가 지정되어 있으면 확인 (하위 호환성)
             if (targetPath && !window.location.pathname.includes(targetPath)) {
-                console.log('⏭️ [AB Test] 타겟 페이지 아님');
+                console.log('⭐️ [AB Test] 타겟 페이지 아님');
                 return;
             }
 
-            const variant = await this.applyVariant();
+            try {
+                // ⭐ 1단계: Variant 적용 (DOM 로드 대기 포함)
+                const variant = await this.applyVariant();
 
-            if (!variant) {
-                console.log('⏭️ [AB Test] 초기화 중단 (비활성화된 페이지)');
-                return;
-            }
+                if (!variant) {
+                    console.log('⭐️ [AB Test] 초기화 중단 (비활성화된 페이지)');
+                    return;
+                }
 
-            console.log('✅ [AB Test] Variant 적용:', variant);
+                console.log('✅ [AB Test] Variant 적용됨:', variant);
 
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => {
-                    this.attachListeners();
-                });
-            } else {
+                // ⭐ 2단계: 클릭 리스너 부착 (Variant 적용 후)
                 this.attachListeners();
+                
+                console.log('🎉 [AB Test] 초기화 완료');
+            } catch (error) {
+                console.error('❌ [AB Test] 초기화 실패:', error);
             }
         }
     };

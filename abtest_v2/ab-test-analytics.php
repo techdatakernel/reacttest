@@ -1,5 +1,5 @@
 <?php
-// ab-test-analytics.php
+// api/ab-test-analytics.php
 
 header('Content-Type: application/json; charset=UTF-8');
 header('Access-Control-Allow-Origin: *');
@@ -11,7 +11,7 @@ define('LOG_DIR', __DIR__ . '/ab-test-logs/');
 // GET 파라미터 받기
 $startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
 $endDate = $_GET['endDate'] ?? date('Y-m-d');
-$pagePath = $_GET['pagePath'] ?? '';
+$pagePath = isset($_GET['pagePath']) ? urldecode($_GET['pagePath']) : '';
 $export = $_GET['export'] ?? '';
 
 // 날짜 범위의 모든 로그 파일 찾기
@@ -31,6 +31,26 @@ function getLogFiles($startDate, $endDate) {
     return $files;
 }
 
+// ⭐ 날짜 비교 함수 (ISO 8601 형식 지원)
+function isDateInRange($timestamp, $startDate, $endDate) {
+    // timestamp를 DateTime 객체로 변환
+    try {
+        $logDate = new DateTime($timestamp);
+    } catch (Exception $e) {
+        // 파싱 실패 시 false 반환
+        return false;
+    }
+    
+    // 시작일: 00:00:00
+    $start = new DateTime($startDate . ' 00:00:00');
+    
+    // 종료일: 23:59:59
+    $end = new DateTime($endDate . ' 23:59:59');
+    
+    // 범위 내에 있는지 확인
+    return ($logDate >= $start && $logDate <= $end);
+}
+
 // 로그 데이터 로드 및 필터링
 function loadLogs($startDate, $endDate, $pagePath = '') {
     $logFiles = getLogFiles($startDate, $endDate);
@@ -42,12 +62,18 @@ function loadLogs($startDate, $endDate, $pagePath = '') {
         
         if ($logs && is_array($logs)) {
             foreach ($logs as $log) {
-                // 날짜 필터
-                $logDate = substr($log['timestamp'], 0, 10);
-                if ($logDate >= $startDate && $logDate <= $endDate) {
+                $logTimestamp = $log['timestamp'] ?? '';
+                
+                // ⭐ 개선된 날짜 비교
+                if (isDateInRange($logTimestamp, $startDate, $endDate)) {
                     // 페이지 필터
-                    if (empty($pagePath) || strpos($log['pagePath'], $pagePath) !== false) {
+                    if (empty($pagePath)) {
                         $allLogs[] = $log;
+                    } else {
+                        $logPath = $log['pagePath'] ?? '';
+                        if ($logPath === $pagePath) {
+                            $allLogs[] = $log;
+                        }
                     }
                 }
             }
@@ -74,7 +100,6 @@ function calculateStats($logs) {
         'logs' => []
     ];
     
-    // 로그가 없으면 바로 반환
     if (empty($logs)) {
         return $stats;
     }
@@ -83,15 +108,12 @@ function calculateStats($logs) {
         $variant = $log['variant'] ?? '';
         $elementId = $log['elementId'] ?? '';
         
-        // Variant 검증
         if (!in_array($variant, ['A', 'B'])) {
             continue;
         }
         
-        // 총 클릭수
         $stats['summary']['totalClicks']++;
         
-        // Variant별 카운트
         if ($variant === 'A') {
             $stats['summary']['variantA']++;
             $stats['variants']['A']['total']++;
@@ -100,7 +122,6 @@ function calculateStats($logs) {
             $stats['variants']['B']['total']++;
         }
         
-        // 채널별 클릭수
         if (!empty($elementId)) {
             if (!isset($stats['variants'][$variant]['channels'][$elementId])) {
                 $stats['variants'][$variant]['channels'][$elementId] = 0;
@@ -108,7 +129,6 @@ function calculateStats($logs) {
             $stats['variants'][$variant]['channels'][$elementId]++;
         }
         
-        // 로그 저장 (최근 100개만)
         if (count($stats['logs']) < 100) {
             $stats['logs'][] = [
                 'timestamp' => $log['timestamp'] ?? '',
@@ -120,7 +140,7 @@ function calculateStats($logs) {
         }
     }
     
-    // 승자 결정 (⭐ 0으로 나누기 방지)
+    // 승자 결정
     if ($stats['summary']['variantA'] > 0 && $stats['summary']['variantB'] > 0) {
         if ($stats['summary']['variantA'] > $stats['summary']['variantB']) {
             $stats['summary']['winner'] = 'Variant A';
@@ -146,7 +166,7 @@ function calculateStats($logs) {
         $stats['summary']['improvement'] = 100;
     }
     
-    // 채널별 정렬 (클릭수 내림차순)
+    // 채널별 정렬
     foreach (['A', 'B'] as $variant) {
         if (!empty($stats['variants'][$variant]['channels'])) {
             arsort($stats['variants'][$variant]['channels']);
@@ -168,15 +188,12 @@ function exportCSV($logs) {
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="ab-test-data-' . date('Y-m-d') . '.csv"');
     
-    // BOM 추가 (Excel에서 한글 깨짐 방지)
     echo "\xEF\xBB\xBF";
     
     $output = fopen('php://output', 'w');
     
-    // 헤더
     fputcsv($output, ['시간', 'Variant', '판매처 ID', '판매처 URL', '페이지', 'IP', 'User Agent']);
     
-    // 데이터
     foreach ($logs as $log) {
         fputcsv($output, [
             $log['timestamp'] ?? '',
@@ -195,32 +212,26 @@ function exportCSV($logs) {
 
 // 메인 로직
 try {
-    // 로그 디렉토리 확인
     if (!file_exists(LOG_DIR)) {
         throw new Exception('로그 디렉토리가 존재하지 않습니다: ' . LOG_DIR);
     }
     
-    // 로그 로드
     $logs = loadLogs($startDate, $endDate, $pagePath);
     
-    // CSV 내보내기 요청
     if ($export === 'csv') {
         exportCSV($logs);
     }
     
-    // 통계 계산
     $stats = calculateStats($logs);
     
-    // JSON 응답
-    echo json_encode($stats, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    echo json_encode($stats, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
         'error' => $e->getMessage(),
         'logDir' => LOG_DIR,
-        'exists' => file_exists(LOG_DIR),
-        'files' => glob(LOG_DIR . '*.json')
+        'exists' => file_exists(LOG_DIR)
     ], JSON_UNESCAPED_UNICODE);
 }
 ?>
