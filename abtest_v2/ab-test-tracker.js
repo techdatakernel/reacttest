@@ -1,4 +1,4 @@
-// ab-test-tracker.js - Multi-page A/B Test Tracker (개선 버전)
+// ab-test-tracker.js - Multi-page A/B Test Tracker (경로 정규화 버전)
 
 (function() {
     'use strict';
@@ -15,6 +15,18 @@
         serverConfig: null,
         currentPagePath: null,
         variantApplied: false,
+
+        // ⭐ 경로 정규화 함수
+        normalizePath: function(path) {
+            if (!path) return '';
+            // 1. 역슬래시 제거 (이스케이프된 슬래시 \/)
+            path = path.replace(/\\\//g, '/');
+            // 2. 여러 슬래시를 하나로
+            path = path.replace(/\/+/g, '/');
+            // 3. 양 끝 공백 제거
+            path = path.trim();
+            return path;
+        },
 
         cookies: {
             set: function(name, value, days) {
@@ -43,9 +55,14 @@
         async loadServerConfig() {
             try {
                 this.currentPagePath = window.location.pathname;
-                const url = `${this.config.configEndpoint}?pagePath=${encodeURIComponent(this.currentPagePath)}`;
+                const normalizedPath = this.normalizePath(this.currentPagePath);
+                const url = `${this.config.configEndpoint}?pagePath=${encodeURIComponent(normalizedPath)}`;
                 
-                console.log('📋 [AB Test] 설정 로드 요청:', url);
+                console.log('📋 [AB Test] 설정 로드 요청:', {
+                    originalPath: this.currentPagePath,
+                    normalizedPath: normalizedPath,
+                    url: url
+                });
                 
                 const response = await fetch(url);
                 const data = await response.json();
@@ -75,7 +92,13 @@
                     this.config.cookieExpiry = data.global.cookieExpiry;
                 }
 
-                console.log('✅ [AB Test] 설정 로드 완료:', this.serverConfig);
+                console.log('✅ [AB Test] 설정 로드 완료:', {
+                    enabled: this.serverConfig.enabled,
+                    mode: this.serverConfig.mode,
+                    testName: this.serverConfig.testName,
+                    normalizedPath: normalizedPath
+                });
+                
                 return this.serverConfig;
 
             } catch (error) {
@@ -109,7 +132,7 @@
             }
 
             if (!this.serverConfig.enabled) {
-                console.log('⭐️ [AB Test] 비활성화된 페이지, 스킵');
+                console.log('⭕️ [AB Test] 비활성화된 페이지, 스킵');
                 return null;
             }
 
@@ -124,13 +147,13 @@
             }
 
             if (mode === 'force_a') {
-                console.log('🔓 [AB Test] 강제 모드 - Variant A');
+                console.log('📌 [AB Test] 강제 모드 - Variant A');
                 this.cookies.set(this.config.cookieName, 'A', this.config.cookieExpiry);
                 return 'A';
             }
 
             if (mode === 'force_b') {
-                console.log('🔓 [AB Test] 강제 모드 - Variant B');
+                console.log('📌 [AB Test] 강제 모드 - Variant B');
                 this.cookies.set(this.config.cookieName, 'B', this.config.cookieExpiry);
                 return 'B';
             }
@@ -142,7 +165,7 @@
                 this.cookies.set(this.config.cookieName, variant, this.config.cookieExpiry);
                 console.log('🎲 [AB Test] 신규 할당 - Variant:', variant);
             } else {
-                console.log('🔖 [AB Test] 쿠키 사용 - Variant:', variant);
+                console.log('📖 [AB Test] 쿠키 사용 - Variant:', variant);
             }
 
             return variant;
@@ -152,7 +175,7 @@
             const variant = await this.getVariant();
 
             if (!variant) {
-                console.log('⭐️ [AB Test] Variant 적용 스킵');
+                console.log('⭕️ [AB Test] Variant 적용 스킵');
                 return null;
             }
 
@@ -174,7 +197,7 @@
 
             lists.forEach(list => {
                 const listVariant = list.getAttribute('data-variant');
-                console.log('📝 [AB Test] 리스트 체크 - Expected:', variant, 'Found:', listVariant);
+                console.log('🔍 [AB Test] 리스트 체크 - Expected:', variant, 'Found:', listVariant);
                 
                 if (listVariant === variant) {
                     list.style.display = 'grid';
@@ -192,11 +215,13 @@
 
         logClick: function(elementId, href) {
             const variant = this.cookies.get(this.config.cookieName) || 'A';
+            const normalizedPath = this.normalizePath(window.location.pathname);
+            
             const data = {
                 variant: variant,
                 elementId: elementId,
                 href: href,
-                pagePath: window.location.pathname,
+                pagePath: normalizedPath,
                 timestamp: new Date().toISOString(),
                 userAgent: navigator.userAgent,
                 referrer: document.referrer
@@ -235,7 +260,7 @@
             console.log('🧪 [AB Test] 초기화 시작 - 페이지:', window.location.pathname);
 
             if (targetPath && !window.location.pathname.includes(targetPath)) {
-                console.log('⭐️ [AB Test] 타겟 페이지 아님');
+                console.log('⭕️ [AB Test] 타겟 페이지 아님');
                 return;
             }
 
@@ -244,7 +269,7 @@
                 const variant = await this.applyVariant();
 
                 if (!variant) {
-                    console.log('⭐️ [AB Test] 초기화 중단 (비활성화된 페이지)');
+                    console.log('⭕️ [AB Test] 초기화 중단 (비활성화된 페이지)');
                     return;
                 }
 
