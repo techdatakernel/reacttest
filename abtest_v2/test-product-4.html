@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 제품 4 - FAQ 페이지 구매 버튼 위치 A/B 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .dtc-dwcr-list {
+            display: none;
+        }
+
+        .dtc-dwcr-list.active {
+            display: block !important;
+        }
+
+        .variant-label {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* 제품 정보 섹션 */
+        .product-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .product-header h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .product-header .price {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .product-header .description {
+            font-size: 16px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        /* 구매 버튼 스타일 */
+        .buy-button {
+            background: #27ae60;
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+
+        .buy-button:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+        }
+
+        .buy-section {
+            background: #ecf0f1;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .buy-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .buy-section p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* Sticky 버튼 (Variant B용) */
+        .sticky-buy-bar {
+            position: sticky;
+            top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            z-index: 100;
+            border: 2px solid #27ae60;
+        }
+
+        .sticky-buy-bar h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        /* FAQ 섹션 */
+        .faq-section {
+            margin-top: 30px;
+        }
+
+        .faq-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 26px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .faq-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faq-question::after {
+            content: '▼';
+            font-size: 12px;
+            color: #3498db;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.open .faq-question::after {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-answer-content {
+            padding: 0 20px 20px 20px;
+            color: #555;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* 디버그 패널 */
+        .debug-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 9999;
+            display: none;
+            min-width: 250px;
+        }
+
+        .debug-info.show {
+            display: block;
+        }
+
+        .debug-info div {
+            margin: 5px 0;
+        }
+
+        .debug-info .label {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        /* 특징 목록 */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .feature-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .feature-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .product-header h2 {
+                font-size: 22px;
+            }
+
+            .product-header .price {
+                font-size: 28px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 디버그 정보 패널 -->
+    <div class="debug-info" id="debugInfo">
+        <div><span class="label">Variant:</span> <span id="debugVariant">-</span></div>
+        <div><span class="label">Mode:</span> <span id="debugMode">-</span></div>
+        <div><span class="label">Page Path:</span> <span id="debugPagePath">-</span></div>
+        <div><span class="label">Config Enabled:</span> <span id="debugEnabled">-</span></div>
+        <div><span class="label">Cookie:</span> <span id="debugCookie">-</span></div>
+    </div>
+
+    <div class="container">
+        <h1>🚀 프리미엄 스마트워치 Pro X</h1>
+        <p class="subtitle">FAQ 페이지 - 구매 버튼 위치 테스트</p>
+
+        <!-- ✅ Variant A: 구매 버튼이 FAQ 하단 -->
+        <div class="dtc-dwcr-list" data-variant="A">
+            <span class="variant-label">🅰️ Variant A - 구매 버튼 하단 배치</span>
+
+            <!-- 제품 헤더 -->
+            <div class="product-header">
+                <h2>스마트워치의 새로운 기준</h2>
+                <div class="price">₩349,000</div>
+                <div class="description">
+                    최첨단 건강 모니터링, 7일 배터리, 방수 기능을 갖춘 프리미엄 스마트워치.
+                    당신의 라이프스타일을 한 차원 업그레이드하세요.
+                </div>
+            </div>
+
+            <!-- 주요 특징 -->
+            <div class="features">
+                <div class="feature-card">
+                    <div class="icon">💪</div>
+                    <h4>건강 추적</h4>
+                    <p>심박수, 혈압, 산소포화도 24시간 모니터링</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔋</div>
+                    <h4>7일 배터리</h4>
+                    <p>한 번 충전으로 일주일 사용</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💧</div>
+                    <h4>IP68 방수</h4>
+                    <p>수영, 샤워 중에도 착용 가능</p>
+                </div>
+            </div>
+
+            <!-- FAQ 섹션 -->
+            <div class="faq-section">
+                <h2>❓ 자주 묻는 질문</h2>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-shipping-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-shipping-a">배송은 얼마나 걸리나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            주문 후 2-3 영업일 이내에 발송되며, 배송은 발송일로부터 1-2일이 소요됩니다.
+                            제주도 및 도서산간 지역은 추가 1-2일이 소요될 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-warranty-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-warranty-a">보증기간은 어떻게 되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            구매일로부터 1년간 제조사 보증이 제공됩니다.
+                            정상적인 사용 중 발생한 제품 결함에 대해 무상 수리 또는 교환이 가능합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-compatibility-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-compatibility-a">어떤 스마트폰과 호환되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            iOS 13.0 이상의 iPhone 및 Android 6.0 이상의 스마트폰과 호환됩니다.
+                            전용 앱을 통해 더 많은 기능을 사용할 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-waterproof-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-waterproof-a">수영할 때도 착용 가능한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            네, IP68 등급 방수 기능으로 수영장이나 바다에서도 사용 가능합니다.
+                            다만, 온수 사우나나 다이빙에는 적합하지 않습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-battery-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-battery-a">배터리 충전은 어떻게 하나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            전용 마그네틱 충전 케이블이 포함되어 있습니다.
+                            약 2시간 완충으로 7일간 사용 가능하며, 급속 충전 시 30분 충전으로 2일 사용이 가능합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-return-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-return-a">반품/교환 정책은 어떻게 되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            제품 수령 후 7일 이내 미개봉 상태에 한해 반품이 가능합니다.
+                            개봉 후에는 제품 하자가 있는 경우에만 교환이 가능하며, 단순 변심에 의한 반품은 불가합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-health-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-health-a">건강 데이터는 정확한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            의료기기 인증을 받은 센서를 사용하여 높은 정확도를 제공합니다.
+                            다만, 건강 관리 참고용이며 의료 진단 목적으로는 사용할 수 없습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-strap-a')">
+                    <div class="faq-question" id="dtc-dwcr-faq-strap-a">스트랩 교체가 가능한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            네, 표준 22mm 퀵 릴리즈 방식으로 쉽게 교체 가능합니다.
+                            다양한 색상과 재질의 스트랩을 별도 구매하실 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 구매 버튼 - FAQ 하단 -->
+            <div class="buy-section">
+                <h3>지금 바로 구매하세요!</h3>
+                <p>✨ 무료 배송 + 7일 반품 보장 ✨</p>
+                <button class="buy-button" id="dtc-dwcr-cta-button-bottom-a" onclick="handlePurchaseClick(event, 'variant-a-bottom')">
+                    ₩349,000 구매하기
+                </button>
+            </div>
+        </div>
+
+        <!-- ✅ Variant B: 구매 버튼이 상단 Sticky -->
+        <div class="dtc-dwcr-list" data-variant="B">
+            <span class="variant-label">🅱️ Variant B - 구매 버튼 상단 고정</span>
+
+            <!-- 제품 헤더 -->
+            <div class="product-header">
+                <h2>스마트워치의 새로운 기준</h2>
+                <div class="price">₩349,000</div>
+                <div class="description">
+                    최첨단 건강 모니터링, 7일 배터리, 방수 기능을 갖춘 프리미엄 스마트워치.
+                    당신의 라이프스타일을 한 차원 업그레이드하세요.
+                </div>
+            </div>
+
+            <!-- Sticky 구매 버튼 - 상단 고정 -->
+            <div class="sticky-buy-bar">
+                <h3>🎁 특별 할인가 ₩349,000</h3>
+                <button class="buy-button" id="dtc-dwcr-cta-button-top-b" onclick="handlePurchaseClick(event, 'variant-b-top')">
+                    지금 구매하기
+                </button>
+                <p style="margin-top: 10px; color: #7f8c8d; font-size: 13px;">✨ 무료 배송 + 7일 반품 보장 ✨</p>
+            </div>
+
+            <!-- 주요 특징 -->
+            <div class="features">
+                <div class="feature-card">
+                    <div class="icon">💪</div>
+                    <h4>건강 추적</h4>
+                    <p>심박수, 혈압, 산소포화도 24시간 모니터링</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔋</div>
+                    <h4>7일 배터리</h4>
+                    <p>한 번 충전으로 일주일 사용</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💧</div>
+                    <h4>IP68 방수</h4>
+                    <p>수영, 샤워 중에도 착용 가능</p>
+                </div>
+            </div>
+
+            <!-- FAQ 섹션 -->
+            <div class="faq-section">
+                <h2>❓ 자주 묻는 질문</h2>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-shipping-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-shipping-b">배송은 얼마나 걸리나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            주문 후 2-3 영업일 이내에 발송되며, 배송은 발송일로부터 1-2일이 소요됩니다.
+                            제주도 및 도서산간 지역은 추가 1-2일이 소요될 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-warranty-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-warranty-b">보증기간은 어떻게 되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            구매일로부터 1년간 제조사 보증이 제공됩니다.
+                            정상적인 사용 중 발생한 제품 결함에 대해 무상 수리 또는 교환이 가능합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-compatibility-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-compatibility-b">어떤 스마트폰과 호환되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            iOS 13.0 이상의 iPhone 및 Android 6.0 이상의 스마트폰과 호환됩니다.
+                            전용 앱을 통해 더 많은 기능을 사용할 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-waterproof-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-waterproof-b">수영할 때도 착용 가능한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            네, IP68 등급 방수 기능으로 수영장이나 바다에서도 사용 가능합니다.
+                            다만, 온수 사우나나 다이빙에는 적합하지 않습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-battery-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-battery-b">배터리 충전은 어떻게 하나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            전용 마그네틱 충전 케이블이 포함되어 있습니다.
+                            약 2시간 완충으로 7일간 사용 가능하며, 급속 충전 시 30분 충전으로 2일 사용이 가능합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-return-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-return-b">반품/교환 정책은 어떻게 되나요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            제품 수령 후 7일 이내 미개봉 상태에 한해 반품이 가능합니다.
+                            개봉 후에는 제품 하자가 있는 경우에만 교환이 가능하며, 단순 변심에 의한 반품은 불가합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-health-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-health-b">건강 데이터는 정확한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            의료기기 인증을 받은 센서를 사용하여 높은 정확도를 제공합니다.
+                            다만, 건강 관리 참고용이며 의료 진단 목적으로는 사용할 수 없습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this, 'dtc-dwcr-faq-strap-b')">
+                    <div class="faq-question" id="dtc-dwcr-faq-strap-b">스트랩 교체가 가능한가요?</div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            네, 표준 22mm 퀵 릴리즈 방식으로 쉽게 교체 가능합니다.
+                            다양한 색상과 재질의 스트랩을 별도 구매하실 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ 토글 스크립트 -->
+    <script>
+        function toggleFaq(element, id) {
+            element.classList.toggle('open');
+        }
+
+        function handlePurchaseClick(event, variant) {
+            event.preventDefault();
+            console.log('🛒 Purchase button clicked:', variant);
+            alert('구매 버튼이 클릭되었습니다! (테스트 모드)\n\nVariant: ' + variant);
+        }
+
+        // 디버그 모드 활성화 (URL에 ?debug=1 추가 시)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('debug') === '1') {
+            const debugPanel = document.getElementById('debugInfo');
+            debugPanel.classList.add('show');
+
+            // ABTestTracker 초기화 후 디버그 정보 업데이트
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const cookie = document.cookie.split('; ').find(row => row.startsWith('ab_version='));
+                    const variant = cookie ? cookie.split('=')[1] : 'none';
+
+                    document.getElementById('debugVariant').textContent = variant;
+                    document.getElementById('debugPagePath').textContent = window.location.pathname;
+                    document.getElementById('debugCookie').textContent = variant;
+
+                    // ABTestTracker에서 정보 가져오기
+                    if (window.ABTestTracker && window.ABTestTracker.currentConfig) {
+                        document.getElementById('debugMode').textContent = window.ABTestTracker.currentConfig.mode || '-';
+                        document.getElementById('debugEnabled').textContent = window.ABTestTracker.currentConfig.enabled || '-';
+                    }
+                }, 1000);
+            });
+        }
+    </script>
+
+    <!-- ✅ ABtest 라이브러리 로드 -->
+    <script src="https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/js/ab-test-tracker.js"></script>
+
+    <!-- ✅ ABtest 초기화 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 [Test Product 4] DOMContentLoaded');
+            await ABTestTracker.init();
+            console.log('✅ [Test Product 4] ABTestTracker initialized');
+        });
+    </script>
+</body>
+</html>
