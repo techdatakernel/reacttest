@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>테스트 제품 1 - CTA 버튼 A/B 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+
+        .product-info {
+            margin-bottom: 30px;
+        }
+
+        .product-info h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .product-info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a472a;
+            margin: 20px 0;
+        }
+
+        /* ⭐ 초기값: 미표시 (JavaScript가 적용) */
+        .dtc-dwcr-list {
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* ⭐ 활성 상태: 표시 */
+        .dtc-dwcr-list.active {
+            display: grid !important;
+        }
+
+        .cta-button {
+            display: block;
+            padding: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .variant-label {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .variant-a-style {
+            background: #1a472a;
+            color: white;
+        }
+
+        .variant-a-style:hover {
+            background: #2d5a3f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 71, 42, 0.3);
+        }
+
+        .variant-b-style {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 3px solid #764ba2;
+        }
+
+        .variant-b-style:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .test-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #1a472a;
+        }
+
+        .test-info h3 {
+            color: #1a472a;
+            margin-bottom: 10px;
+        }
+
+        .test-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ⭐ 디버그 표시 */
+        .debug-info {
+            background: #f0f7ff;
+            border: 1px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+            display: none;
+        }
+
+        .debug-info.show {
+            display: block;
+        }
+
+        .debug-info .label {
+            font-weight: 600;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 테스트 제품 1</h1>
+        <p style="color: #999; margin-bottom: 30px;">CTA 버튼 스타일 A/B 테스트</p>
+
+        <div class="product-image">
+            📦
+        </div>
+
+        <div class="product-info">
+            <h2>프리미엄 제품</h2>
+            <p>이 제품은 A/B 테스트를 위한 샘플 제품입니다.</p>
+            <p>버튼 스타일에 따라 클릭율이 어떻게 달라지는지 테스트합니다.</p>
+            <div class="price">₩49,900</div>
+        </div>
+
+        <!-- ⭐ Variant A -->
+        <div class="dtc-dwcr-list" data-variant="A">
+            <span class="variant-label">🅰️ Variant A - 전통적 스타일</span>
+            <a id="dtc-dwcr-cta-button-a" href="#" class="cta-button variant-a-style">
+                지금 구매하기
+            </a>
+        </div>
+
+        <!-- ⭐ Variant B -->
+        <div class="dtc-dwcr-list" data-variant="B">
+            <span class="variant-label">🅱️ Variant B - 강렬한 스타일</span>
+            <a id="dtc-dwcr-cta-button-b" href="#" class="cta-button variant-b-style">
+                🎉 지금 바로 구매하기 🎉
+            </a>
+        </div>
+
+        <div class="test-info">
+            <h3>📊 A/B 테스트 정보</h3>
+            <p><strong>테스트 목표:</strong> 어떤 버튼 스타일이 더 높은 클릭율을 기록하는가?</p>
+            <p><strong>Variant A:</strong> 전통적인 그린 컬러의 심플한 버튼</p>
+            <p><strong>Variant B:</strong> 그라데이션과 이모지를 사용한 강렬한 버튼</p>
+            <p><strong>측정 지표:</strong> 버튼 클릭수</p>
+        </div>
+
+        <!-- ⭐ 디버그 정보 (개발자 도구) -->
+        <div class="debug-info" id="debugInfo">
+            <div><span class="label">Variant:</span> <span id="debugVariant">-</span></div>
+            <div><span class="label">Mode:</span> <span id="debugMode">-</span></div>
+            <div><span class="label">Page Path:</span> <span id="debugPagePath">-</span></div>
+            <div><span class="label">Config Enabled:</span> <span id="debugEnabled">-</span></div>
+        </div>
+    </div>
+
+    <!-- ⭐ AB Test Tracker 로드 -->
+    <script src="https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/js/ab-test-tracker.js"></script>
+    <script>
+        // ⭐ 초기화 - 페이지 로드 완료 후 실행
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 페이지 로드 완료, AB Test 초기화');
+            await ABTestTracker.init();
+            
+            // ⭐ 디버그 정보 표시 (선택사항)
+            updateDebugInfo();
+        });
+
+        // ⭐ 디버그 정보 업데이트
+        function updateDebugInfo() {
+            const variant = ABTestTracker.cookies.get('ab_version') || 'unknown';
+            const mode = ABTestTracker.serverConfig?.mode || 'unknown';
+            const enabled = ABTestTracker.serverConfig?.enabled || false;
+            
+            document.getElementById('debugVariant').textContent = variant;
+            document.getElementById('debugMode').textContent = mode;
+            document.getElementById('debugPagePath').textContent = window.location.pathname;
+            document.getElementById('debugEnabled').textContent = enabled ? '✅' : '❌';
+        }
+
+        // ⭐ URL 파라미터로 디버그 활성화 (예: ?debug=1)
+        if (new URLSearchParams(window.location.search).get('debug') === '1') {
+            document.getElementById('debugInfo').classList.add('show');
+        }
+    </script>
+</body>
+</html>

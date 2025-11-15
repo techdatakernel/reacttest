@@ -65,6 +65,10 @@
             gap: 20px;
         }
 
+        .dtc-dwcr-list.active {
+            display: grid !important;
+        }
+
         .variant-label {
             display: inline-block;
             background: #ffd700;
@@ -181,6 +185,26 @@
             font-size: 14px;
             line-height: 1.6;
         }
+
+        .debug-info {
+            background: #f0f7ff;
+            border: 1px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+            display: none;
+        }
+
+        .debug-info.show {
+            display: block;
+        }
+
+        .debug-info .label {
+            font-weight: 600;
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -194,8 +218,8 @@
             <p class="product-subtitle">2025 한정판</p>
         </div>
 
-        <!-- Variant A: 가격 먼저 → 혜택 → 상세정보 -->
-        <div class="dtc-dwcr-list" data-variant="A">
+        <!-- ✅ 수정: data-variant="B" → Variant A (가격 우선) 대신 표시 -->
+        <div class="dtc-dwcr-list" data-variant="B">
             <span class="variant-label">🅰️ Variant A - 가격 우선 노출</span>
 
             <div class="price-box">
@@ -232,8 +256,8 @@
             </div>
         </div>
 
-        <!-- Variant B: 상세정보 먼저 → 혜택 → 가격 -->
-        <div class="dtc-dwcr-list" data-variant="B">
+        <!-- ✅ 수정: data-variant="A" → Variant B (정보 우선) 대신 표시 -->
+        <div class="dtc-dwcr-list" data-variant="A">
             <span class="variant-label">🅱️ Variant B - 정보 우선 노출</span>
 
             <div class="info-section">
@@ -277,14 +301,37 @@
             <p><strong>Variant B:</strong> 상세정보 → 혜택 → 가격 (품질 강조)</p>
             <p><strong>측정 지표:</strong> CTA 버튼 클릭수 (구매/장바구니)</p>
         </div>
+
+        <div class="debug-info" id="debugInfo">
+            <div><span class="label">Variant:</span> <span id="debugVariant">-</span></div>
+            <div><span class="label">Mode:</span> <span id="debugMode">-</span></div>
+            <div><span class="label">Page Path:</span> <span id="debugPagePath">-</span></div>
+            <div><span class="label">Config Enabled:</span> <span id="debugEnabled">-</span></div>
+        </div>
     </div>
 
-    <!-- AB Test Tracker 로드 -->
-    <script src="./ab-test-tracker.js"></script>
+    <script src="https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/js/ab-test-tracker.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            ABTestTracker.init();
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 페이지 로드 완료, AB Test 초기화');
+            await ABTestTracker.init();
+            updateDebugInfo();
         });
+
+        function updateDebugInfo() {
+            const variant = ABTestTracker.cookies.get('ab_version') || 'unknown';
+            const mode = ABTestTracker.serverConfig?.mode || 'unknown';
+            const enabled = ABTestTracker.serverConfig?.enabled || false;
+            
+            document.getElementById('debugVariant').textContent = variant;
+            document.getElementById('debugMode').textContent = mode;
+            document.getElementById('debugPagePath').textContent = window.location.pathname;
+            document.getElementById('debugEnabled').textContent = enabled ? '✅' : '❌';
+        }
+
+        if (new URLSearchParams(window.location.search).get('debug') === '1') {
+            document.getElementById('debugInfo').classList.add('show');
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,68 @@
+{
+    "pages": {
+        "/products/hanmac-extracreamydraftcan-handle-package": {
+            "enabled": true,
+            "testName": "한맥 판매처 순서 최적화",
+            "mode": "force_a",
+            "variants": {
+                "A": {
+                    "name": "카카오 선물하기 우선",
+                    "order": [
+                        "kakao-gift",
+                        "cu-pocket",
+                        "gs-25",
+                        "daily-shot",
+                        "emart-24",
+                        "seven-eleven"
+                    ]
+                },
+                "B": {
+                    "name": "CU 포켓 우선",
+                    "order": [
+                        "cu-pocket",
+                        "gs-25",
+                        "kakao-gift",
+                        "emart-24",
+                        "seven-eleven",
+                        "daily-shot"
+                    ]
+                }
+            },
+            "schedule": {
+                "enabled": false,
+                "startDate": null,
+                "endDate": null,
+                "variant": null
+            },
+            "lastUpdated": "2025-11-11T16:21:46+00:00",
+            "updatedBy": "admin"
+        },
+        "/ob/stella/abtest2/test-product-1.html": {
+            "enabled": true,
+            "testName": "test1 - CTA 버튼 테스트",
+            "mode": "force_a",
+            "variants": {
+                "A": {
+                    "name": "Variant A",
+                    "order": []
+                },
+                "B": {
+                    "name": "Variant B",
+                    "order": []
+                }
+            },
+            "schedule": {
+                "enabled": false,
+                "startDate": null,
+                "endDate": null,
+                "variant": null
+            },
+            "lastUpdated": "2025-11-11T16:19:21+00:00",
+            "updatedBy": "admin"
+        }
+    },
+    "global": {
+        "cookieExpiry": 30,
+        "defaultMode": "ab_test"
+    }
+}
