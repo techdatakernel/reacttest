@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABtest v1.3 - Complete Specification & Flow Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .version {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header .date {
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 25px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #764ba2;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge.v1-1 {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge.v1-2 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge.v1-3 {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge.new {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .flow-diagram {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .flow-step:last-child::after {
+            content: '';
+        }
+
+        .flow-step .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .flow-step .step-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block .comment {
+            color: #75715e;
+        }
+
+        .code-block .keyword {
+            color: #f92672;
+        }
+
+        .code-block .string {
+            color: #e6db74;
+        }
+
+        .code-block .function {
+            color: #66d9ef;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #388e3c;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item h4 {
+            margin-top: 0;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .architecture-diagram {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .arch-layer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .arch-layer.frontend {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .arch-layer.backend {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .arch-layer.data {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 ABtest v1.3</h1>
+            <div class="version">Complete Specification & Flow Documentation</div>
+            <div class="date">최종 업데이트: 2025-11-17</div>
+        </div>
+
+        <div class="nav">
+            <a href="#overview">개요</a>
+            <a href="#architecture">아키텍처</a>
+            <a href="#flow">플로우</a>
+            <a href="#specs">기술 스펙</a>
+            <a href="#api">API</a>
+            <a href="#dashboard">대시보드</a>
+            <a href="#deployment">배포</a>
+        </div>
+
+        <div class="content">
+            <!-- 1. 개요 -->
+            <div class="section" id="overview">
+                <h2>📋 1. 시스템 개요</h2>
+
+                <div class="success-box">
+                    <strong>ABtest v1.3</strong>는 크로스 페이지 Variant 추적 기능을 갖춘 엔터프라이즈급 A/B 테스트 솔루션입니다.
+                    사용자가 여러 테스트 페이지를 방문하더라도 동일한 Variant를 유지하여 일관된 사용자 경험을 제공합니다.
+                </div>
+
+                <h3>주요 특징</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>🌍 크로스 페이지 추적</h4>
+                        <p>전역 쿠키(ab_global_variant)를 통해 여러 페이지에서 동일 Variant 유지</p>
+                    </div>
+                    <div class="card">
+                        <h4>📊 실시간 데이터 분석</h4>
+                        <p>IP 기반 사용자 세션 추적 및 실시간 통계 계산</p>
+                    </div>
+                    <div class="card">
+                        <h4>🎯 정확한 클릭 추적</h4>
+                        <p>onclick 핸들러 없이 전역 이벤트 리스너로 모든 클릭 추적</p>
+                    </div>
+                    <div class="card">
+                        <h4>🖥️ 통합 대시보드</h4>
+                        <p>페이지 관리, 설정, 통계, 사용자 여정 분석을 하나의 대시보드에서</p>
+                    </div>
+                </div>
+
+                <h3>버전 히스토리</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-1">v1.1</span> 기본 A/B 테스트 시스템</h4>
+                        <ul>
+                            <li>페이지별 Variant 할당 (ab_version 쿠키)</li>
+                            <li>클릭 추적 메커니즘 (onclick 제거 패턴)</li>
+                            <li>경로 정규화 시스템</li>
+                            <li>JSON 기반 로그 저장</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-2">v1.2</span> 크로스 페이지 추적 추가</h4>
+                        <ul>
+                            <li>전역 쿠키(ab_global_variant) 도입</li>
+                            <li>globalVariant 필드 추가</li>
+                            <li>실제 로그 데이터 분석 함수</li>
+                            <li>사용자 여정 추적</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-3">v1.3</span> 방문 페이지 정보 및 버그 수정</h4>
+                        <ul>
+                            <li>첫/마지막 방문 페이지 추적</li>
+                            <li>firstVariant 오류 수정 (시간순 정렬)</li>
+                            <li>페이지 이름 추출 및 툴팁 표시</li>
+                            <li>대시보드 UI 개선</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 아키텍처 -->
+            <div class="section" id="architecture">
+                <h2>🏗️ 2. 시스템 아키텍처</h2>
+
+                <div class="architecture-diagram">
+                    <div class="arch-layer frontend">
+                        <strong>Frontend Layer</strong><br>
+                        HTML Test Pages + ab-test-tracker.js + ab-test-dashboard.html
+                    </div>
+                    <div style="font-size: 2em; color: #667eea;">↓</div>
+                    <div class="arch-layer backend">
+                        <strong>Backend Layer</strong><br>
+                        ab-test-config.php + ab-test-log.php + ab-test-analytics.php
+                    </div>
+                    <div style="font-size: 2em; color: #667eea;">↓</div>
+                    <div class="arch-layer data">
+                        <strong>Data Layer</strong><br>
+                        ab-test-config.json + clicks_YYYY-MM.json
+                    </div>
+                </div>
+
+                <h3>파일 구조</h3>
+                <div class="code-block">
+/var/www/html_bak/ob/stella/abtest2/
+├── 📄 ab-test-dashboard.html              (53KB - v1.3 대시보드)
+├── 📄 test-product-1.html                 (테스트 페이지)
+├── 📄 test-product-2.html                 (테스트 페이지)
+├── 📄 test-product-3.html                 (테스트 페이지)
+├── 📄 test-product-4.html                 (테스트 페이지)
+├── 📄 test-product-5.html                 (테스트 페이지)
+├── 📁 js/
+│   └── ab-test-tracker.js                 (15KB - v1.2 트래커)
+└── 📁 api/
+    ├── ab-test-config.php                 (11KB - 설정 관리)
+    ├── ab-test-log.php                    (15KB - v1.3 로그 분석)
+    ├── ab-test-analytics.php              (통계 분석)
+    ├── ab-test-config.json                (5.1KB - 설정 데이터)
+    └── 📁 ab-test-logs/
+        └── clicks_2025-11.json            (46KB - 클릭 로그)
+                </div>
+
+                <h3>기술 스택</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>레이어</th>
+                                <th>기술</th>
+                                <th>용도</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Frontend</strong></td>
+                                <td>HTML5, CSS3, Vanilla JavaScript (ES6+)</td>
+                                <td>테스트 페이지, 대시보드 UI</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Backend</strong></td>
+                                <td>PHP 7.4+</td>
+                                <td>API, 데이터 분석, 설정 관리</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Storage</strong></td>
+                                <td>JSON 파일</td>
+                                <td>설정, 로그 저장</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cookie</strong></td>
+                                <td>HTTP Cookie (SameSite=Lax)</td>
+                                <td>Variant 지속성 유지</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. 플로우 -->
+            <div class="section" id="flow">
+                <h2>🔄 3. 시스템 플로우</h2>
+
+                <h3>3.1 사용자 방문 플로우 <span class="badge v1-3">v1.3</span></h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            사용자가 테스트 페이지 방문
+                        </div>
+                        <div>ab-test-tracker.js 로드 및 초기화</div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            서버 설정 로드
+                        </div>
+                        <div>ab-test-config.php?pagePath=... 호출</div>
+                        <div class="code-block">
+GET /api/ab-test-config.php?pagePath=/ob/stella/abtest2/test-product-1.html
+→ {enabled: true, mode: "ab_test", testName: "상품 레이아웃 테스트"}
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">3</span>
+                            Variant 결정 (3-tier 체크)
+                        </div>
+                        <div>
+                            <strong>Priority 1:</strong> 전역 쿠키 확인 (ab_global_variant)<br>
+                            <strong>Priority 2:</strong> 로컬 쿠키 확인 (ab_version)<br>
+                            <strong>Priority 3:</strong> 신규 할당 (Math.random < 0.5)
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">4</span>
+                            Variant 적용
+                        </div>
+                        <div>
+                            DOM 조작: data-variant="A" 요소만 display: grid<br>
+                            쿠키 저장: ab_version + ab_global_variant (30일)
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">5</span>
+                            클릭 이벤트 리스너 부착
+                        </div>
+                        <div>
+                            모든 a[id^="dtc-dwcr-"] 요소에 클릭 리스너 등록
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">6</span>
+                            사용자 클릭 발생
+                        </div>
+                        <div>
+                            클릭 데이터 전송 (variant + globalVariant + elementId + pagePath + ...)
+                        </div>
+                        <div class="code-block">
+POST /api/ab-test-log.php
+{
+  "variant": "B",
+  "globalVariant": "B",  <span class="comment">// ⭐ v1.2+</span>
+  "elementId": "dtc-dwcr-product-card-buy-a-1",
+  "pagePath": "/ob/stella/abtest2/test-product-5.html",
+  "timestamp": "2025-11-17T04:10:57.921Z"
+}
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">7</span>
+                            로그 저장 및 분석
+                        </div>
+                        <div>
+                            clicks_2025-11.json 파일에 저장<br>
+                            IP 기반 사용자 세션 분석<br>
+                            크로스 페이지 통계 계산
+                        </div>
+                    </div>
+                </div>
+
+                <h3>3.2 Variant 결정 로직 <span class="badge v1-2">v1.2</span></h3>
+                <div class="code-block">
+<span class="comment">// Step 1: 모드별 강제 할당 확인</span>
+<span class="keyword">if</span> (mode === <span class="string">'force_a'</span>) <span class="keyword">return</span> <span class="string">'A'</span>;
+<span class="keyword">if</span> (mode === <span class="string">'force_b'</span>) <span class="keyword">return</span> <span class="string">'B'</span>;
+<span class="keyword">if</span> (mode === <span class="string">'scheduled'</span> && isScheduleActive()) <span class="keyword">return</span> schedule.variant;
+
+<span class="comment">// Step 2: ab_test 모드 - 크로스 페이지 추적</span>
+<span class="keyword">let</span> globalVariant = cookies.<span class="function">getGlobal</span>();  <span class="comment">// ab_global_variant</span>
+<span class="keyword">if</span> (globalVariant) {
+    console.log(<span class="string">'🌍 전역 쿠키에서 Variant 사용: '</span> + globalVariant);
+    cookies.<span class="function">setGlobal</span>(globalVariant, <span class="number">30</span>);  <span class="comment">// 유효기간 연장</span>
+    cookies.<span class="function">set</span>(<span class="string">'ab_version'</span>, globalVariant, <span class="number">30</span>);
+    <span class="keyword">return</span> globalVariant;
+}
+
+<span class="comment">// Step 3: 로컬 쿠키 확인</span>
+<span class="keyword">let</span> localVariant = cookies.<span class="function">get</span>(<span class="string">'ab_version'</span>);
+<span class="keyword">if</span> (localVariant) {
+    console.log(<span class="string">'📖 로컬 쿠키에서 Variant 사용: '</span> + localVariant);
+    cookies.<span class="function">setGlobal</span>(localVariant, <span class="number">30</span>);  <span class="comment">// 전역 쿠키에도 저장</span>
+    <span class="keyword">return</span> localVariant;
+}
+
+<span class="comment">// Step 4: 신규 할당</span>
+<span class="keyword">let</span> variant = Math.<span class="function">random</span>() < <span class="number">0.5</span> ? <span class="string">'A'</span> : <span class="string">'B'</span>;
+console.log(<span class="string">'🎲 신규 Variant 할당: '</span> + variant);
+cookies.<span class="function">set</span>(<span class="string">'ab_version'</span>, variant, <span class="number">30</span>);
+cookies.<span class="function">setGlobal</span>(variant, <span class="number">30</span>);
+<span class="keyword">return</span> variant;
+                </div>
+
+                <h3>3.3 크로스 페이지 추적 시나리오</h3>
+                <div class="info-box">
+                    <strong>시나리오:</strong> 사용자가 test-product-1.html → test-product-3.html → test-product-5.html 순으로 방문
+
+                    <ol style="margin-top: 15px;">
+                        <li><strong>test-product-1.html 방문</strong>
+                            <ul>
+                                <li>전역 쿠키 없음 → 로컬 쿠키 없음 → 신규 할당 (예: B)</li>
+                                <li>ab_version = B, ab_global_variant = B 저장</li>
+                            </ul>
+                        </li>
+                        <li><strong>test-product-3.html 방문</strong>
+                            <ul>
+                                <li>전역 쿠키 있음 (ab_global_variant = B)</li>
+                                <li>B 사용 (일관성 유지) ✅</li>
+                            </ul>
+                        </li>
+                        <li><strong>test-product-5.html 방문</strong>
+                            <ul>
+                                <li>전역 쿠키 있음 (ab_global_variant = B)</li>
+                                <li>B 사용 (일관성 유지) ✅</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <strong>결과:</strong> 모든 페이지에서 Variant B 유지 → 일관된 사용자 경험 제공
+                </div>
+            </div>
+
+            <!-- 4. 기술 스펙 -->
+            <div class="section" id="specs">
+                <h2>⚙️ 4. 기술 스펙</h2>
+
+                <h3>4.1 쿠키 전략</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>쿠키 이름</th>
+                                <th>범위</th>
+                                <th>유효기간</th>
+                                <th>용도</th>
+                                <th>버전</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>ab_version</code></td>
+                                <td>페이지별</td>
+                                <td>30일</td>
+                                <td>현재 페이지 Variant 저장</td>
+                                <td><span class="badge v1-1">v1.1</span></td>
+                            </tr>
+                            <tr>
+                                <td><code>ab_global_variant</code></td>
+                                <td>전역 (path=/)</td>
+                                <td>30일</td>
+                                <td>크로스 페이지 Variant 추적</td>
+                                <td><span class="badge v1-2">v1.2</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>4.2 클릭 추적 ID 패턴 <span class="badge v1-1">v1.1</span></h3>
+                <div class="warning-box">
+                    <strong>중요:</strong> onclick 핸들러를 사용하면 event.preventDefault()로 인해 클릭 이벤트 전파가 차단됩니다.
+                    반드시 <code>&lt;a href="#"&gt;</code> 태그만 사용하세요.
+                </div>
+
+                <div class="code-block">
+<span class="comment">/* ID 패턴: dtc-dwcr-{category}-{action}-{variant} */</span>
+
+<span class="comment">/* ✅ 올바른 예시 */</span>
+&lt;<span class="keyword">a</span> <span class="function">href</span>=<span class="string">"#"</span> <span class="function">id</span>=<span class="string">"dtc-dwcr-product-card-buy-a-1"</span> <span class="function">class</span>=<span class="string">"btn"</span>&gt;
+    장바구니 담기
+&lt;/<span class="keyword">a</span>&gt;
+
+<span class="comment">/* ❌ 잘못된 예시 (onclick 사용) */</span>
+&lt;<span class="keyword">button</span> <span class="function">onclick</span>=<span class="string">"buyProduct()"</span>&gt;  <span class="comment">← 클릭 추적 실패</span>
+    장바구니 담기
+&lt;/<span class="keyword">button</span>&gt;
+
+<span class="comment">/* CSS로 버튼 스타일링 */</span>
+<span class="keyword">.btn</span> {
+    <span class="function">text-decoration</span>: <span class="string">none</span>;  <span class="comment">← 링크 밑줄 제거</span>
+    <span class="function">display</span>: <span class="string">inline-block</span>;
+    <span class="function">padding</span>: <span class="string">12px 24px</span>;
+    <span class="function">background</span>: <span class="string">#667eea</span>;
+    <span class="function">color</span>: <span class="string">white</span>;
+    <span class="function">border-radius</span>: <span class="string">6px</span>;
+}
+                </div>
+
+                <h3>4.3 로그 데이터 구조 <span class="badge v1-3">v1.3</span></h3>
+                <div class="code-block">
+{
+  <span class="string">"id"</span>: <span class="string">"click_691aa0513826a.299981893"</span>,
+  <span class="string">"variant"</span>: <span class="string">"B"</span>,                          <span class="comment">// 페이지별 Variant</span>
+  <span class="string">"globalVariant"</span>: <span class="string">"B"</span>,                   <span class="comment">// ⭐ 전역 Variant (v1.2+)</span>
+  <span class="string">"elementId"</span>: <span class="string">"dtc-dwcr-cta-button-top-b"</span>,
+  <span class="string">"href"</span>: <span class="string">"https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/test-product-4.html#"</span>,
+  <span class="string">"pagePath"</span>: <span class="string">"/ob/stella/abtest2/test-product-4.html"</span>,
+  <span class="string">"timestamp"</span>: <span class="string">"2025-11-17T04:10:57.921Z"</span>,
+  <span class="string">"userAgent"</span>: <span class="string">"Mozilla/5.0..."</span>,
+  <span class="string">"referrer"</span>: <span class="string">""</span>,
+  <span class="string">"ipAddress"</span>: <span class="string">"10.0.101.154"</span>,           <span class="comment">// 사용자 식별</span>
+  <span class="string">"serverTimestamp"</span>: <span class="string">"2025-11-17T04:10:57+00:00"</span>
+}
+                </div>
+
+                <h3>4.4 경로 정규화 <span class="badge v1-1">v1.1</span></h3>
+                <div class="info-box">
+                    설정 파일의 pagePath와 실제 요청 경로를 정확히 매칭하기 위해 경로 정규화 수행
+                </div>
+                <div class="code-block">
+<span class="comment">// JavaScript (ab-test-tracker.js)</span>
+<span class="function">normalizePath</span>: <span class="keyword">function</span>(path) {
+    <span class="keyword">if</span> (!path) <span class="keyword">return</span> <span class="string">''</span>;
+    path = path.<span class="function">replace</span>(<span class="string">/\\\//g</span>, <span class="string">'/'</span>);      <span class="comment">// 역슬래시 제거</span>
+    path = path.<span class="function">replace</span>(<span class="string">/\/+/g</span>, <span class="string">'/'</span>);       <span class="comment">// 중복 슬래시 제거</span>
+    path = path.<span class="function">trim</span>();
+    <span class="keyword">return</span> path;
+}
+
+<span class="comment">// PHP (ab-test-config.php)</span>
+<span class="keyword">function</span> <span class="function">normalizePath</span>($path) {
+    <span class="keyword">if</span> (!$path) <span class="keyword">return</span> <span class="string">''</span>;
+    $path = <span class="function">str_replace</span>(<span class="string">'\/'</span>, <span class="string">'/'</span>, $path);
+    $path = <span class="function">preg_replace</span>(<span class="string">'#/+#'</span>, <span class="string">'/'</span>, $path);
+    <span class="keyword">return</span> <span class="function">trim</span>($path);
+}
+                </div>
+            </div>
+
+            <!-- 5. API 명세 -->
+            <div class="section" id="api">
+                <h2>🔌 5. API 명세</h2>
+
+                <h3>5.1 ab-test-config.php - 설정 관리</h3>
+
+                <h4>GET /api/ab-test-config.php?pagePath={path}</h4>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>GET</td>
+                        </tr>
+                        <tr>
+                            <th>Query Params</th>
+                            <td><code>pagePath</code> - 페이지 경로 (정규화된 경로)</td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"config"</span>: {
+    <span class="string">"enabled"</span>: <span class="keyword">true</span>,
+    <span class="string">"mode"</span>: <span class="string">"ab_test"</span>,           <span class="comment">// ab_test | force_a | force_b | scheduled</span>
+    <span class="string">"testName"</span>: <span class="string">"상품 레이아웃 테스트"</span>,
+    <span class="string">"schedule"</span>: {
+      <span class="string">"enabled"</span>: <span class="keyword">false</span>
+    }
+  },
+  <span class="string">"global"</span>: {
+    <span class="string">"defaultMode"</span>: <span class="string">"ab_test"</span>,
+    <span class="string">"cookieExpiry"</span>: <span class="number">30</span>
+  }
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>5.2 ab-test-log.php - 로그 저장 및 분석</h3>
+
+                <h4>POST /api/ab-test-log.php</h4>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>POST</td>
+                        </tr>
+                        <tr>
+                            <th>Content-Type</th>
+                            <td>application/json</td>
+                        </tr>
+                        <tr>
+                            <th>Request Body</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"variant"</span>: <span class="string">"A"</span> | <span class="string">"B"</span>,
+  <span class="string">"globalVariant"</span>: <span class="string">"A"</span> | <span class="string">"B"</span>,     <span class="comment">// v1.2+</span>
+  <span class="string">"elementId"</span>: <span class="string">"dtc-dwcr-..."</span>,
+  <span class="string">"href"</span>: <span class="string">"..."</span>,
+  <span class="string">"pagePath"</span>: <span class="string">"/ob/stella/abtest2/..."</span>,
+  <span class="string">"timestamp"</span>: <span class="string">"2025-11-17T..."</span>,
+  <span class="string">"userAgent"</span>: <span class="string">"..."</span>,
+  <span class="string">"referrer"</span>: <span class="string">"..."</span>
+}
+</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"id"</span>: <span class="string">"click_691aa0513826a.299981893"</span>,
+  <span class="string">"message"</span>: <span class="string">"로그가 저장되었습니다"</span>,
+  <span class="string">"logFile"</span>: <span class="string">"clicks_2025-11.json"</span>
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h4>GET /api/ab-test-log.php?action=getCrossPageStats</h4>
+                <div class="badge v1-2">v1.2</div>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>GET</td>
+                        </tr>
+                        <tr>
+                            <th>Query Params</th>
+                            <td><code>action=getCrossPageStats</code></td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"stats"</span>: {
+    <span class="string">"trackedUsers"</span>: <span class="number">1</span>,              <span class="comment">// 여러 페이지 방문 사용자 수</span>
+    <span class="string">"consistencyRate"</span>: <span class="number">0</span>,           <span class="comment">// Variant 일치율 (%)</span>
+    <span class="string">"avgPagesPerUser"</span>: <span class="number">5</span>,           <span class="comment">// 평균 방문 페이지</span>
+    <span class="string">"globalCookieRate"</span>: <span class="number">0</span>,          <span class="comment">// 전역 쿠키 적용률 (%)</span>
+    <span class="string">"aToACount"</span>: <span class="number">0</span>,                 <span class="comment">// A→A 유지 사용자</span>
+    <span class="string">"bToBCount"</span>: <span class="number">0</span>,                 <span class="comment">// B→B 유지 사용자</span>
+    <span class="string">"changedCount"</span>: <span class="number">1</span>,              <span class="comment">// Variant 변경 사용자</span>
+    <span class="string">"changedPercent"</span>: <span class="number">100</span>           <span class="comment">// 변경 비율 (%)</span>
+  }
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h4>GET /api/ab-test-log.php?action=getUserJourney</h4>
+                <div class="badge v1-3">v1.3</div>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>GET</td>
+                        </tr>
+                        <tr>
+                            <th>Query Params</th>
+                            <td><code>action=getUserJourney</code></td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"success"</span>: <span class="keyword">true</span>,
+  <span class="string">"journeys"</span>: [
+    {
+      <span class="string">"userId"</span>: <span class="string">"6867cf194c0c6793"</span>,
+      <span class="string">"firstVariant"</span>: <span class="string">"B"</span>,
+      <span class="string">"firstPage"</span>: <span class="string">"test-product-1"</span>,        <span class="comment">// ⭐ v1.3</span>
+      <span class="string">"firstPageFull"</span>: <span class="string">"/ob/stella/abtest2/test-product-1.html"</span>,
+      <span class="string">"lastVariant"</span>: <span class="string">"B"</span>,
+      <span class="string">"lastPage"</span>: <span class="string">"test-product-4"</span>,         <span class="comment">// ⭐ v1.3</span>
+      <span class="string">"lastPageFull"</span>: <span class="string">"/ob/stella/abtest2/test-product-4.html"</span>,
+      <span class="string">"pagesVisited"</span>: <span class="number">5</span>,
+      <span class="string">"lastUpdated"</span>: <span class="string">"2025-11-17T04:10:57.921Z"</span>
+    }
+  ]
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 6. 대시보드 -->
+            <div class="section" id="dashboard">
+                <h2>🖥️ 6. 통합 대시보드</h2>
+
+                <div class="success-box">
+                    <strong>ab-test-dashboard.html (53KB - v1.3)</strong><br>
+                    페이지 관리, 설정 제어, 통계 분석, 크로스 페이지 추적을 하나의 인터페이스에서 제공
+                </div>
+
+                <h3>6.1 페이지 관리 탭</h3>
+                <ul>
+                    <li>✅ 새 ABtest 페이지 추가</li>
+                    <li>✅ 페이지 목록 조회 (테스트 이름, 모드, 상태)</li>
+                    <li>✅ 페이지 삭제</li>
+                    <li>✅ 실시간 설정 동기화</li>
+                </ul>
+
+                <h3>6.2 설정 제어 탭</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>테스트 모드</h4>
+                        <ul>
+                            <li><strong>ab_test</strong> - 랜덤 50:50 분배</li>
+                            <li><strong>force_a</strong> - Variant A 고정</li>
+                            <li><strong>force_b</strong> - Variant B 고정</li>
+                            <li><strong>scheduled</strong> - 스케줄 기반</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>스케줄 설정</h4>
+                        <ul>
+                            <li>시작일/종료일 설정</li>
+                            <li>스케줄 Variant 선택</li>
+                            <li>활성화/비활성화 토글</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>6.3 통계 분석 탭</h3>
+                <ul>
+                    <li>✅ 날짜 필터 (시작일 ~ 종료일)</li>
+                    <li>✅ 빠른 필터 (오늘, 최근 7일, 최근 30일)</li>
+                    <li>✅ 페이지별 통계</li>
+                    <li>✅ Variant별 클릭 수</li>
+                    <li>✅ 승자 표시 (개선율 표시)</li>
+                </ul>
+
+                <h3>6.4 크로스 페이지 추적 탭 <span class="badge v1-3">v1.3</span></h3>
+
+                <h4>통계 요약</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>지표</th>
+                                <th>설명</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>추적 사용자 수</strong></td>
+                                <td>2개 이상 페이지 방문한 사용자</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Variant 일치율</strong></td>
+                                <td>모든 페이지에서 동일 Variant 유지 비율</td>
+                            </tr>
+                            <tr>
+                                <td><strong>평균 방문 페이지</strong></td>
+                                <td>사용자당 평균 방문 페이지 수</td>
+                            </tr>
+                            <tr>
+                                <td><strong>전역 쿠키 적용률</strong></td>
+                                <td>ab_global_variant 쿠키 적용 비율</td>
+                            </tr>
+                            <tr>
+                                <td><strong>A→A 계속</strong></td>
+                                <td>Variant A에서 A 유지</td>
+                            </tr>
+                            <tr>
+                                <td><strong>B→B 계속</strong></td>
+                                <td>Variant B에서 B 유지</td>
+                            </tr>
+                            <tr>
+                                <td><strong>변경됨</strong></td>
+                                <td>Variant 변경된 사용자 (A↔B)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>사용자 여정 분석 테이블</h4>
+                <div class="code-block">
+| 사용자 ID | 첫 방문 Variant | 첫 방문 페이지 ⭐ | 마지막 Variant | 마지막 페이지 ⭐ | 일관성 | 방문 페이지 | 최근 활동 |
+|-----------|----------------|-------------------|---------------|------------------|--------|------------|-----------|
+| 6867cf19...| B              | test-product-1    | B             | test-product-4   | 변경됨  | 5 개       | 2025. 11. 17. |
+                </div>
+
+                <div class="info-box">
+                    <strong>v1.3 개선사항:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>✅ 첫 방문 페이지 / 마지막 페이지 컬럼 추가</li>
+                        <li>✅ 페이지 이름에 마우스 호버 시 전체 경로 툴팁 표시</li>
+                        <li>✅ firstVariant 오류 수정 (시간순 정렬 적용)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. 배포 -->
+            <div class="section" id="deployment">
+                <h2>🚀 7. 배포 가이드</h2>
+
+                <h3>7.1 필수 배포 파일 <span class="badge v1-3">v1.3</span></h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>파일명</th>
+                                <th>크기</th>
+                                <th>배포 경로</th>
+                                <th>버전</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ab-test-tracker.js</td>
+                                <td>15KB</td>
+                                <td>/js/ab-test-tracker.js</td>
+                                <td><span class="badge v1-2">v1.2</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-config.php</td>
+                                <td>11KB</td>
+                                <td>/api/ab-test-config.php</td>
+                                <td><span class="badge v1-1">v1.1</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-log.php</td>
+                                <td>15KB</td>
+                                <td>/api/ab-test-log.php</td>
+                                <td><span class="badge v1-3">v1.3</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-dashboard.html</td>
+                                <td>53KB</td>
+                                <td>/ab-test-dashboard.html</td>
+                                <td><span class="badge v1-3">v1.3</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>7.2 배포 절차</h3>
+
+                <h4>Step 1: 백업</h4>
+                <div class="code-block">
+cd /var/www/html_bak/ob/stella/abtest2
+mkdir -p backups/v1.2_$(date +%Y%m%d)
+
+<span class="comment"># 기존 파일 백업</span>
+cp api/ab-test-log.php backups/v1.2_$(date +%Y%m%d)/
+cp ab-test-dashboard.html backups/v1.2_$(date +%Y%m%d)/
+
+echo <span class="string">"✅ 백업 완료"</span>
+                </div>
+
+                <h4>Step 2: 배포</h4>
+                <div class="code-block">
+<span class="comment"># PHP API 파일 배포</span>
+cp ab-test-log_v1_3_with_pages.php api/ab-test-log.php
+
+<span class="comment"># 대시보드 파일 배포</span>
+cp ab-test-dashboard_v1_3_with_pages.html ab-test-dashboard.html
+
+<span class="comment"># 권한 설정</span>
+chmod 644 api/ab-test-log.php
+chmod 644 ab-test-dashboard.html
+
+echo <span class="string">"✅ 배포 완료"</span>
+                </div>
+
+                <h4>Step 3: 검증</h4>
+                <div class="code-block">
+<span class="comment"># API 테스트</span>
+curl <span class="string">"https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-log.php?action=getUserJourney"</span>
+
+<span class="comment"># 대시보드 접속</span>
+<span class="comment"># https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/ab-test-dashboard.html</span>
+
+<span class="comment"># 체크리스트:</span>
+<span class="comment"># □ 페이지 관리 탭 정상 작동</span>
+<span class="comment"># □ 설정 제어 탭 정상 작동</span>
+<span class="comment"># □ 통계 분석 탭 정상 작동</span>
+<span class="comment"># □ 크로스 페이지 추적 탭 정상 작동</span>
+<span class="comment"># □ 사용자 여정 테이블에 "첫 방문 페이지" 컬럼 표시</span>
+<span class="comment"># □ 사용자 여정 테이블에 "마지막 페이지" 컬럼 표시</span>
+                </div>
+
+                <h3>7.3 테스트 페이지 작성 가이드</h3>
+
+                <h4>HTML 구조</h4>
+                <div class="code-block">
+<span class="comment">&lt;!-- 1. 트래커 스크립트 로드 --&gt;</span>
+&lt;<span class="keyword">script</span> <span class="function">src</span>=<span class="string">"/ob/stella/abtest2/js/ab-test-tracker.js"</span>&gt;&lt;/<span class="keyword">script</span>&gt;
+
+<span class="comment">&lt;!-- 2. Variant A 요소 --&gt;</span>
+&lt;<span class="keyword">div</span> <span class="function">class</span>=<span class="string">"dtc-dwcr-list"</span> <span class="function">data-variant</span>=<span class="string">"A"</span> <span class="function">style</span>=<span class="string">"display: none;"</span>&gt;
+    &lt;<span class="keyword">a</span> <span class="function">href</span>=<span class="string">"#"</span> <span class="function">id</span>=<span class="string">"dtc-dwcr-product-card-buy-a-1"</span> <span class="function">class</span>=<span class="string">"btn"</span>&gt;
+        장바구니 담기
+    &lt;/<span class="keyword">a</span>&gt;
+&lt;/<span class="keyword">div</span>&gt;
+
+<span class="comment">&lt;!-- 3. Variant B 요소 --&gt;</span>
+&lt;<span class="keyword">div</span> <span class="function">class</span>=<span class="string">"dtc-dwcr-list"</span> <span class="function">data-variant</span>=<span class="string">"B"</span> <span class="function">style</span>=<span class="string">"display: none;"</span>&gt;
+    &lt;<span class="keyword">a</span> <span class="function">href</span>=<span class="string">"#"</span> <span class="function">id</span>=<span class="string">"dtc-dwcr-product-list-buy-b-1"</span> <span class="function">class</span>=<span class="string">"btn"</span>&gt;
+        장바구니 담기
+    &lt;/<span class="keyword">a</span>&gt;
+&lt;/<span class="keyword">div</span>&gt;
+
+<span class="comment">&lt;!-- 4. 초기화 --&gt;</span>
+&lt;<span class="keyword">script</span>&gt;
+    <span class="function">ABTestTracker</span>.<span class="function">init</span>();
+&lt;/<span class="keyword">script</span>&gt;
+                </div>
+
+                <h4>CSS 스타일링</h4>
+                <div class="code-block">
+<span class="comment">/* 링크를 버튼처럼 보이게 */</span>
+<span class="keyword">.btn</span> {
+    <span class="function">text-decoration</span>: <span class="string">none</span> !<span class="keyword">important</span>;  <span class="comment">← 필수!</span>
+    <span class="function">display</span>: <span class="string">inline-block</span>;
+    <span class="function">padding</span>: <span class="string">12px 24px</span>;
+    <span class="function">background</span>: <span class="string">#667eea</span>;
+    <span class="function">color</span>: <span class="string">white</span>;
+    <span class="function">border-radius</span>: <span class="string">6px</span>;
+    <span class="function">cursor</span>: <span class="string">pointer</span>;
+    <span class="function">transition</span>: <span class="string">all 0.3s</span>;
+}
+
+<span class="keyword">.btn</span>:<span class="function">hover</span> {
+    <span class="function">background</span>: <span class="string">#764ba2</span>;
+    <span class="function">transform</span>: <span class="function">translateY</span>(<span class="string">-2px</span>);
+}
+                </div>
+
+                <h3>7.4 설정 파일 등록</h3>
+                <div class="info-box">
+                    대시보드 → 페이지 관리 탭 → "새 페이지 추가" 버튼 클릭하여 GUI로 등록 가능
+                </div>
+
+                <div class="code-block">
+<span class="comment">// api/ab-test-config.json</span>
+{
+  <span class="string">"pages"</span>: [
+    {
+      <span class="string">"pagePath"</span>: <span class="string">"/ob/stella/abtest2/test-product-5.html"</span>,
+      <span class="string">"enabled"</span>: <span class="keyword">true</span>,
+      <span class="string">"mode"</span>: <span class="string">"ab_test"</span>,
+      <span class="string">"testName"</span>: <span class="string">"상품 카드 레이아웃 테스트"</span>,
+      <span class="string">"schedule"</span>: {
+        <span class="string">"enabled"</span>: <span class="keyword">false</span>
+      }
+    }
+  ],
+  <span class="string">"global"</span>: {
+    <span class="string">"defaultMode"</span>: <span class="string">"ab_test"</span>,
+    <span class="string">"cookieExpiry"</span>: <span class="number">30</span>
+  }
+}
+                </div>
+            </div>
+
+            <!-- 마무리 -->
+            <div class="section">
+                <h2>✅ 체크리스트</h2>
+
+                <h3>개발 완료 항목</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>v1.1 기능</h4>
+                        <ul>
+                            <li>✅ 페이지별 Variant 할당</li>
+                            <li>✅ 쿠키 기반 지속성</li>
+                            <li>✅ 클릭 추적 (onclick 제거)</li>
+                            <li>✅ 경로 정규화</li>
+                            <li>✅ JSON 로그 저장</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>v1.2 기능</h4>
+                        <ul>
+                            <li>✅ 전역 쿠키 (ab_global_variant)</li>
+                            <li>✅ globalVariant 필드</li>
+                            <li>✅ 실제 로그 분석</li>
+                            <li>✅ 크로스 페이지 통계</li>
+                            <li>✅ 사용자 여정 추적</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="card">
+                        <h4>v1.3 기능</h4>
+                        <ul>
+                            <li>✅ 첫/마지막 방문 페이지</li>
+                            <li>✅ firstVariant 버그 수정</li>
+                            <li>✅ 시간순 정렬</li>
+                            <li>✅ 페이지 이름 툴팁</li>
+                            <li>✅ 대시보드 UI 개선</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>통합 대시보드</h4>
+                        <ul>
+                            <li>✅ 페이지 관리</li>
+                            <li>✅ 설정 제어</li>
+                            <li>✅ 통계 분석</li>
+                            <li>✅ 크로스 페이지 추적</li>
+                            <li>✅ 사용자 여정 분석</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>현재 운영 중인 테스트 페이지</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>페이지</th>
+                                <th>테스트 내용</th>
+                                <th>모드</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>test-product-1.html</td>
+                                <td>상품 상세 레이아웃</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                            </tr>
+                            <tr>
+                                <td>test-product-2.html</td>
+                                <td>구매 버튼 위치</td>
+                                <td>force_b</td>
+                                <td>✅ 활성</td>
+                            </tr>
+                            <tr>
+                                <td>test-product-3.html</td>
+                                <td>이미지 갤러리</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                            </tr>
+                            <tr>
+                                <td>test-product-4.html</td>
+                                <td>FAQ 섹션 위치</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                            </tr>
+                            <tr>
+                                <td>test-product-5.html</td>
+                                <td>상품 카드 vs 리스트</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>📚 ABtest v1.3 Complete Specification</h3>
+            <p>크로스 페이지 A/B 테스트 솔루션 - 완전 문서화</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                최종 업데이트: 2025-11-17 | 버전: v1.3 |
+                파일: ab-test-tracker.js (v1.2), ab-test-log.php (v1.3), ab-test-dashboard.html (v1.3)
+            </p>
+        </div>
+    </div>
+</body>
+</html>
