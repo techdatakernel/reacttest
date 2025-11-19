@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABtest v1.4 - Complete Specification & Flow Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .version {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header .date {
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .header .phase-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 10px 5px 0 5px;
+            font-size: 0.9em;
+        }
+
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 25px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: #764ba2;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 30px 0 15px 0;
+        }
+
+        .section h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge.v1-1 {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge.v1-2 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge.v1-3 {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge.v1-4 {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .badge.phase1 {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .badge.phase2 {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .badge.new {
+            background: #ffebee;
+            color: #c62828;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .flow-diagram {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .flow-step:last-child::after {
+            content: '';
+        }
+
+        .flow-step .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .flow-step .step-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .code-block .comment {
+            color: #75715e;
+        }
+
+        .code-block .keyword {
+            color: #f92672;
+        }
+
+        .code-block .string {
+            color: #e6db74;
+        }
+
+        .code-block .function {
+            color: #66d9ef;
+        }
+
+        .code-block .number {
+            color: #ae81ff;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #388e3c;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .phase-box {
+            background: linear-gradient(135deg, #e1f5fe 0%, #fce4ec 100%);
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .phase-box h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #667eea;
+        }
+
+        .timeline-item h4 {
+            margin-top: 0;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .architecture-diagram {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .arch-layer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .arch-layer.frontend {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .arch-layer.backend {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .arch-layer.data {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-column {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .comparison-column h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .highlight-yellow {
+            background: #fff176;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 ABtest v1.4</h1>
+            <div class="version">Complete Specification & Flow Documentation</div>
+            <div class="phase-badge">🌐 Phase 1: 실제 IP 추출</div>
+            <div class="phase-badge">👤 Phase 2: userId 추적</div>
+            <div class="date">최종 업데이트: 2025-11-19</div>
+        </div>
+
+        <div class="nav">
+            <a href="#overview">개요</a>
+            <a href="#phase1">Phase 1</a>
+            <a href="#phase2">Phase 2</a>
+            <a href="#architecture">아키텍처</a>
+            <a href="#flow">플로우</a>
+            <a href="#specs">기술 스펙</a>
+            <a href="#api">API</a>
+            <a href="#dashboard">대시보드</a>
+            <a href="#deployment">배포</a>
+        </div>
+
+        <div class="content">
+            <!-- 1. 개요 -->
+            <div class="section" id="overview">
+                <h2>📋 1. 시스템 개요</h2>
+
+                <div class="success-box">
+                    <strong>ABtest v1.4</strong>는 <span class="highlight-yellow">Phase 1 (실제 클라이언트 IP 추출)</span>과
+                    <span class="highlight-yellow">Phase 2 (userId 기반 사용자 추적)</span>을 완벽하게 통합한
+                    하이브리드 A/B 테스트 솔루션입니다. 크로스 페이지 Variant 추적과 정확한 사용자 식별을 통해
+                    일관된 사용자 경험과 정밀한 데이터 분석을 제공합니다.
+                </div>
+
+                <h3>주요 특징</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>🌐 실제 IP 추출 (Phase 1)</h4>
+                        <p>AWS ALB 환경에서 X-Forwarded-For 헤더를 통해 실제 클라이언트 IP 추출. 모든 사용자를 정확히 구분합니다.</p>
+                    </div>
+                    <div class="card">
+                        <h4>👤 userId 기반 추적 (Phase 2)</h4>
+                        <p>UUID v4 기반 고유 사용자 ID 생성. localStorage에 365일 보관하여 장기간 추적 가능합니다.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔄 하이브리드 추적</h4>
+                        <p>userId 우선, IP 대체 로직. 레거시 데이터도 지원하며 점진적 마이그레이션 가능합니다.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🌍 크로스 페이지 일관성</h4>
+                        <p>전역 쿠키(ab_global_variant)로 여러 페이지에서 동일 Variant 유지. 일관된 UX 제공합니다.</p>
+                    </div>
+                </div>
+
+                <h3>버전 히스토리</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-1">v1.1</span> 기본 A/B 테스트 시스템</h4>
+                        <ul>
+                            <li>페이지별 Variant 할당 (ab_version 쿠키)</li>
+                            <li>클릭 추적 메커니즘 (onclick 제거 패턴)</li>
+                            <li>경로 정규화 시스템</li>
+                            <li>JSON 기반 로그 저장</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-2">v1.2</span> 크로스 페이지 추적 추가</h4>
+                        <ul>
+                            <li>전역 쿠키(ab_global_variant) 도입</li>
+                            <li>globalVariant 필드 추가</li>
+                            <li>실제 로그 데이터 분석 함수</li>
+                            <li>사용자 여정 추적</li>
+                            <li><strong>문제:</strong> AWS ALB IP만 추출 (10.0.x.x)</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-3">v1.3</span> 방문 페이지 정보 및 버그 수정</h4>
+                        <ul>
+                            <li>첫/마지막 방문 페이지 추적</li>
+                            <li>firstVariant 오류 수정 (시간순 정렬)</li>
+                            <li>페이지 이름 추출 및 툴팁 표시</li>
+                            <li>대시보드 UI 개선</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <h4><span class="badge v1-4">v1.4</span> <span class="badge new">최신</span> Phase 1+2 하이브리드 추적</h4>
+                        <ul>
+                            <li><span class="badge phase1">Phase 1</span> 실제 클라이언트 IP 추출 (getRealClientIP)</li>
+                            <li><span class="badge phase2">Phase 2</span> userId 기반 사용자 식별 (ABTestUserID)</li>
+                            <li>하이브리드 추적 시스템 (userId 우선, IP 대체)</li>
+                            <li>신규 ab-test-analytics.php (로그 형식 완전 지원)</li>
+                            <li>v1.4 대시보드 (5개 탭 - userId 분석 추가)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 1 -->
+            <div class="section" id="phase1">
+                <h2>🌐 2. Phase 1: 실제 클라이언트 IP 추출</h2>
+
+                <div class="phase-box">
+                    <h4>문제점</h4>
+                    <p><strong>v1.3까지의 문제:</strong> AWS ALB 환경에서 REMOTE_ADDR는 ALB의 내부 IP(10.0.x.x)만 반환</p>
+                    <p><strong>결과:</strong> 모든 사용자가 동일한 IP로 인식 → 사용자 구분 불가능</p>
+                </div>
+
+                <h3>해결 방안: getRealClientIP() 함수</h3>
+                <div class="code-block">
+<span class="comment">// ab-test-log.php (v1.4)</span>
+<span class="keyword">function</span> <span class="function">getRealClientIP</span>() {
+    <span class="comment">// 1️⃣ X-Forwarded-For 헤더 확인 (우선순위 최고)</span>
+    <span class="keyword">if</span> (!<span class="function">empty</span>($_SERVER[<span class="string">'HTTP_X_FORWARDED_FOR'</span>])) {
+        <span class="comment">// 형식: "client_ip, proxy1_ip, proxy2_ip"</span>
+        $ips = <span class="function">explode</span>(<span class="string">','</span>, $_SERVER[<span class="string">'HTTP_X_FORWARDED_FOR'</span>]);
+        $clientIP = <span class="function">trim</span>($ips[<span class="number">0</span>]);  <span class="comment">// 첫 번째 IP가 실제 클라이언트</span>
+
+        <span class="keyword">if</span> (<span class="function">filter_var</span>($clientIP, FILTER_VALIDATE_IP)) {
+            <span class="keyword">return</span> [
+                <span class="string">'realIP'</span> => $clientIP,
+                <span class="string">'source'</span> => <span class="string">'X-Forwarded-For'</span>
+            ];
+        }
+    }
+
+    <span class="comment">// 2️⃣ X-Real-IP 헤더 (일부 프록시)</span>
+    <span class="keyword">if</span> (!<span class="function">empty</span>($_SERVER[<span class="string">'HTTP_X_REAL_IP'</span>])) {
+        <span class="keyword">return</span> [<span class="string">'realIP'</span> => $_SERVER[<span class="string">'HTTP_X_REAL_IP'</span>], <span class="string">'source'</span> => <span class="string">'X-Real-IP'</span>];
+    }
+
+    <span class="comment">// 3️⃣ CloudFront-Viewer-Address</span>
+    <span class="keyword">if</span> (!<span class="function">empty</span>($_SERVER[<span class="string">'HTTP_CLOUDFRONT_VIEWER_ADDRESS'</span>])) {
+        $clientIP = <span class="function">explode</span>(<span class="string">':'</span>, $_SERVER[<span class="string">'HTTP_CLOUDFRONT_VIEWER_ADDRESS'</span>])[<span class="number">0</span>];
+        <span class="keyword">return</span> [<span class="string">'realIP'</span> => $clientIP, <span class="string">'source'</span> => <span class="string">'CloudFront'</span>];
+    }
+
+    <span class="comment">// 4️⃣ 기본값: REMOTE_ADDR (ALB IP)</span>
+    <span class="keyword">return</span> [
+        <span class="string">'realIP'</span> => $_SERVER[<span class="string">'REMOTE_ADDR'</span>] ?? <span class="string">'0.0.0.0'</span>,
+        <span class="string">'source'</span> => <span class="string">'REMOTE_ADDR'</span>
+    ];
+}
+                </div>
+
+                <h3>로그 데이터 구조 변경</h3>
+                <div class="comparison-table">
+                    <div class="comparison-column">
+                        <h4>❌ Before (v1.3)</h4>
+                        <div class="code-block">
+{
+  <span class="string">"ipAddress"</span>: <span class="string">"10.0.101.154"</span>
+  <span class="comment">// ← ALB IP만 기록</span>
+}
+                        </div>
+                    </div>
+                    <div class="comparison-column">
+                        <h4>✅ After (v1.4)</h4>
+                        <div class="code-block">
+{
+  <span class="string">"ipAddress"</span>: <span class="string">"43.202.246.63"</span>,
+  <span class="comment">// ← 실제 클라이언트 IP</span>
+
+  <span class="string">"ipSource"</span>: <span class="string">"X-Forwarded-For"</span>,
+  <span class="comment">// ← IP 출처 표시</span>
+
+  <span class="string">"ipAddressALB"</span>: <span class="string">"10.0.101.154"</span>
+  <span class="comment">// ← ALB IP (참고용)</span>
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>Phase 1 완료 효과:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>✅ 모든 사용자의 실제 IP 정확히 추출</li>
+                        <li>✅ 사용자별 구분 가능 (IP 기반 세션 추적)</li>
+                        <li>✅ 통계 정확도 대폭 향상</li>
+                        <li>✅ IP 출처 투명성 확보 (디버깅 용이)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="section" id="phase2">
+                <h2>👤 3. Phase 2: userId 기반 사용자 추적</h2>
+
+                <div class="phase-box">
+                    <h4>Phase 1의 한계</h4>
+                    <p><strong>IP 기반 추적의 문제:</strong></p>
+                    <ul>
+                        <li>동일 네트워크에서 여러 사용자 → 같은 IP (NAT 환경)</li>
+                        <li>모바일 네트워크 변경 → IP 변경 (동일 사용자가 다른 사용자로 인식)</li>
+                        <li>VPN 사용 시 → IP 빈번 변경</li>
+                    </ul>
+                    <p><strong>해결:</strong> 브라우저 기반 고유 사용자 ID 생성 및 추적</p>
+                </div>
+
+                <h3>ABTestUserID 클래스 (UUID v4)</h3>
+                <div class="code-block">
+<span class="comment">// ab-test-tracker.js (v1.3 - Phase 2 추가)</span>
+<span class="keyword">class</span> <span class="function">ABTestUserID</span> {
+    <span class="keyword">static</span> STORAGE_KEY = <span class="string">'ab_test_user_id'</span>;
+    <span class="keyword">static</span> EXPIRY_DAYS = <span class="number">365</span>;  <span class="comment">// 1년</span>
+
+    <span class="comment">// UUID v4 생성 (RFC 4122 표준)</span>
+    <span class="keyword">static</span> <span class="function">generateUUID</span>() {
+        <span class="keyword">return</span> <span class="string">'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'</span>.<span class="function">replace</span>(<span class="string">/[xy]/g</span>, <span class="keyword">function</span>(c) {
+            <span class="keyword">const</span> r = Math.<span class="function">random</span>() * <span class="number">16</span> | <span class="number">0</span>;
+            <span class="keyword">const</span> v = c === <span class="string">'x'</span> ? r : (r & <span class="number">0x3</span> | <span class="number">0x8</span>);
+            <span class="keyword">return</span> v.<span class="function">toString</span>(<span class="number">16</span>);
+        });
+        <span class="comment">// 예: "a8b9c0d1-e2f3-4567-8901-234567890abc"</span>
+    }
+
+    <span class="comment">// 사용자 ID 가져오기 (없으면 생성)</span>
+    <span class="keyword">static</span> <span class="function">getUserID</span>() {
+        <span class="keyword">try</span> {
+            <span class="comment">// 1️⃣ localStorage에서 확인</span>
+            <span class="keyword">const</span> stored = localStorage.<span class="function">getItem</span>(<span class="keyword">this</span>.STORAGE_KEY);
+
+            <span class="keyword">if</span> (stored) {
+                <span class="keyword">const</span> data = JSON.<span class="function">parse</span>(stored);
+
+                <span class="comment">// 2️⃣ 만료 확인</span>
+                <span class="keyword">if</span> (<span class="keyword">new</span> <span class="function">Date</span>(data.expires) > <span class="keyword">new</span> <span class="function">Date</span>()) {
+                    console.<span class="function">log</span>(<span class="string">'✅ 기존 userId 사용'</span>);
+                    <span class="keyword">return</span> data.userId;
+                }
+            }
+
+            <span class="comment">// 3️⃣ 새 ID 생성</span>
+            <span class="keyword">const</span> newUserId = <span class="keyword">this</span>.<span class="function">generateUUID</span>();
+            <span class="keyword">const</span> expires = <span class="keyword">new</span> <span class="function">Date</span>();
+            expires.<span class="function">setDate</span>(expires.<span class="function">getDate</span>() + <span class="keyword">this</span>.EXPIRY_DAYS);
+
+            <span class="comment">// 4️⃣ localStorage에 저장</span>
+            localStorage.<span class="function">setItem</span>(<span class="keyword">this</span>.STORAGE_KEY, JSON.<span class="function">stringify</span>({
+                userId: newUserId,
+                created: <span class="keyword">new</span> <span class="function">Date</span>().<span class="function">toISOString</span>(),
+                expires: expires.<span class="function">toISOString</span>()
+            }));
+
+            console.<span class="function">log</span>(<span class="string">'🆕 신규 userId 생성'</span>);
+            <span class="keyword">return</span> newUserId;
+
+        } <span class="keyword">catch</span> (error) {
+            <span class="comment">// localStorage 사용 불가 시 세션 기반 ID</span>
+            <span class="keyword">return</span> <span class="string">'session_'</span> + Date.<span class="function">now</span>() + <span class="string">'_'</span> + Math.<span class="function">random</span>();
+        }
+    }
+}
+                </div>
+
+                <h3>클릭 로그에 userId 포함</h3>
+                <div class="code-block">
+<span class="comment">// ab-test-tracker.js - logClick() 함수</span>
+<span class="function">logClick</span>: <span class="keyword">function</span>(elementId, href) {
+    <span class="keyword">const</span> variant = <span class="keyword">this</span>.cookies.<span class="function">get</span>(<span class="keyword">this</span>.config.cookieName) || <span class="string">'A'</span>;
+    <span class="keyword">const</span> globalVariant = <span class="keyword">this</span>.cookies.<span class="function">getGlobal</span>() || variant;
+    <span class="keyword">const</span> userId = ABTestUserID.<span class="function">getUserID</span>();  <span class="comment">// ⭐ Phase 2</span>
+
+    <span class="keyword">const</span> data = {
+        userId: userId,                      <span class="comment">// ⭐ NEW</span>
+        variant: variant,
+        globalVariant: globalVariant,
+        elementId: elementId,
+        href: href,
+        pagePath: <span class="keyword">this</span>.<span class="function">normalizePath</span>(window.location.pathname),
+        timestamp: <span class="keyword">new</span> <span class="function">Date</span>().<span class="function">toISOString</span>(),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer
+    };
+
+    <span class="comment">// API로 전송</span>
+    <span class="function">fetch</span>(<span class="keyword">this</span>.config.apiEndpoint, {
+        method: <span class="string">'POST'</span>,
+        headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
+        body: JSON.<span class="function">stringify</span>(data)
+    });
+}
+                </div>
+
+                <h3>Phase 2 완성된 로그 구조</h3>
+                <div class="code-block">
+{
+  <span class="string">"id"</span>: <span class="string">"click_691aa0513826a.299981893"</span>,
+
+  <span class="comment">// ⭐ Phase 2: userId</span>
+  <span class="string">"userId"</span>: <span class="string">"a8b9c0d1-e2f3-4567-8901-234567890abc"</span>,
+
+  <span class="comment">// ⭐ Phase 1: 실제 IP</span>
+  <span class="string">"ipAddress"</span>: <span class="string">"43.202.246.63"</span>,
+  <span class="string">"ipSource"</span>: <span class="string">"X-Forwarded-For"</span>,
+  <span class="string">"ipAddressALB"</span>: <span class="string">"10.0.101.154"</span>,
+
+  <span class="comment">// v1.2: 크로스 페이지</span>
+  <span class="string">"variant"</span>: <span class="string">"B"</span>,
+  <span class="string">"globalVariant"</span>: <span class="string">"B"</span>,
+
+  <span class="comment">// v1.1: 기본 정보</span>
+  <span class="string">"elementId"</span>: <span class="string">"dtc-dwcr-cta-button-top-b"</span>,
+  <span class="string">"pagePath"</span>: <span class="string">"/ob/stella/abtest2/test-product-4.html"</span>,
+  <span class="string">"timestamp"</span>: <span class="string">"2025-11-19T04:10:57.921Z"</span>,
+  <span class="string">"userAgent"</span>: <span class="string">"Mozilla/5.0..."</span>,
+  <span class="string">"serverTimestamp"</span>: <span class="string">"2025-11-19T04:10:57+00:00"</span>
+}
+                </div>
+
+                <div class="success-box">
+                    <strong>Phase 2 완료 효과:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>✅ IP 변경에도 동일 사용자 추적 가능</li>
+                        <li>✅ NAT 환경에서도 사용자 구분</li>
+                        <li>✅ 365일 장기 추적 (localStorage)</li>
+                        <li>✅ UUID v4 표준 준수 (충돌 확률 극히 낮음)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 하이브리드 시스템 -->
+            <div class="section" id="hybrid">
+                <h2>🔄 4. 하이브리드 추적 시스템</h2>
+
+                <div class="info-box">
+                    <strong>Phase 1 + Phase 2 통합 전략</strong><br>
+                    userId가 있으면 우선 사용, 없으면 IP로 대체하여 레거시 데이터도 완벽 지원
+                </div>
+
+                <h3>getUserKey() 함수 - 사용자 식별 통합</h3>
+                <div class="code-block">
+<span class="comment">// ab-test-log.php (v1.4)</span>
+<span class="keyword">function</span> <span class="function">getUserKey</span>($log) {
+    <span class="comment">// 1️⃣ Phase 2 우선: userId 사용</span>
+    <span class="keyword">if</span> (!<span class="function">empty</span>($log[<span class="string">'userId'</span>]) &&
+        <span class="function">strpos</span>($log[<span class="string">'userId'</span>], <span class="string">'session_'</span>) !== <span class="number">0</span>) {
+        <span class="keyword">return</span> <span class="string">'user_'</span> . $log[<span class="string">'userId'</span>];
+    }
+
+    <span class="comment">// 2️⃣ Phase 1 대체: 실제 IP 사용</span>
+    <span class="keyword">if</span> (!<span class="function">empty</span>($log[<span class="string">'ipAddress'</span>])) {
+        <span class="keyword">return</span> <span class="string">'ip_'</span> . <span class="function">md5</span>($log[<span class="string">'ipAddress'</span>]);
+    }
+
+    <span class="keyword">return</span> <span class="keyword">null</span>;
+}
+                </div>
+
+                <h3>ab-test-analytics.php - 하이브리드 분석</h3>
+                <div class="code-block">
+<span class="comment">// 크로스 페이지 분석 함수</span>
+<span class="keyword">function</span> <span class="function">analyzeCrosspage</span>($logs) {
+    $userJourneys = [];
+
+    <span class="keyword">foreach</span> ($logs <span class="keyword">as</span> $log) {
+        <span class="comment">// ⭐ userId 우선, 없으면 IP 사용</span>
+        $userId = $log[<span class="string">'userId'</span>] ?? <span class="keyword">null</span>;
+        $ipAddress = $log[<span class="string">'ipAddress'</span>] ?? <span class="keyword">null</span>;
+
+        <span class="keyword">if</span> ($userId) {
+            $identifier = <span class="string">'user_'</span> . $userId;
+            $trackingMethod = <span class="string">'userId'</span>;
+        } <span class="keyword">else</span> {
+            $identifier = <span class="string">'ip_'</span> . ($ipAddress ?: <span class="string">'unknown'</span>);
+            $trackingMethod = <span class="string">'IP'</span>;
+        }
+
+        <span class="keyword">if</span> (!<span class="function">isset</span>($userJourneys[$identifier])) {
+            $userJourneys[$identifier] = [
+                <span class="string">'userId'</span> => $identifier,
+                <span class="string">'tracking_method'</span> => $trackingMethod,  <span class="comment">// ⭐ 추적 방식 표시</span>
+                <span class="string">'original_userId'</span> => $userId ?: <span class="string">'-'</span>,
+                <span class="string">'original_ip'</span> => $ipAddress,
+                <span class="string">'visits'</span> => [],
+                <span class="string">'variants'</span> => []
+            ];
+        }
+
+        <span class="comment">// 방문 기록 추가...</span>
+    }
+
+    <span class="comment">// 통계 계산</span>
+    $userIdBased = <span class="number">0</span>;
+    $ipBased = <span class="number">0</span>;
+
+    <span class="keyword">foreach</span> ($userJourneys <span class="keyword">as</span> $journey) {
+        <span class="keyword">if</span> ($journey[<span class="string">'tracking_method'</span>] === <span class="string">'userId'</span>) {
+            $userIdBased++;
+        } <span class="keyword">else</span> {
+            $ipBased++;
+        }
+    }
+
+    <span class="keyword">return</span> [
+        <span class="string">'summary'</span> => [
+            <span class="string">'userId_based'</span> => $userIdBased,        <span class="comment">// Phase 2</span>
+            <span class="string">'ip_based'</span> => $ipBased,                <span class="comment">// Phase 1 (레거시)</span>
+            <span class="string">'userId_adoption_rate'</span> => $totalUsers > <span class="number">0</span>
+                ? <span class="function">round</span>($userIdBased / $totalUsers, <span class="number">2</span>)
+                : <span class="number">0</span>
+        ],
+        <span class="string">'users'</span> => $userDetails
+    ];
+}
+                </div>
+
+                <h3>통계 응답 예시</h3>
+                <div class="code-block">
+{
+  <span class="string">"summary"</span>: {
+    <span class="string">"total_users"</span>: <span class="number">156</span>,
+    <span class="string">"userId_based"</span>: <span class="number">120</span>,           <span class="comment">// Phase 2 사용자</span>
+    <span class="string">"ip_based"</span>: <span class="number">36</span>,                 <span class="comment">// 레거시 사용자</span>
+    <span class="string">"userId_adoption_rate"</span>: <span class="number">0.77</span>,    <span class="comment">// 77% 채택률</span>
+    <span class="string">"consistency_rate"</span>: <span class="number">0.94</span>,
+    <span class="string">"avg_pages_per_user"</span>: <span class="number">2.8</span>
+  },
+  <span class="string">"users"</span>: [
+    {
+      <span class="string">"userId"</span>: <span class="string">"user_a8b9c0d1..."</span>,
+      <span class="string">"tracking_method"</span>: <span class="string">"userId"</span>,   <span class="comment">// ⭐ 추적 방식</span>
+      <span class="string">"first_variant"</span>: <span class="string">"B"</span>,
+      <span class="string">"last_variant"</span>: <span class="string">"B"</span>,
+      <span class="string">"consistent"</span>: <span class="keyword">true</span>
+    },
+    {
+      <span class="string">"userId"</span>: <span class="string">"ip_5d41402abc4b..."</span>,
+      <span class="string">"tracking_method"</span>: <span class="string">"IP"</span>,       <span class="comment">// 레거시</span>
+      <span class="string">"first_variant"</span>: <span class="string">"A"</span>,
+      <span class="string">"last_variant"</span>: <span class="string">"A"</span>,
+      <span class="string">"consistent"</span>: <span class="keyword">true</span>
+    }
+  ]
+}
+                </div>
+            </div>
+
+            <!-- 2. 아키텍처 -->
+            <div class="section" id="architecture">
+                <h2>🏗️ 5. 시스템 아키텍처</h2>
+
+                <div class="architecture-diagram">
+                    <div class="arch-layer frontend">
+                        <strong>Frontend Layer</strong><br>
+                        ab-test-tracker.js v1.3 (Phase 2: ABTestUserID 클래스)
+                    </div>
+                    <div style="font-size: 2em; color: #667eea;">↓</div>
+                    <div class="arch-layer backend">
+                        <strong>Backend Layer</strong><br>
+                        ab-test-log.php v1.4 (Phase 1: getRealClientIP) + ab-test-analytics.php
+                    </div>
+                    <div style="font-size: 2em; color: #667eea;">↓</div>
+                    <div class="arch-layer data">
+                        <strong>Data Layer</strong><br>
+                        clicks_YYYY-MM.json (userId + ipAddress + globalVariant)
+                    </div>
+                    <div style="font-size: 2em; color: #667eea;">↓</div>
+                    <div class="arch-layer" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <strong>Dashboard Layer</strong><br>
+                        v1.4 Dashboard (5 tabs: 페이지관리 + 설정 + 통계 + 크로스페이지 + userId분석)
+                    </div>
+                </div>
+
+                <h3>파일 구조</h3>
+                <div class="code-block">
+/var/www/html_bak/ob/stella/abtest2/
+├── 📄 ab-test-dashboard.html              (62KB - v1.4 대시보드)
+├── 📄 test-product-1.html ~ 5.html        (테스트 페이지들)
+├── 📁 js/
+│   └── ab-test-tracker.js                 (18KB - v1.3 Phase 2)
+└── 📁 api/
+    ├── ab-test-config.php                 (9.7KB)
+    ├── ab-test-log.php                    (18KB - v1.4 Phase 1)
+    ├── ab-test-analytics.php              (12KB - 신규) ⭐
+    ├── ab-test-config.json                (4.5KB)
+    └── 📁 ab-test-logs/
+        └── clicks_2025-11.json            (로그 파일)
+                </div>
+
+                <h3>v1.4 핵심 컴포넌트</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>파일</th>
+                                <th>크기</th>
+                                <th>Phase</th>
+                                <th>주요 기능</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ab-test-tracker.js</td>
+                                <td>18KB</td>
+                                <td><span class="badge phase2">Phase 2</span></td>
+                                <td>ABTestUserID 클래스, UUID 생성, localStorage 관리</td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-log.php</td>
+                                <td>18KB</td>
+                                <td><span class="badge phase1">Phase 1</span></td>
+                                <td>getRealClientIP(), getUserKey(), 로그 저장</td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-analytics.php</td>
+                                <td>12KB</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                                <td>하이브리드 분석, 크로스페이지 통계, CSV 내보내기</td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-dashboard.html</td>
+                                <td>62KB</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                                <td>5개 탭 (userId 분석 추가)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 플로우 -->
+            <div class="section" id="flow">
+                <h2>🔄 6. 사용자 방문 플로우 (v1.4)</h2>
+
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">1</span>
+                            사용자 테스트 페이지 방문
+                        </div>
+                        <div>ab-test-tracker.js 로드 및 초기화</div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">2</span>
+                            <span class="badge phase2">Phase 2</span> userId 생성/조회
+                        </div>
+                        <div>
+                            ABTestUserID.getUserID() 호출<br>
+                            → localStorage 확인 → 없으면 UUID v4 생성 → 365일 저장
+                        </div>
+                        <div class="code-block">
+userId = <span class="string">"a8b9c0d1-e2f3-4567-8901-234567890abc"</span>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">3</span>
+                            서버 설정 로드
+                        </div>
+                        <div>ab-test-config.php?pagePath=... 호출</div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">4</span>
+                            Variant 결정 (3-tier 체크)
+                        </div>
+                        <div>
+                            <strong>Priority 1:</strong> 전역 쿠키 (ab_global_variant)<br>
+                            <strong>Priority 2:</strong> 로컬 쿠키 (ab_version)<br>
+                            <strong>Priority 3:</strong> 신규 할당 (Math.random)
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">5</span>
+                            Variant 적용 및 클릭 리스너 등록
+                        </div>
+                        <div>DOM 조작 + 이벤트 리스너 부착</div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">6</span>
+                            사용자 클릭 발생
+                        </div>
+                        <div>클릭 데이터 + userId + variant 전송</div>
+                        <div class="code-block">
+POST /api/ab-test-log.php
+{
+  <span class="string">"userId"</span>: <span class="string">"a8b9c0d1-..."</span>,        <span class="comment">// Phase 2</span>
+  <span class="string">"variant"</span>: <span class="string">"B"</span>,
+  <span class="string">"globalVariant"</span>: <span class="string">"B"</span>,
+  <span class="string">"elementId"</span>: <span class="string">"dtc-dwcr-..."</span>,
+  <span class="string">"pagePath"</span>: <span class="string">"/ob/stella/abtest2/..."</span>
+}
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">7</span>
+                            <span class="badge phase1">Phase 1</span> 실제 IP 추출 및 로그 저장
+                        </div>
+                        <div>
+                            getRealClientIP() 실행 (X-Forwarded-For)<br>
+                            → ipAddress: 43.202.246.63 (실제 클라이언트)<br>
+                            → ipSource: X-Forwarded-For<br>
+                            → clicks_2025-11.json 저장
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-title">
+                            <span class="step-number">8</span>
+                            하이브리드 분석 및 대시보드 표시
+                        </div>
+                        <div>
+                            ab-test-analytics.php 분석<br>
+                            → userId 우선, IP 대체 로직<br>
+                            → 대시보드에서 추적 방식별 통계 표시
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API -->
+            <div class="section" id="api">
+                <h2>🔌 7. API 명세 (v1.4)</h2>
+
+                <h3>ab-test-analytics.php <span class="badge new">신규</span></h3>
+
+                <h4>GET /api/ab-test-analytics.php?action=basic</h4>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>GET</td>
+                        </tr>
+                        <tr>
+                            <th>Query Params</th>
+                            <td>
+                                <code>action=basic</code><br>
+                                <code>start=YYYY-MM-DD</code> (선택)<br>
+                                <code>end=YYYY-MM-DD</code> (선택)<br>
+                                <code>pagePath=/path/to/page</code> (선택)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"summary"</span>: {
+    <span class="string">"totalClicks"</span>: <span class="number">1250</span>,
+    <span class="string">"variantA"</span>: <span class="number">580</span>,
+    <span class="string">"variantB"</span>: <span class="number">670</span>,
+    <span class="string">"winner"</span>: <span class="string">"Variant B"</span>,
+    <span class="string">"improvement"</span>: <span class="number">15.5</span>
+  },
+  <span class="string">"daily"</span>: [
+    {<span class="string">"date"</span>: <span class="string">"2025-11-19"</span>, <span class="string">"variantA"</span>: <span class="number">45</span>, <span class="string">"variantB"</span>: <span class="number">52</span>}
+  ]
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h4>GET /api/ab-test-analytics.php?action=crosspage</h4>
+                <div class="table-responsive">
+                    <table>
+                        <tr>
+                            <th style="width: 150px;">Method</th>
+                            <td>GET</td>
+                        </tr>
+                        <tr>
+                            <th>Query Params</th>
+                            <td><code>action=crosspage</code></td>
+                        </tr>
+                        <tr>
+                            <th>Response</th>
+                            <td>
+<div class="code-block">
+{
+  <span class="string">"summary"</span>: {
+    <span class="string">"total_users"</span>: <span class="number">156</span>,
+    <span class="string">"userId_based"</span>: <span class="number">120</span>,           <span class="comment">// Phase 2</span>
+    <span class="string">"ip_based"</span>: <span class="number">36</span>,                 <span class="comment">// 레거시</span>
+    <span class="string">"userId_adoption_rate"</span>: <span class="number">0.77</span>,    <span class="comment">// 77%</span>
+    <span class="string">"consistency_rate"</span>: <span class="number">0.94</span>,
+    <span class="string">"avg_pages_per_user"</span>: <span class="number">2.8</span>
+  },
+  <span class="string">"users"</span>: [
+    {
+      <span class="string">"userId"</span>: <span class="string">"user_a8b9c0d1..."</span>,
+      <span class="string">"tracking_method"</span>: <span class="string">"userId"</span>,   <span class="comment">// ⭐</span>
+      <span class="string">"first_variant"</span>: <span class="string">"B"</span>,
+      <span class="string">"consistent"</span>: <span class="keyword">true</span>
+    }
+  ]
+}
+</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h4>GET /api/ab-test-analytics.php?export=csv</h4>
+                <div class="info-box">
+                    <strong>CSV 내보내기</strong><br>
+                    모든 로그 데이터를 CSV 파일로 다운로드. Excel에서 바로 열 수 있습니다.
+                </div>
+            </div>
+
+            <!-- 대시보드 -->
+            <div class="section" id="dashboard">
+                <h2>🖥️ 8. v1.4 대시보드 (5개 탭)</h2>
+
+                <div class="success-box">
+                    <strong>ab-test-dashboard_1119_v2.html (62KB)</strong><br>
+                    v1.3 버그 수정 + userId 분석 탭 추가
+                </div>
+
+                <h3>탭 구성</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>📄 1. 페이지 관리</h4>
+                        <ul>
+                            <li>새 ABtest 페이지 추가</li>
+                            <li>페이지 목록 조회</li>
+                            <li>페이지 수정/삭제</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>⚙️ 2. 설정 제어</h4>
+                        <ul>
+                            <li>ab_test / force_a / force_b 모드</li>
+                            <li>스케줄 설정</li>
+                            <li>페이지별 설정 관리</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>📈 3. 통계 분석</h4>
+                        <ul>
+                            <li>날짜 필터 (시작일~종료일)</li>
+                            <li>Variant별 클릭 수</li>
+                            <li>승자 표시 및 개선율</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>🌍 4. 크로스 페이지 추적</h4>
+                        <ul>
+                            <li>Variant 일치율</li>
+                            <li>평균 방문 페이지</li>
+                            <li>사용자 여정 분석</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>👤 5. userId 분석 탭 <span class="badge new">v1.4 신규</span></h3>
+
+                <div class="phase-box">
+                    <h4>Phase 1 + Phase 2 통합 통계</h4>
+                    <p>사용자 추적 방식별 상세 분석 및 userId 채택률 모니터링</p>
+                </div>
+
+                <h4>표시 항목</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>지표</th>
+                                <th>설명</th>
+                                <th>Phase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>👤 userId 기반 추적</strong></td>
+                                <td>localStorage에 UUID 저장한 사용자</td>
+                                <td><span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>🌐 실제 IP 기반 추적</strong></td>
+                                <td>userId 없는 레거시 사용자 (IP로 식별)</td>
+                                <td><span class="badge phase1">Phase 1</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>📈 총 추적 사용자 수</strong></td>
+                                <td>userId + IP 기반 사용자 합계</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>✅ userId 채택률</strong></td>
+                                <td>전체 사용자 중 userId 사용 비율</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>사용자 상세 정보 테이블</h4>
+                <div class="code-block">
+| 사용자 ID | 추적 방식 | 첫 페이지 | 첫 Variant | 마지막 페이지 | 마지막 Variant | 일관성 | 방문수 |
+|-----------|----------|-----------|-----------|--------------|---------------|--------|--------|
+| user_a8b9c0d1... | userId   | test-1    | B         | test-4       | B             | ✅     | 5      |
+| ip_5d41402abc... | IP       | test-2    | A         | test-3       | A             | ✅     | 3      |
+                </div>
+            </div>
+
+            <!-- 배포 -->
+            <div class="section" id="deployment">
+                <h2>🚀 9. 배포 가이드 (v1.4)</h2>
+
+                <h3>배포 파일 목록</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>파일명</th>
+                                <th>크기</th>
+                                <th>배포 경로</th>
+                                <th>버전</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ab-test-tracker.js</td>
+                                <td>18KB</td>
+                                <td>/js/ab-test-tracker.js</td>
+                                <td><span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-log.php</td>
+                                <td>18KB</td>
+                                <td>/api/ab-test-log.php</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-analytics.php</td>
+                                <td>12KB</td>
+                                <td>/api/ab-test-analytics.php</td>
+                                <td><span class="badge new">신규</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-dashboard.html</td>
+                                <td>62KB</td>
+                                <td>/ab-test-dashboard.html</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                            </tr>
+                            <tr>
+                                <td>ab-test-config.json</td>
+                                <td>4.5KB</td>
+                                <td>/api/ab-test-config.json</td>
+                                <td><span class="badge v1-4">v1.4</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>배포 절차</h3>
+
+                <h4>Step 1: 백업</h4>
+                <div class="code-block">
+cd /var/www/html_bak/ob/stella/abtest2
+mkdir -p backups/v1.3_$(date +%Y%m%d)
+
+<span class="comment"># 기존 파일 백업</span>
+cp js/ab-test-tracker.js backups/v1.3_$(date +%Y%m%d)/
+cp api/ab-test-log.php backups/v1.3_$(date +%Y%m%d)/
+cp ab-test-dashboard.html backups/v1.3_$(date +%Y%m%d)/
+
+echo <span class="string">"✅ 백업 완료"</span>
+                </div>
+
+                <h4>Step 2: v1.4 파일 배포</h4>
+                <div class="code-block">
+<span class="comment"># Phase 2: 트래커 업데이트</span>
+cp ab-test-tracker_v1_3_phase2.js js/ab-test-tracker.js
+
+<span class="comment"># Phase 1: 로그 API 업데이트</span>
+cp ab-test-log_v1_4_phase1.php api/ab-test-log.php
+
+<span class="comment"># 신규: Analytics API</span>
+cp ab-test-analytics.php api/ab-test-analytics.php
+
+<span class="comment"># v1.4 대시보드</span>
+cp ab-test-dashboard_1119_v2.html ab-test-dashboard.html
+
+<span class="comment"># 권한 설정</span>
+chmod 644 js/ab-test-tracker.js
+chmod 644 api/ab-test-log.php
+chmod 644 api/ab-test-analytics.php
+chmod 644 ab-test-dashboard.html
+
+echo <span class="string">"✅ 배포 완료"</span>
+                </div>
+
+                <h4>Step 3: 검증</h4>
+                <div class="code-block">
+<span class="comment"># 1. Phase 2 테스트 (userId 생성 확인)</span>
+<span class="comment"># 브라우저 콘솔에서:</span>
+localStorage.getItem(<span class="string">'ab_test_user_id'</span>)
+<span class="comment"># 예상 결과: {"userId":"a8b9c0d1-...","created":"...","expires":"..."}</span>
+
+<span class="comment"># 2. Phase 1 테스트 (실제 IP 추출 확인)</span>
+curl <span class="string">"https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-analytics.php?action=crosspage"</span>
+<span class="comment"># 예상 결과: userId_based, ip_based 통계 표시</span>
+
+<span class="comment"># 3. 대시보드 확인</span>
+<span class="comment"># https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/ab-test-dashboard.html</span>
+<span class="comment"># 체크: 탭 5개 (페이지관리, 설정, 통계, 크로스페이지, userId분석)</span>
+                </div>
+
+                <h3>v1.4 체크리스트</h3>
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>Phase 1 검증</h4>
+                        <ul>
+                            <li>✅ 로그에 ipAddress 실제 IP 기록</li>
+                            <li>✅ ipSource 표시 (X-Forwarded-For)</li>
+                            <li>✅ ipAddressALB 참고용 기록</li>
+                            <li>✅ 서로 다른 사용자 IP 구분</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h4>Phase 2 검증</h4>
+                        <ul>
+                            <li>✅ localStorage에 userId 저장 확인</li>
+                            <li>✅ UUID v4 형식 검증</li>
+                            <li>✅ 로그에 userId 포함</li>
+                            <li>✅ 페이지 이동 시 userId 유지</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 최종 정리 -->
+            <div class="section">
+                <h2>✅ v1.4 완료 현황</h2>
+
+                <h3>Phase 1: 실제 IP 추출</h3>
+                <div class="success-box">
+                    ✅ getRealClientIP() 함수 구현<br>
+                    ✅ X-Forwarded-For 헤더 우선 처리<br>
+                    ✅ ipSource, ipAddressALB 필드 추가<br>
+                    ✅ AWS ALB 환경 완벽 지원
+                </div>
+
+                <h3>Phase 2: userId 기반 추적</h3>
+                <div class="success-box">
+                    ✅ ABTestUserID 클래스 구현<br>
+                    ✅ UUID v4 표준 준수<br>
+                    ✅ localStorage 365일 보관<br>
+                    ✅ 모든 클릭 로그에 userId 포함
+                </div>
+
+                <h3>하이브리드 시스템</h3>
+                <div class="success-box">
+                    ✅ getUserKey() 통합 함수<br>
+                    ✅ userId 우선, IP 대체 로직<br>
+                    ✅ ab-test-analytics.php 신규 개발<br>
+                    ✅ 레거시 데이터 완벽 지원<br>
+                    ✅ 점진적 마이그레이션 가능
+                </div>
+
+                <h3>v1.4 대시보드</h3>
+                <div class="success-box">
+                    ✅ v1.3 버그 수정 (openAddPageModal 오류)<br>
+                    ✅ userId 분석 탭 추가 (5번째 탭)<br>
+                    ✅ 추적 방식별 통계 표시<br>
+                    ✅ userId 채택률 모니터링
+                </div>
+
+                <h3>등록된 테스트 페이지</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>페이지</th>
+                                <th>모드</th>
+                                <th>상태</th>
+                                <th>Phase 지원</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>test-product-1.html</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                                <td><span class="badge phase1">Phase 1</span> <span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td>test-product-2.html</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                                <td><span class="badge phase1">Phase 1</span> <span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td>test-product-3.html</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                                <td><span class="badge phase1">Phase 1</span> <span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td>test-product-4.html</td>
+                                <td>force_a</td>
+                                <td>✅ 활성</td>
+                                <td><span class="badge phase1">Phase 1</span> <span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                            <tr>
+                                <td>test-product-5.html</td>
+                                <td>ab_test</td>
+                                <td>✅ 활성</td>
+                                <td><span class="badge phase1">Phase 1</span> <span class="badge phase2">Phase 2</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>📚 ABtest v1.4 Complete Specification</h3>
+            <p>Phase 1 (실제 IP 추출) + Phase 2 (userId 추적) 하이브리드 A/B 테스트 솔루션</p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                최종 업데이트: 2025-11-19 | 버전: v1.4 |
+                Phase 1: getRealClientIP | Phase 2: ABTestUserID | Analytics: 신규
+            </p>
+        </div>
+    </div>
+</body>
+</html>
