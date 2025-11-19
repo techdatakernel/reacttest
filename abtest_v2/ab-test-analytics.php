@@ -1,20 +1,16 @@
 <?php
-// api/ab-test-analytics.php
+// api/ab-test-analytics.php - 신규 로그 형식 지원 버전
 
 header('Content-Type: application/json; charset=UTF-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET');
 
-// 로그 디렉토리 설정
 define('LOG_DIR', __DIR__ . '/ab-test-logs/');
 
-// GET 파라미터 받기
-$startDate = $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
-$endDate = $_GET['endDate'] ?? date('Y-m-d');
-$pagePath = isset($_GET['pagePath']) ? urldecode($_GET['pagePath']) : '';
-$export = $_GET['export'] ?? '';
+// ============================================
+// 유틸리티 함수
+// ============================================
 
-// 날짜 범위의 모든 로그 파일 찾기
 function getLogFiles($startDate, $endDate) {
     $files = [];
     $start = new DateTime($startDate);
@@ -31,27 +27,19 @@ function getLogFiles($startDate, $endDate) {
     return $files;
 }
 
-// ⭐ 날짜 비교 함수 (ISO 8601 형식 지원)
 function isDateInRange($timestamp, $startDate, $endDate) {
-    // timestamp를 DateTime 객체로 변환
     try {
         $logDate = new DateTime($timestamp);
     } catch (Exception $e) {
-        // 파싱 실패 시 false 반환
         return false;
     }
     
-    // 시작일: 00:00:00
     $start = new DateTime($startDate . ' 00:00:00');
-    
-    // 종료일: 23:59:59
     $end = new DateTime($endDate . ' 23:59:59');
     
-    // 범위 내에 있는지 확인
     return ($logDate >= $start && $logDate <= $end);
 }
 
-// 로그 데이터 로드 및 필터링
 function loadLogs($startDate, $endDate, $pagePath = '') {
     $logFiles = getLogFiles($startDate, $endDate);
     $allLogs = [];
@@ -64,9 +52,7 @@ function loadLogs($startDate, $endDate, $pagePath = '') {
             foreach ($logs as $log) {
                 $logTimestamp = $log['timestamp'] ?? '';
                 
-                // ⭐ 개선된 날짜 비교
                 if (isDateInRange($logTimestamp, $startDate, $endDate)) {
-                    // 페이지 필터
                     if (empty($pagePath)) {
                         $allLogs[] = $log;
                     } else {
@@ -83,8 +69,10 @@ function loadLogs($startDate, $endDate, $pagePath = '') {
     return $allLogs;
 }
 
-// 통계 계산
-function calculateStats($logs) {
+// ============================================
+// 기본 통계 분석
+// ============================================
+function analyzeBasicStats($logs, $startDate, $endDate) {
     $stats = [
         'summary' => [
             'totalClicks' => 0,
@@ -93,20 +81,16 @@ function calculateStats($logs) {
             'winner' => '-',
             'improvement' => 0
         ],
-        'variants' => [
-            'A' => ['total' => 0, 'channels' => []],
-            'B' => ['total' => 0, 'channels' => []]
-        ],
+        'daily' => [],
         'logs' => []
     ];
     
-    if (empty($logs)) {
-        return $stats;
-    }
+    $dailyStats = [];
     
     foreach ($logs as $log) {
-        $variant = $log['variant'] ?? '';
-        $elementId = $log['elementId'] ?? '';
+        // ⭐ globalVariant 우선, 없으면 variant 사용
+        $variant = $log['globalVariant'] ?? $log['variant'] ?? '';
+        $timestamp = $log['timestamp'] ?? '';
         
         if (!in_array($variant, ['A', 'B'])) {
             continue;
@@ -116,74 +100,197 @@ function calculateStats($logs) {
         
         if ($variant === 'A') {
             $stats['summary']['variantA']++;
-            $stats['variants']['A']['total']++;
         } else {
             $stats['summary']['variantB']++;
-            $stats['variants']['B']['total']++;
         }
         
-        if (!empty($elementId)) {
-            if (!isset($stats['variants'][$variant]['channels'][$elementId])) {
-                $stats['variants'][$variant]['channels'][$elementId] = 0;
+        // 날짜별 집계
+        try {
+            $date = new DateTime($timestamp);
+            $dateKey = $date->format('Y-m-d');
+            
+            if (!isset($dailyStats[$dateKey])) {
+                $dailyStats[$dateKey] = [
+                    'date' => $dateKey,
+                    'variantA' => 0,
+                    'variantB' => 0
+                ];
             }
-            $stats['variants'][$variant]['channels'][$elementId]++;
-        }
-        
-        if (count($stats['logs']) < 100) {
-            $stats['logs'][] = [
-                'timestamp' => $log['timestamp'] ?? '',
-                'variant' => $variant,
-                'elementId' => $elementId,
-                'pagePath' => $log['pagePath'] ?? '',
-                'userAgent' => $log['userAgent'] ?? ''
-            ];
+            
+            if ($variant === 'A') {
+                $dailyStats[$dateKey]['variantA']++;
+            } else {
+                $dailyStats[$dateKey]['variantB']++;
+            }
+        } catch (Exception $e) {
+            // 날짜 파싱 실패 시 무시
         }
     }
     
     // 승자 결정
-    if ($stats['summary']['variantA'] > 0 && $stats['summary']['variantB'] > 0) {
-        if ($stats['summary']['variantA'] > $stats['summary']['variantB']) {
-            $stats['summary']['winner'] = 'Variant A';
-            $stats['summary']['improvement'] = round(
-                (($stats['summary']['variantA'] - $stats['summary']['variantB']) / $stats['summary']['variantB']) * 100, 
-                1
-            );
-        } elseif ($stats['summary']['variantB'] > $stats['summary']['variantA']) {
-            $stats['summary']['winner'] = 'Variant B';
-            $stats['summary']['improvement'] = round(
-                (($stats['summary']['variantB'] - $stats['summary']['variantA']) / $stats['summary']['variantA']) * 100, 
-                1
-            );
-        } else {
-            $stats['summary']['winner'] = '동점';
-            $stats['summary']['improvement'] = 0;
-        }
-    } elseif ($stats['summary']['variantA'] > 0) {
+    $aClicks = $stats['summary']['variantA'];
+    $bClicks = $stats['summary']['variantB'];
+    
+    if ($aClicks > $bClicks && $aClicks > 0) {
         $stats['summary']['winner'] = 'Variant A';
-        $stats['summary']['improvement'] = 100;
-    } elseif ($stats['summary']['variantB'] > 0) {
+        $stats['summary']['improvement'] = round((($aClicks - $bClicks) / $aClicks) * 100, 1);
+    } elseif ($bClicks > $aClicks && $bClicks > 0) {
         $stats['summary']['winner'] = 'Variant B';
-        $stats['summary']['improvement'] = 100;
+        $stats['summary']['improvement'] = round((($bClicks - $aClicks) / $bClicks) * 100, 1);
     }
     
-    // 채널별 정렬
-    foreach (['A', 'B'] as $variant) {
-        if (!empty($stats['variants'][$variant]['channels'])) {
-            arsort($stats['variants'][$variant]['channels']);
-        }
-    }
+    // daily 배열로 변환 및 정렬
+    $stats['daily'] = array_values($dailyStats);
+    usort($stats['daily'], function($a, $b) {
+        return strcmp($a['date'], $b['date']);
+    });
     
-    // 로그 최신순 정렬
-    if (!empty($stats['logs'])) {
-        usort($stats['logs'], function($a, $b) {
-            return strtotime($b['timestamp']) - strtotime($a['timestamp']);
-        });
+    // 최근 20개 로그 추가
+    $recentLogs = array_slice($logs, -20);
+    $recentLogs = array_reverse($recentLogs);
+    
+    foreach ($recentLogs as $log) {
+        $stats['logs'][] = [
+            'timestamp' => $log['timestamp'] ?? '',
+            'variant' => $log['globalVariant'] ?? $log['variant'] ?? '',
+            'elementId' => $log['elementId'] ?? '',
+            'pagePath' => $log['pagePath'] ?? ''
+        ];
     }
     
     return $stats;
 }
 
+// ============================================
+// 크로스페이지 분석 (신규 로그 형식 지원)
+// ============================================
+function analyzeCrosspage($logs) {
+    $userJourneys = [];
+    
+    foreach ($logs as $log) {
+        // ⭐ userId 우선, 없으면 IP 사용
+        $userId = $log['userId'] ?? null;
+        $ipAddress = $log['ipAddress'] ?? null;
+        
+        // userId가 있으면 우선 사용
+        if ($userId) {
+            $identifier = 'user_' . $userId;
+        } else {
+            $identifier = 'ip_' . ($ipAddress ?: 'unknown');
+        }
+        
+        if (!isset($userJourneys[$identifier])) {
+            $userJourneys[$identifier] = [
+                'userId' => $identifier,
+                'tracking_method' => $userId ? 'userId' : 'IP',
+                'original_userId' => $userId ?: '-',
+                'original_ip' => $ipAddress,
+                'visits' => [],
+                'variants' => []
+            ];
+        }
+        
+        $userJourneys[$identifier]['visits'][] = [
+            'timestamp' => $log['timestamp'] ?? '',
+            'pagePath' => $log['pagePath'] ?? '',
+            'variant' => $log['variant'] ?? '',
+            'globalVariant' => $log['globalVariant'] ?? ''
+        ];
+        
+        $variant = $log['globalVariant'] ?? $log['variant'] ?? '';
+        if (!empty($variant)) {
+            $userJourneys[$identifier]['variants'][] = $variant;
+        }
+    }
+    
+    // 통계 계산
+    $totalUsers = 0;
+    $consistentUsers = 0;
+    $aToA = 0;
+    $bToB = 0;
+    $changed = 0;
+    $totalPages = 0;
+    $userIdBased = 0;
+    $ipBased = 0;
+    
+    $userDetails = [];
+    
+    foreach ($userJourneys as $identifier => $journey) {
+        if (count($journey['visits']) < 2) {
+            continue;
+        }
+        
+        $totalUsers++;
+        $totalPages += count($journey['visits']);
+        
+        if ($journey['tracking_method'] === 'userId') {
+            $userIdBased++;
+        } else {
+            $ipBased++;
+        }
+        
+        usort($journey['visits'], function($a, $b) {
+            return strcmp($a['timestamp'], $b['timestamp']);
+        });
+        
+        $firstVisit = $journey['visits'][0];
+        $lastVisit = $journey['visits'][count($journey['visits']) - 1];
+        
+        $firstVariant = $firstVisit['globalVariant'] ?: $firstVisit['variant'];
+        $lastVariant = $lastVisit['globalVariant'] ?: $lastVisit['variant'];
+        
+        $variants = array_unique($journey['variants']);
+        $consistent = (count($variants) === 1);
+        
+        if ($consistent) {
+            $consistentUsers++;
+            if ($firstVariant === 'A') {
+                $aToA++;
+            } else {
+                $bToB++;
+            }
+        } else {
+            $changed++;
+        }
+        
+        $userDetails[] = [
+            'userId' => substr($identifier, 0, 20) . '...',
+            'tracking_method' => $journey['tracking_method'],
+            'first_page' => $firstVisit['pagePath'],
+            'first_variant' => $firstVariant,
+            'last_page' => $lastVisit['pagePath'],
+            'last_variant' => $lastVariant,
+            'consistent' => $consistent,
+            'total_pages' => count($journey['visits']),
+            'last_timestamp' => $lastVisit['timestamp']
+        ];
+    }
+    
+    usort($userDetails, function($a, $b) {
+        return strcmp($b['last_timestamp'], $a['last_timestamp']);
+    });
+    
+    $userDetails = array_slice($userDetails, 0, 50);
+    
+    return [
+        'summary' => [
+            'total_users' => $totalUsers,
+            'consistency_rate' => $totalUsers > 0 ? round($consistentUsers / $totalUsers, 2) : 0,
+            'avg_pages_per_user' => $totalUsers > 0 ? round($totalPages / $totalUsers, 1) : 0,
+            'userId_adoption_rate' => $totalUsers > 0 ? round($userIdBased / $totalUsers, 2) : 0,
+            'userId_based' => $userIdBased,
+            'ip_based' => $ipBased,
+            'a_to_a' => $aToA,
+            'b_to_b' => $bToB,
+            'changed' => $changed
+        ],
+        'users' => $userDetails
+    ];
+}
+
+// ============================================
 // CSV 내보내기
+// ============================================
 function exportCSV($logs) {
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="ab-test-data-' . date('Y-m-d') . '.csv"');
@@ -192,17 +299,18 @@ function exportCSV($logs) {
     
     $output = fopen('php://output', 'w');
     
-    fputcsv($output, ['시간', 'Variant', '판매처 ID', '판매처 URL', '페이지', 'IP', 'User Agent']);
+    fputcsv($output, ['시간', 'Variant', 'Global Variant', 'User ID', 'IP', 'IP Source', '페이지', 'Element ID']);
     
     foreach ($logs as $log) {
         fputcsv($output, [
             $log['timestamp'] ?? '',
             $log['variant'] ?? '',
-            $log['elementId'] ?? '',
-            $log['href'] ?? '',
+            $log['globalVariant'] ?? '',
+            $log['userId'] ?? '-',
+            $log['ipAddress'] ?? '-',
+            $log['ipSource'] ?? '-',
             $log['pagePath'] ?? '',
-            $log['ipAddress'] ?? '',
-            $log['userAgent'] ?? ''
+            $log['elementId'] ?? ''
         ]);
     }
     
@@ -210,11 +318,19 @@ function exportCSV($logs) {
     exit;
 }
 
+// ============================================
 // 메인 로직
+// ============================================
 try {
     if (!file_exists(LOG_DIR)) {
         throw new Exception('로그 디렉토리가 존재하지 않습니다: ' . LOG_DIR);
     }
+    
+    $action = $_GET['action'] ?? 'basic';
+    $startDate = $_GET['start'] ?? $_GET['startDate'] ?? date('Y-m-d', strtotime('-30 days'));
+    $endDate = $_GET['end'] ?? $_GET['endDate'] ?? date('Y-m-d');
+    $pagePath = isset($_GET['pagePath']) ? urldecode($_GET['pagePath']) : '';
+    $export = $_GET['export'] ?? '';
     
     $logs = loadLogs($startDate, $endDate, $pagePath);
     
@@ -222,9 +338,18 @@ try {
         exportCSV($logs);
     }
     
-    $stats = calculateStats($logs);
+    switch ($action) {
+        case 'crosspage':
+            $result = analyzeCrosspage($logs);
+            break;
+            
+        case 'basic':
+        default:
+            $result = analyzeBasicStats($logs, $startDate, $endDate);
+            break;
+    }
     
-    echo json_encode($stats, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     
 } catch (Exception $e) {
     http_response_code(500);

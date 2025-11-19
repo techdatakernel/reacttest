@@ -1,14 +1,69 @@
-// ab-test-tracker.js - Multi-page A/B Test Tracker with Cross-Page Variant Tracking
-// 버전: v1.2 (크로스 페이지 Variant 추적 기능 추가)
-// 최종 업데이트: 2025-11-15
+// ab-test-tracker.js - Multi-page A/B Test Tracker with User ID Tracking
+// 버전: v1.3 (Phase 1+2: 크로스 페이지 Variant 추적 + userId 기반 사용자 식별)
+// 최종 업데이트: 2025-11-17
 
 (function() {
     'use strict';
 
+    // ⭐ Phase 2: 사용자 ID 관리 클래스
+    class ABTestUserID {
+        static STORAGE_KEY = 'ab_test_user_id';
+        static EXPIRY_DAYS = 365;
+        
+        // UUID v4 생성
+        static generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        
+        // 사용자 ID 가져오기 (없으면 생성)
+        static getUserID() {
+            try {
+                // 로컬스토리지에서 확인
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    
+                    // 만료 확인
+                    if (new Date(data.expires) > new Date()) {
+                        console.log(`✅ [ABTest UserID] 기존 ID 사용: ${data.userId.substring(0, 8)}...`);
+                        return data.userId;
+                    }
+                }
+                
+                // 새 ID 생성
+                const newUserId = this.generateUUID();
+                const expires = new Date();
+                expires.setDate(expires.getDate() + this.EXPIRY_DAYS);
+                
+                // 저장
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+                    userId: newUserId,
+                    created: new Date().toISOString(),
+                    expires: expires.toISOString()
+                }));
+                
+                console.log(`🆕 [ABTest UserID] 신규 ID 생성: ${newUserId.substring(0, 8)}...`);
+                return newUserId;
+                
+            } catch (error) {
+                console.error('[ABTest UserID] 생성 실패:', error);
+                // 로컬스토리지 사용 불가 시 세션 기반 ID
+                const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+                console.warn('[ABTest UserID] 세션 기반 ID 사용:', sessionId);
+                return sessionId;
+            }
+        }
+    }
+
     const ABTestTracker = {
         config: {
             cookieName: 'ab_version',                    // 페이지별 쿠키
-            globalCookieName: 'ab_global_variant',       // 전역 쿠키 (NEW)
+            globalCookieName: 'ab_global_variant',       // 전역 쿠키
             cookieExpiry: 30,
             apiEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-log.php',
             configEndpoint: 'https://abi-ops.miraepmp.co.kr/ob/stella/abtest2/api/ab-test-config.php',
@@ -57,7 +112,7 @@
                 document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             },
 
-            // ⭐ NEW: 전역 Variant 쿠키 설정 (모든 페이지에서 접근 가능)
+            // ⭐ 전역 Variant 쿠키 설정 (모든 페이지에서 접근 가능)
             setGlobal: function(variant, days) {
                 const date = new Date();
                 date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -69,7 +124,7 @@
                 console.log(`🌍 [AB Test] 전역 Variant 쿠키 설정: ${variant} (${days}일)`);
             },
 
-            // ⭐ NEW: 전역 Variant 쿠키 조회
+            // ⭐ 전역 Variant 쿠키 조회
             getGlobal: function() {
                 const nameEQ = `${ABTestTracker.config.globalCookieName}=`;
                 const ca = document.cookie.split(';');
@@ -84,7 +139,7 @@
                 return null;
             },
 
-            // ⭐ NEW: 전역 쿠키 삭제
+            // ⭐ 전역 쿠키 삭제
             deleteGlobal: function() {
                 document.cookie = `${ABTestTracker.config.globalCookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
                 console.log('🌍 [AB Test] 전역 Variant 쿠키 삭제됨');
@@ -165,7 +220,7 @@
             return true;
         },
 
-        // ⭐ NEW: Variant 결정 로직 - 크로스 페이지 추적 포함
+        // ⭐ Variant 결정 로직 (크로스 페이지 + userId 추적)
         async getVariant() {
             if (!this.serverConfig) {
                 await this.loadServerConfig();
@@ -202,8 +257,8 @@
                 return 'B';
             }
 
-            // ⭐ Step 2️⃣: ab_test 모드 - 크로스 페이지 추적 (NEW)
-            console.log('🎲 [AB Test] ab_test 모드 - 크로스 페이지 추적 시작');
+            // ⭐ Step 2️⃣: ab_test 모드 - 크로스 페이지 + userId 추적
+            console.log('🎲 [AB Test] ab_test 모드 - 크로스 페이지 + userId 추적 시작');
 
             // ⭐ 2-1. 전역 쿠키 확인 (기존 사용자)
             let globalVariant = this.cookies.getGlobal();
@@ -278,26 +333,31 @@
             return variant;
         },
 
-        // ⭐ NEW: 로그에 전역 Variant 포함
+        // ⭐ Phase 1 + Phase 2: userId와 전역 Variant 포함 로깅
         logClick: function(elementId, href) {
             const variant = this.cookies.get(this.config.cookieName) || 'A';
             const globalVariant = this.cookies.getGlobal() || variant;
             const normalizedPath = this.normalizePath(window.location.pathname);
             
+            // ⭐ Phase 2: userId 추가
+            const userId = ABTestUserID.getUserID();
+            
             const data = {
                 variant: variant,
-                globalVariant: globalVariant,                  // NEW
+                globalVariant: globalVariant,
                 elementId: elementId,
                 href: href,
                 pagePath: normalizedPath,
                 timestamp: new Date().toISOString(),
                 userAgent: navigator.userAgent,
-                referrer: document.referrer
+                referrer: document.referrer,
+                userId: userId  // ⭐ Phase 2 추가
             };
 
-            console.log('📤 [AB Test] 클릭 전송 (크로스 페이지 추적):', {
+            console.log('📤 [AB Test] 클릭 전송 (Phase 1+2 - userId 기반):', {
                 variant: data.variant,
                 globalVariant: data.globalVariant,
+                userId: userId.substring(0, 8) + '...',
                 elementId: data.elementId
             });
 
@@ -308,7 +368,10 @@
             })
             .then(response => response.json())
             .then(result => {
-                console.log('✅ [AB Test] 저장 완료:', result);
+                console.log('✅ [AB Test] 저장 완료 (IP Source:', result.ipSource, ')', {
+                    userId: result.userId?.substring(0, 8) + '...',
+                    ipAddress: result.ipAddress
+                });
             })
             .catch(err => {
                 console.error('❌ [AB Test] 에러:', err);
@@ -329,7 +392,7 @@
         },
 
         async init(targetPath) {
-            console.log('🧪 [AB Test] 초기화 시작 - 페이지:', window.location.pathname);
+            console.log('🧪 [AB Test] 초기화 시작 (v1.3 Phase 1+2) - 페이지:', window.location.pathname);
 
             if (targetPath && !window.location.pathname.includes(targetPath)) {
                 console.log('⭕️ [AB Test] 타겟 페이지 아님');
@@ -337,6 +400,11 @@
             }
 
             try {
+                // ⭐ Phase 2: userId 초기화
+                console.log('👤 [AB Test] 사용자 ID 초기화...');
+                const userId = ABTestUserID.getUserID();
+                console.log(`👤 [AB Test] 사용자 ID: ${userId.substring(0, 16)}...`);
+
                 // ⭐ 1단계: Variant 적용 (DOM 로드 대기 포함)
                 const variant = await this.applyVariant();
 
@@ -350,7 +418,7 @@
                 // ⭐ 2단계: 클릭 리스너 부착 (Variant 적용 후)
                 this.attachListeners();
                 
-                console.log('🎉 [AB Test] 초기화 완료 (크로스 페이지 추적 활성화)');
+                console.log('🎉 [AB Test] 초기화 완료 (Phase 1+2: 크로스 페이지 + userId 기반 추적 활성화)');
             } catch (error) {
                 console.error('❌ [AB Test] 초기화 실패:', error);
             }
@@ -358,6 +426,7 @@
     };
 
     window.ABTestTracker = ABTestTracker;
-    console.log('✅ ABTestTracker v1.2 로드 완료 (크로스 페이지 Variant 추적 포함)');
+    window.ABTestUserID = ABTestUserID;
+    console.log('✅ ABTestTracker v1.3 로드 완료 (Phase 1+2: 크로스 페이지 추적 + userId 식별)');
 
 })();

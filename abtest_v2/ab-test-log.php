@@ -1,6 +1,6 @@
 <?php
 // api/ab-test-log.php - A/B 테스트 클릭 로그 저장 API
-// 버전: v1.3 (첫/마지막 방문 페이지 정보 추가)
+// 버전: v1.4 (Phase 1+2: 실제 IP 추출 + userId 기반 사용자 추적)
 // 최종 업데이트: 2025-11-17
 
 header('Content-Type: application/json; charset=UTF-8');
@@ -15,6 +15,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // 로그 디렉토리 설정
 define('LOG_DIR', __DIR__ . '/ab-test-logs/');
+
+// ⭐ Phase 1: 실제 클라이언트 IP 추출 함수
+function getRealClientIP() {
+    // 1. X-Forwarded-For 헤더 확인 (AWS ALB가 설정)
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        // 형식: "client_ip, proxy1_ip, proxy2_ip"
+        $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $clientIP = trim($ips[0]);  // 첫 번째 IP가 실제 클라이언트 IP
+        
+        // IP 유효성 검사
+        if (filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return [
+                'realIP' => $clientIP,
+                'source' => 'X-Forwarded-For'
+            ];
+        }
+    }
+    
+    // 2. X-Real-IP 헤더 확인 (일부 프록시 사용)
+    if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+        $clientIP = $_SERVER['HTTP_X_REAL_IP'];
+        if (filter_var($clientIP, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return [
+                'realIP' => $clientIP,
+                'source' => 'X-Real-IP'
+            ];
+        }
+    }
+    
+    // 3. CloudFront 사용 시
+    if (!empty($_SERVER['HTTP_CLOUDFRONT_VIEWER_ADDRESS'])) {
+        $clientIP = explode(':', $_SERVER['HTTP_CLOUDFRONT_VIEWER_ADDRESS'])[0];
+        if (filter_var($clientIP, FILTER_VALIDATE_IP)) {
+            return [
+                'realIP' => $clientIP,
+                'source' => 'CloudFront'
+            ];
+        }
+    }
+    
+    // 4. 기본값: REMOTE_ADDR (AWS ALB IP)
+    return [
+        'realIP' => $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0',
+        'source' => 'REMOTE_ADDR'
+    ];
+}
 
 // ⭐ 경로 정규화 함수 (ab-test-config.php와 동일)
 function normalizePath($path) {
@@ -59,7 +105,7 @@ function getLogFilePath($timestamp) {
     }
 }
 
-// ⭐ 로그 저장 (globalVariant 포함)
+// ⭐ 로그 저장 (Phase 1 + Phase 2)
 function saveLog($data) {
     try {
         // 로그 디렉토리 생성 확인
@@ -78,7 +124,13 @@ function saveLog($data) {
             $logs = json_decode($content, true) ?: [];
         }
         
-        // ⭐ NEW: 새 로그 항목 생성 (globalVariant 포함)
+        // ⭐ Phase 1: 실제 클라이언트 IP 추출
+        $ipInfo = getRealClientIP();
+        
+        // ⭐ Phase 2: userId 기본값 설정
+        $userId = $data['userId'] ?? '';
+        
+        // ⭐ 새 로그 항목 생성 (Phase 1 + Phase 2)
         $newLog = [
             'id' => generateClickId(),
             'variant' => $data['variant'],
@@ -89,7 +141,12 @@ function saveLog($data) {
             'timestamp' => $data['timestamp'],
             'userAgent' => substr($data['userAgent'] ?? '', 0, 500),
             'referrer' => $data['referrer'] ?? '',
-            'ipAddress' => $_SERVER['REMOTE_ADDR'] ?? '',
+            // ⭐ Phase 1: 실제 클라이언트 IP
+            'ipAddress' => $ipInfo['realIP'],
+            'ipSource' => $ipInfo['source'],
+            'ipAddressALB' => $_SERVER['REMOTE_ADDR'] ?? '',  // 참고용 (ALB IP)
+            // ⭐ Phase 2: 사용자 ID
+            'userId' => $userId,
             'serverTimestamp' => date('c')
         ];
         
@@ -110,8 +167,11 @@ function saveLog($data) {
         return [
             'success' => true,
             'id' => $newLog['id'],
-            'message' => '로그가 저장되었습니다',
-            'logFile' => basename($logFile)
+            'message' => '로그가 저장되었습니다 (Phase 1+2)',
+            'logFile' => basename($logFile),
+            'userId' => $userId,
+            'ipAddress' => $ipInfo['realIP'],
+            'ipSource' => $ipInfo['source']
         ];
         
     } catch (Exception $e) {
@@ -141,13 +201,30 @@ function getAllLogs() {
     return $allLogs;
 }
 
-// ⭐ 실제 크로스 페이지 통계 계산
+// ⭐ 사용자 키 생성 (Phase 1 + Phase 2)
+function getUserKey($log) {
+    // ⭐ Phase 2 우선: userId 사용
+    if (!empty($log['userId'])) {
+        return 'user_' . $log['userId'];
+    }
+    
+    // Phase 1 대체: 실제 IP 사용
+    if (!empty($log['ipAddress'])) {
+        return 'ip_' . md5($log['ipAddress']);
+    }
+    
+    return null;
+}
+
+// ⭐ Phase 1 + Phase 2: 크로스 페이지 통계 계산
 function calculateCrossPageStats() {
     $allLogs = getAllLogs();
     
     if (empty($allLogs)) {
         return [
             'trackedUsers' => 0,
+            'trackedUsersWithUserId' => 0,
+            'trackedUsersWithIP' => 0,
             'consistencyRate' => 0,
             'avgPagesPerUser' => 0,
             'globalCookieRate' => 0,
@@ -160,59 +237,69 @@ function calculateCrossPageStats() {
         ];
     }
     
-    // ⭐ NEW: 시간순 정렬 (오래된 것부터)
+    // ⭐ 시간순 정렬 (오래된 것부터)
     usort($allLogs, function($a, $b) {
         return strtotime($a['timestamp']) - strtotime($b['timestamp']);
     });
     
-    // IP 주소 기반으로 사용자 구분 (globalVariant도 고려)
+    // ⭐ Phase 1 + Phase 2: userId와 IP 기반으로 사용자 구분
     $userSessions = [];
+    $userIdCount = 0;
+    $ipOnlyCount = 0;
     
     foreach ($allLogs as $log) {
-        $ipAddress = $log['ipAddress'] ?? '';
         $globalVariant = $log['globalVariant'] ?? $log['variant'] ?? '';
+        $userKey = getUserKey($log);
         
-        if (!$ipAddress || !$globalVariant) {
+        if (!$userKey || !$globalVariant) {
             continue;
         }
         
-        if (!isset($userSessions[$ipAddress])) {
-            $userSessions[$ipAddress] = [
+        if (!isset($userSessions[$userKey])) {
+            $userSessions[$userKey] = [
                 'variants' => [],
                 'pages' => [],
                 'firstVariant' => null,
                 'lastVariant' => null,
                 'firstTimestamp' => $log['timestamp'],
-                'lastTimestamp' => $log['timestamp']
+                'lastTimestamp' => $log['timestamp'],
+                'trackingMethod' => strpos($userKey, 'user_') === 0 ? 'userId' : 'ipAddress'
             ];
+            
+            // ⭐ 추적 방법별 카운트
+            if ($userSessions[$userKey]['trackingMethod'] === 'userId') {
+                $userIdCount++;
+            } else {
+                $ipOnlyCount++;
+            }
         }
         
         // 페이지 경로 추가 (중복 제거)
         $pagePath = $log['pagePath'] ?? '';
-        if ($pagePath && !in_array($pagePath, $userSessions[$ipAddress]['pages'])) {
-            $userSessions[$ipAddress]['pages'][] = $pagePath;
+        if ($pagePath && !in_array($pagePath, $userSessions[$userKey]['pages'])) {
+            $userSessions[$userKey]['pages'][] = $pagePath;
         }
         
         // Variant 기록
-        $userSessions[$ipAddress]['variants'][] = $globalVariant;
+        $userSessions[$userKey]['variants'][] = $globalVariant;
         
         // 첫 번째와 마지막 Variant 기록
-        if ($userSessions[$ipAddress]['firstVariant'] === null) {
-            $userSessions[$ipAddress]['firstVariant'] = $globalVariant;
+        if ($userSessions[$userKey]['firstVariant'] === null) {
+            $userSessions[$userKey]['firstVariant'] = $globalVariant;
         }
-        $userSessions[$ipAddress]['lastVariant'] = $globalVariant;
+        $userSessions[$userKey]['lastVariant'] = $globalVariant;
         
         // 타임스탬프 업데이트
-        if (strtotime($log['timestamp']) > strtotime($userSessions[$ipAddress]['lastTimestamp'])) {
-            $userSessions[$ipAddress]['lastTimestamp'] = $log['timestamp'];
+        if (strtotime($log['timestamp']) > strtotime($userSessions[$userKey]['lastTimestamp'])) {
+            $userSessions[$userKey]['lastTimestamp'] = $log['timestamp'];
         }
     }
     
     // 여러 페이지를 방문한 사용자만 필터링
     $crossPageUsers = [];
-    foreach ($userSessions as $ip => $session) {
+    foreach ($userSessions as $key => $session) {
         if (count($session['pages']) > 1) {
-            $crossPageUsers[$ip] = $session;
+            $crossPageUsers[$key] = $session;
         }
     }
     
@@ -224,7 +311,7 @@ function calculateCrossPageStats() {
     $totalPages = 0;
     $globalCookieCount = 0;
     
-    foreach ($crossPageUsers as $ip => $session) {
+    foreach ($crossPageUsers as $key => $session) {
         $totalPages += count($session['pages']);
         
         // 전역 쿠키 적용 확인 (모든 variants가 같은지 확인)
@@ -257,6 +344,8 @@ function calculateCrossPageStats() {
     
     return [
         'trackedUsers' => $trackedUsers,
+        'trackedUsersWithUserId' => $userIdCount,
+        'trackedUsersWithIP' => $ipOnlyCount,
         'consistencyRate' => $consistencyRate,
         'avgPagesPerUser' => $avgPagesPerUser,
         'globalCookieRate' => $globalCookieRate,
@@ -269,7 +358,7 @@ function calculateCrossPageStats() {
     ];
 }
 
-// ⭐ 실제 사용자 여정 분석 (첫/마지막 페이지 정보 추가)
+// ⭐ Phase 1 + Phase 2: 실제 사용자 여정 분석
 function analyzeCrossPageUserJourneys() {
     $allLogs = getAllLogs();
     
@@ -277,26 +366,26 @@ function analyzeCrossPageUserJourneys() {
         return [];
     }
     
-    // ⭐ NEW: 시간순 정렬 (오래된 것부터)
+    // ⭐ 시간순 정렬 (오래된 것부터)
     usort($allLogs, function($a, $b) {
         return strtotime($a['timestamp']) - strtotime($b['timestamp']);
     });
     
-    // IP 주소 기반으로 사용자 구분
+    // ⭐ Phase 1 + Phase 2: userId와 IP 기반으로 사용자 구분
     $userSessions = [];
     
     foreach ($allLogs as $log) {
-        $ipAddress = $log['ipAddress'] ?? '';
         $globalVariant = $log['globalVariant'] ?? $log['variant'] ?? '';
         $pagePath = $log['pagePath'] ?? '';
         $timestamp = $log['timestamp'] ?? '';
+        $userKey = getUserKey($log);
         
-        if (!$ipAddress || !$globalVariant) {
+        if (!$userKey || !$globalVariant) {
             continue;
         }
         
-        if (!isset($userSessions[$ipAddress])) {
-            $userSessions[$ipAddress] = [
+        if (!isset($userSessions[$userKey])) {
+            $userSessions[$userKey] = [
                 'variants' => [],
                 'pages' => [],
                 'logs' => [],
@@ -305,39 +394,42 @@ function analyzeCrossPageUserJourneys() {
                 'firstPage' => null,
                 'lastPage' => null,
                 'firstTimestamp' => $timestamp,
-                'lastUpdated' => $timestamp
+                'lastUpdated' => $timestamp,
+                'trackingMethod' => strpos($userKey, 'user_') === 0 ? 'userId' : 'ipAddress',
+                'userId' => $log['userId'] ?? '',
+                'ipAddress' => $log['ipAddress'] ?? ''
             ];
         }
         
         // 로그 저장
-        $userSessions[$ipAddress]['logs'][] = $log;
+        $userSessions[$userKey]['logs'][] = $log;
         
         // 페이지 경로 추가 (중복 제거)
-        if ($pagePath && !in_array($pagePath, $userSessions[$ipAddress]['pages'])) {
-            $userSessions[$ipAddress]['pages'][] = $pagePath;
+        if ($pagePath && !in_array($pagePath, $userSessions[$userKey]['pages'])) {
+            $userSessions[$userKey]['pages'][] = $pagePath;
         }
         
         // Variant 기록
-        $userSessions[$ipAddress]['variants'][] = $globalVariant;
+        $userSessions[$userKey]['variants'][] = $globalVariant;
         
-        // ⭐ NEW: 첫 번째와 마지막 Variant 및 페이지 기록
-        if ($userSessions[$ipAddress]['firstVariant'] === null) {
-            $userSessions[$ipAddress]['firstVariant'] = $globalVariant;
-            $userSessions[$ipAddress]['firstPage'] = $pagePath;
-            $userSessions[$ipAddress]['firstTimestamp'] = $timestamp;
+        // ⭐ 첫 번째와 마지막 Variant 및 페이지 기록
+        if ($userSessions[$userKey]['firstVariant'] === null) {
+            $userSessions[$userKey]['firstVariant'] = $globalVariant;
+            $userSessions[$userKey]['firstPage'] = $pagePath;
+            $userSessions[$userKey]['firstTimestamp'] = $timestamp;
         }
         
         // 마지막 값은 계속 업데이트
-        $userSessions[$ipAddress]['lastVariant'] = $globalVariant;
-        $userSessions[$ipAddress]['lastPage'] = $pagePath;
-        $userSessions[$ipAddress]['lastUpdated'] = $timestamp;
+        $userSessions[$userKey]['lastVariant'] = $globalVariant;
+        $userSessions[$userKey]['lastPage'] = $pagePath;
+        $userSessions[$userKey]['lastUpdated'] = $timestamp;
     }
     
     // 여러 페이지를 방문한 사용자만 필터링
     $journeys = [];
-    foreach ($userSessions as $ip => $session) {
+    foreach ($userSessions as $key => $session) {
         if (count($session['pages']) > 1) {
-            // ⭐ NEW: 페이지 이름 추출 함수
+            // ⭐ 페이지 이름 추출 함수
             $getPageName = function($path) {
                 if (empty($path)) return '-';
                 $parts = explode('/', $path);
@@ -346,7 +438,10 @@ function analyzeCrossPageUserJourneys() {
             };
             
             $journeys[] = [
-                'userId' => substr(md5($ip), 0, 16),
+                'userId' => substr(md5($key), 0, 16),
+                'trackingMethod' => $session['trackingMethod'],
+                'originalUserId' => $session['userId'],
+                'originalIPAddress' => $session['ipAddress'],
                 'firstVariant' => $session['firstVariant'],
                 'lastVariant' => $session['lastVariant'],
                 'firstPage' => $getPageName($session['firstPage']),

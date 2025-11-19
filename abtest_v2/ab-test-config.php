@@ -1,5 +1,5 @@
 <?php
-// api/ab-test-config.php - A/B 테스트 설정 API (경로 정규화 수정)
+// api/ab-test-config.php - Dashboard 호환 버전
 
 header('Content-Type: application/json; charset=UTF-8');
 header('Access-Control-Allow-Origin: *');
@@ -11,19 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// 설정 파일 경로
 define('CONFIG_FILE', __DIR__ . '/ab-test-config.json');
 
-// ⭐ 경로 정규화 함수 - 역슬래시 제거
 function normalizePath($path) {
-    // 역슬래시 제거 (이스케이프된 슬래시)
     $path = str_replace('\\/', '/', $path);
-    // 슬래시 정규화 (여러 슬래시를 하나로)
     $path = preg_replace('#/+#', '/', $path);
     return trim($path);
 }
 
-// ⭐ 설정 로드 - 강화된 버전
 function loadConfig() {
     if (!file_exists(CONFIG_FILE)) {
         return [
@@ -45,9 +40,7 @@ function loadConfig() {
     return $config;
 }
 
-// ⭐ 설정 저장 - 경로 정규화 포함
 function saveConfig($data) {
-    // 저장 전에 모든 페이지의 경로를 정규화
     if (isset($data['pages']) && is_array($data['pages'])) {
         $normalizedPages = [];
         foreach ($data['pages'] as $path => $config) {
@@ -57,7 +50,6 @@ function saveConfig($data) {
         $data['pages'] = $normalizedPages;
     }
     
-    // JSON_UNESCAPED_SLASHES 옵션으로 슬래시 이스케이프 방지
     $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     
     if (file_put_contents(CONFIG_FILE, $json) === false) {
@@ -65,11 +57,9 @@ function saveConfig($data) {
     }
 }
 
-// ⭐ 경로에서 페이지 설정 찾기 - 유연한 매칭
 function findPageConfig($pages, $searchPath) {
     $normalizedSearchPath = normalizePath($searchPath);
     
-    // 정확히 일치하는 경로 찾기
     foreach ($pages as $path => $config) {
         $normalizedPath = normalizePath($path);
         if ($normalizedPath === $normalizedSearchPath) {
@@ -77,7 +67,6 @@ function findPageConfig($pages, $searchPath) {
         }
     }
     
-    // 일치하지 않으면 null 반환
     return null;
 }
 
@@ -85,40 +74,43 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
     
     if ($method === 'GET') {
-        // ⭐ GET 요청: 전체 페이지 설정 또는 특정 페이지 설정
         $pagePath = isset($_GET['pagePath']) ? $_GET['pagePath'] : '';
         $config = loadConfig();
         
-        // ⭐ 전체 페이지 목록 요청 (pagePath가 없을 때)
+        // ✅ 전체 페이지 목록 요청 - Dashboard 호환 수정
         if (empty($pagePath)) {
-            // 반환 시 경로 정규화
             $normalizedPages = [];
-            foreach ($config['pages'] as $path => $pageConfig) {
-                $normalizedPath = normalizePath($path);
-                $normalizedPages[$normalizedPath] = $pageConfig;
+            if (isset($config['pages']) && is_array($config['pages'])) {
+                foreach ($config['pages'] as $path => $pageConfig) {
+                    $normalizedPath = normalizePath($path);
+                    $normalizedPages[$normalizedPath] = $pageConfig;
+                }
             }
             
+            // ⭐ config 키로 반환 (Dashboard 호환)
             echo json_encode([
                 'success' => true,
-                'config' => $normalizedPages ?: [],
-                'global' => $config['global'] ?: ['cookieExpiry' => 30, 'defaultMode' => 'ab_test'],
+                'config' => $normalizedPages,  // ← pages에서 config로 변경!
+                'global' => $config['global'] ?? ['cookieExpiry' => 30, 'defaultMode' => 'ab_test'],
                 'timestamp' => date('c')
             ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             exit;
         }
         
-        // ⭐ 특정 페이지 설정 요청 - 유연한 매칭
-        $pageConfig = findPageConfig($config['pages'], $pagePath);
+        // 특정 페이지 설정 요청
+        $pageConfig = null;
+        if (isset($config['pages']) && is_array($config['pages'])) {
+            $pageConfig = findPageConfig($config['pages'], $pagePath);
+        }
         
         echo json_encode([
             'success' => true,
             'config' => $pageConfig,
-            'global' => $config['global'] ?: ['cookieExpiry' => 30, 'defaultMode' => 'ab_test'],
+            'global' => $config['global'] ?? ['cookieExpiry' => 30, 'defaultMode' => 'ab_test'],
             'timestamp' => date('c')
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         
     } elseif ($method === 'POST') {
-        // ⭐ POST 요청: 설정 수정/추가/삭제
         $input = json_decode(file_get_contents('php://input'), true);
         
         if (!$input) {
@@ -128,7 +120,6 @@ try {
         $action = $input['action'] ?? 'update';
         $config = loadConfig();
         
-        // ⭐ 페이지 초기화 확인
         if (!isset($config['pages'])) {
             $config['pages'] = [];
         }
@@ -145,17 +136,14 @@ try {
                     throw new Exception('pagePath 필수');
                 }
                 
-                // ⭐ 경로 정규화
                 $normalizedPath = normalizePath($pagePath);
                 
-                // 기존 정규화되지 않은 경로가 있으면 제거
                 foreach ($config['pages'] as $existingPath => $existingConfig) {
                     if (normalizePath($existingPath) === $normalizedPath) {
                         unset($config['pages'][$existingPath]);
                     }
                 }
                 
-                // ⭐ 기존 설정이 없으면 새로 생성
                 if (!isset($config['pages'][$normalizedPath])) {
                     $config['pages'][$normalizedPath] = [
                         'enabled' => true,
@@ -176,6 +164,10 @@ try {
                 $config['pages'][$normalizedPath]['lastUpdated'] = date('c');
                 $config['pages'][$normalizedPath]['updatedBy'] = $input['updatedBy'] ?? 'system';
                 
+                if (isset($input['schedule'])) {
+                    $config['pages'][$normalizedPath]['schedule'] = $input['schedule'];
+                }
+                
                 saveConfig($config);
                 
                 echo json_encode([
@@ -193,10 +185,8 @@ try {
                     throw new Exception('pagePath 필수');
                 }
                 
-                // ⭐ 경로 정규화
                 $normalizedPath = normalizePath($pagePath);
                 
-                // 중복 체크 (정규화된 경로로 비교)
                 foreach ($config['pages'] as $existingPath => $existingConfig) {
                     if (normalizePath($existingPath) === $normalizedPath) {
                         throw new Exception('이미 존재하는 페이지입니다');
@@ -239,10 +229,8 @@ try {
                     throw new Exception('pagePath 필수');
                 }
                 
-                // ⭐ 경로 정규화
                 $normalizedPath = normalizePath($pagePath);
                 
-                // 정규화된 경로로 찾아서 삭제
                 $found = false;
                 foreach ($config['pages'] as $existingPath => $existingConfig) {
                     if (normalizePath($existingPath) === $normalizedPath) {
