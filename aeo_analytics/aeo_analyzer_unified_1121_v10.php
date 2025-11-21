@@ -8,7 +8,7 @@
 
 set_time_limit(120);
 
-define('OPENAI_API_KEY', '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');
+define('OPENAI_API_KEY', 'xxx');
 define('DATA_DIR', __DIR__ . '/aeo_data');
 define('MAX_TOKENS', 3000);
 define('API_TIMEOUT', 45);
