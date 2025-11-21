@@ -1,0 +1,15 @@
+
+{
+    "6b9c9fc7c61757256f5324bb8518e27f": {
+        "id": "6b9c9fc7c61757256f5324bb8518e27f",
+        "query": "스텔라 마시고 싶은데 어떻게 할까?",
+        "url": "https:\/\/stella.miraepmp.co.kr\/core\/product.php",
+        "hybrid_score": 62,
+        "evaluation": "보통",
+        "timestamp": "2025-11-21 07:32:39",
+        "date": "2025-11-21",
+        "query_type": "",
+        "model": "gpt-4-turbo-preview",
+        "temperature": 0.7
+    }
+}

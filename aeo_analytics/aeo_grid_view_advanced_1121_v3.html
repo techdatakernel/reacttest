@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO 데이터 관리 - 고급 뷰</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f5f7fa; color: #2c3e50; }
+        
+        .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+        .sidebar { background: linear-gradient(180deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; position: sticky; top: 0; height: 100vh; overflow-y: auto; z-index: 100; }
+        .main { padding: 25px; }
+        
+        /* 사이드바 */
+        .sidebar h2 { font-size: 18px; margin-bottom: 25px; }
+        .filter-group { margin-bottom: 22px; }
+        .filter-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 8px; opacity: 0.9; text-transform: uppercase; }
+        .filter-group input, .filter-group select { width: 100%; padding: 8px; border: none; border-radius: 4px; font-family: inherit; font-size: 12px; }
+        
+        .stat-card { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+        .stat-card .number { font-size: 20px; font-weight: 700; }
+        .stat-card .label { font-size: 11px; opacity: 0.8; }
+        
+        .sidebar button { width: 100%; padding: 10px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; cursor: pointer; font-weight: 600; margin-top: 15px; transition: all 0.3s; }
+        .sidebar button:hover { background: rgba(255,255,255,0.3); }
+        
+        /* 메인 */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .header h1 { font-size: 24px; }
+        
+        .view-options { display: flex; gap: 10px; }
+        .view-btn { background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .view-btn:hover { background: #764ba2; }
+        .view-btn.active { background: #764ba2; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        
+        /* 카드 뷰 */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+        }
+        
+        .card-score {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-eval {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card-query {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 13px;
+        }
+        
+        .card-url {
+            font-size: 11px;
+            color: #7f8c8d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 10px;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-bottom: 12px;
+        }
+        
+        .card-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-view { 
+            flex: 1; 
+            padding: 8px; 
+            background: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 11px; 
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-view:hover { background: #2980b9; }
+        
+        /* 테이블 뷰 */
+        .table-wrapper { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f9f9f9; }
+        
+        /* 무한 스크롤 */
+        .infinite-list { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .list-item { padding: 15px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
+        .list-item:hover { background: #f9f9f9; }
+        .list-content { flex: 1; }
+        .list-query { font-weight: 600; margin-bottom: 4px; }
+        .list-url { font-size: 11px; color: #7f8c8d; }
+        .list-score { text-align: right; }
+        .list-score-value { font-size: 18px; font-weight: 700; color: #667eea; }
+        .list-score-eval { font-size: 11px; color: #7f8c8d; }
+        
+        /* 로딩 */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .loading { text-align: center; padding: 40px; }
+        .empty { text-align: center; padding: 60px 20px; color: #7f8c8d; }
+        
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            margin: 50px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            animation: slideUp 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 20px;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 160px);
+            overflow-y: auto;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .info-value {
+            color: #212529;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab.active {
+            color: #667eea;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        .concept-description {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .concept-description h4 {
+            color: #495057;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .concept-description p {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.7;
+            margin: 0;
+        }
+        
+        .recommendation-section {
+            margin-bottom: 25px;
+        }
+        
+        .recommendation-section h3 {
+            color: #495057;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .recommendation-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 5px;
+        }
+        
+        .recommendation-text {
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .keyword-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .keyword-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .keyword-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .keyword-term {
+            font-weight: 600;
+            color: #212529;
+            font-size: 16px;
+        }
+        
+        .keyword-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .keyword-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .json-viewer {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        
+        .json-viewer pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #212529;
+        }
+        
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .layout { grid-template-columns: 180px 1fr; }
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+        }
+        
+        @media (max-width: 768px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .grid-container { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 15px; }
+            .view-options { width: 100%; }
+            .view-btn { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <h2>🔍 필터</h2>
+            
+            <div class="filter-group">
+                <label>검색</label>
+                <input type="text" id="searchInput" placeholder="질문/URL...">
+            </div>
+            
+            <div class="filter-group">
+                <label>평가</label>
+                <select id="evaluationFilter">
+                    <option value="">전체</option>
+                    <option value="우수">우수</option>
+                    <option value="양호">양호</option>
+                    <option value="개선필요">개선필요</option>
+                    <option value="위험">위험</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>타입</label>
+                <select id="typeFilter">
+                    <option value="">전체</option>
+                    <option value="정보형">정보형</option>
+                    <option value="비교형">비교형</option>
+                    <option value="위치 정보">위치 정보</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>점수</label>
+                <input type="range" id="scoreRange" min="0" max="100" value="0">
+                <small id="scoreDisplay" style="display: block; margin-top: 5px;">0점 이상</small>
+            </div>
+            
+            <div class="filter-group">
+                <label>정렬</label>
+                <select id="sortBy">
+                    <option value="timestamp">최신순</option>
+                    <option value="score">점수 높음</option>
+                    <option value="query">질문순</option>
+                </select>
+            </div>
+            
+            <button onclick="applyFilters()">✓ 적용</button>
+            
+            <!-- 통계 -->
+            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                <h2 style="font-size: 14px; margin-bottom: 15px;">📊 통계</h2>
+                <div class="stat-card">
+                    <div class="number" id="totalCount">0</div>
+                    <div class="label">총 분석</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="excellentCount">0</div>
+                    <div class="label">우수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="avgScore">0</div>
+                    <div class="label">평균 점수</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 메인 -->
+        <div class="main">
+            <div class="header">
+                <h1>📈 AEO 분석 데이터</h1>
+                <div class="view-options">
+                    <button class="view-btn active" onclick="switchView('grid')">🔲 카드</button>
+                    <button class="view-btn" onclick="switchView('table')">📋 테이블</button>
+                    <button class="view-btn" onclick="switchView('infinite')">♾️ 무한</button>
+                </div>
+            </div>
+            
+            <!-- 로딩 -->
+            <div id="loadingContainer" class="loading" style="display: none;">
+                <div class="loader"></div>
+                <p>데이터를 불러오는 중...</p>
+            </div>
+            
+            <!-- 카드 뷰 -->
+            <div id="gridView" class="grid-container"></div>
+            
+            <!-- 테이블 뷰 -->
+            <div id="tableView" style="display: none;"></div>
+            
+            <!-- 무한 스크롤 -->
+            <div id="infiniteView" style="display: none;" class="infinite-list"></div>
+        </div>
+    </div>
+    
+    <!-- 상세보기 모달 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 분석 결과 상세 보기</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-grid">
+                    <div class="info-label">질문</div>
+                    <div class="info-value" id="modalQuery"></div>
+                    
+                    <div class="info-label">URL</div>
+                    <div class="info-value"><a id="modalUrl" href="#" target="_blank"></a></div>
+                    
+                    <div class="info-label">하이브리드 점수</div>
+                    <div class="info-value" id="modalScore"></div>
+                    
+                    <div class="info-label">평가</div>
+                    <div class="info-value" id="modalEval"></div>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('keywords')">🔤 키워드 (BM25)</button>
+                    <button class="tab" onclick="switchTab('semantic')">🧠 시맨틱</button>
+                    <button class="tab" onclick="switchTab('improvements')">💡 개선</button>
+                    <button class="tab" onclick="switchTab('raw')">📄 원본</button>
+                </div>
+                
+                <div id="keywordsTab" class="tab-content active">
+                    <div class="concept-description">
+                        <h4>📚 BM25란?</h4>
+                        <p>BM25(Best Matching 25)는 검색 엔진에서 사용되는 키워드 기반 관련성 평가 알고리즘입니다.</p>
+                    </div>
+                    <div id="keywordsList"></div>
+                </div>
+                
+                <div id="semanticTab" class="tab-content">
+                    <div class="concept-description">
+                        <h4>📚 시맨틱 분석이란?</h4>
+                        <p>AI가 텍스트의 의미를 이해하고 평가하는 방식입니다.</p>
+                    </div>
+                    <div id="semanticContent"></div>
+                </div>
+                
+                <div id="improvementsTab" class="tab-content">
+                    <div class="concept-description">
+                        <h4>📚 AEO 개선 제안이란?</h4>
+                        <p>AI 검색 엔진에서 더 나은 답변 제공을 위한 최적화 방안입니다.</p>
+                    </div>
+                    <div id="improvementsList"></div>
+                </div>
+                
+                <div id="rawTab" class="tab-content">
+                    <div class="concept-description">
+                        <h4>📚 원본 JSON 데이터</h4>
+                        <p>API로부터 받은 전체 분석 결과의 원본 데이터입니다.</p>
+                    </div>
+                    <div class="json-viewer">
+                        <pre id="rawJson"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentView = 'grid';
+        let allData = [];
+        let filteredData = [];
+        let pageNum = 1;
+        const itemsPerPage = 20;
+        
+        // 데이터 로드
+        async function loadData() {
+            const loading = document.getElementById('loadingContainer');
+            loading.style.display = 'block';
+            
+            try {
+                const response = await fetch('aeo_data/index.json');
+                const indexData = await response.json();
+                
+                allData = Object.values(indexData).map(item => ({
+                    ...item,
+                    date: item.timestamp ? item.timestamp.split(' ')[0] : item.date || ''
+                }));
+                
+                filteredData = [...allData];
+                applyFilters();
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                document.getElementById('gridView').innerHTML = `
+                    <div class="empty">
+                        <p>⚠️ 데이터를 불러오는데 실패했습니다.</p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // 뷰 전환
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('gridView').style.display = view === 'grid' ? 'grid' : 'none';
+            document.getElementById('tableView').style.display = view === 'table' ? 'block' : 'none';
+            document.getElementById('infiniteView').style.display = view === 'infinite' ? 'block' : 'none';
+            
+            pageNum = 1;
+            renderCurrentView();
+        }
+        
+        // 필터 적용
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const evaluation = document.getElementById('evaluationFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const minScore = parseInt(document.getElementById('scoreRange').value);
+            const sortBy = document.getElementById('sortBy').value;
+            
+            filteredData = allData.filter(item => {
+                const matchSearch = !search || 
+                    item.query.toLowerCase().includes(search) || 
+                    item.url.toLowerCase().includes(search);
+                const matchEval = !evaluation || item.evaluation === evaluation;
+                const matchType = !typeFilter || item.query_type === typeFilter;
+                const matchScore = item.hybrid_score >= minScore;
+                
+                return matchSearch && matchEval && matchType && matchScore;
+            });
+            
+            // 정렬
+            if (sortBy === 'score') {
+                filteredData.sort((a, b) => b.hybrid_score - a.hybrid_score);
+            } else if (sortBy === 'query') {
+                filteredData.sort((a, b) => a.query.localeCompare(b.query));
+            } else {
+                filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            }
+            
+            pageNum = 1;
+            updateStats();
+            renderCurrentView();
+        }
+        
+        // 현재 뷰 렌더링
+        function renderCurrentView() {
+            if (currentView === 'grid') renderGrid();
+            else if (currentView === 'table') renderTable();
+            else renderInfinite();
+        }
+        
+        // 그리드 렌더링
+        function renderGrid() {
+            const container = document.getElementById('gridView');
+            const items = filteredData.slice(0, itemsPerPage * pageNum);
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty" style="grid-column: 1 / -1;"><p>📭 표시할 데이터가 없습니다.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-score">${item.hybrid_score.toFixed(1)}</div>
+                        <span class="card-eval">${item.evaluation || '-'}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-query">${item.query}</div>
+                        <div class="card-url" title="${item.url}">${item.url}</div>
+                        <div class="card-meta">
+                            <span>${item.date}</span>
+                            <span>${item.query_type || '-'}</span>
+                        </div>
+                        <button class="btn-view" onclick="showDetail('${item.id}')">📊 보기</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            if (items.length < filteredData.length) {
+                const more = document.createElement('div');
+                more.style.gridColumn = '1 / -1';
+                more.style.textAlign = 'center';
+                more.style.padding = '20px';
+                more.innerHTML = `<button onclick="pageNum++; renderGrid()" style="background: #667eea; color: white; border: none; padding: 10px 30px; border-radius: 4px; cursor: pointer; font-weight: 600;">더 보기 (${items.length}/${filteredData.length})</button>`;
+                container.appendChild(more);
+            }
+        }
+        
+        // 테이블 렌더링
+        function renderTable() {
+            const container = document.getElementById('tableView');
+            const items = filteredData.slice(0, itemsPerPage * pageNum);
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty"><p>📭 표시할 데이터가 없습니다.</p></div>';
+                return;
+            }
+            
+            let html = '<div class="table-wrapper"><table><thead><tr><th>질문</th><th>점수</th><th>평가</th><th>타입</th><th>날짜</th></tr></thead><tbody>';
+            items.forEach(item => {
+                html += `<tr style="cursor: pointer;" onclick="showDetail('${item.id}')">
+                    <td style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.query}</td>
+                    <td style="text-align: center; font-weight: 700;">${item.hybrid_score.toFixed(1)}</td>
+                    <td>${item.evaluation || '-'}</td>
+                    <td>${item.query_type || '-'}</td>
+                    <td>${item.date}</td>
+                </tr>`;
+            });
+            html += '</tbody></table></div>';
+            
+            if (items.length < filteredData.length) {
+                html += `<div style="text-align: center; padding: 20px;"><button onclick="pageNum++; renderTable()" style="background: #667eea; color: white; border: none; padding: 10px 30px; border-radius: 4px; cursor: pointer; font-weight: 600;">더 보기 (${items.length}/${filteredData.length})</button></div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // 무한 스크롤
+        function renderInfinite() {
+            const container = document.getElementById('infiniteView');
+            const items = filteredData.slice(0, itemsPerPage * pageNum);
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="empty"><p>📭 표시할 데이터가 없습니다.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="list-item" onclick="showDetail('${item.id}')">
+                    <div class="list-content">
+                        <div class="list-query">${item.query}</div>
+                        <div class="list-url">${item.url}</div>
+                    </div>
+                    <div class="list-score">
+                        <div class="list-score-value">${item.hybrid_score.toFixed(1)}</div>
+                        <div class="list-score-eval">${item.evaluation || '-'}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            if (items.length < filteredData.length) {
+                const trigger = document.createElement('div');
+                trigger.style.padding = '20px';
+                trigger.style.textAlign = 'center';
+                trigger.style.cursor = 'pointer';
+                trigger.innerHTML = `<button onclick="pageNum++; renderInfinite()" style="background: #667eea; color: white; border: none; padding: 10px 30px; border-radius: 4px; cursor: pointer; font-weight: 600;">더 보기 (${items.length}/${filteredData.length})</button>`;
+                container.appendChild(trigger);
+            }
+        }
+        
+        // 통계 업데이트
+        function updateStats() {
+            const excellent = filteredData.filter(d => d.evaluation === '우수' || d.evaluation === '양호').length;
+            const avg = filteredData.length > 0 ? 
+                (filteredData.reduce((sum, d) => sum + d.hybrid_score, 0) / filteredData.length).toFixed(1) : 0;
+            
+            document.getElementById('totalCount').textContent = filteredData.length;
+            document.getElementById('excellentCount').textContent = excellent;
+            document.getElementById('avgScore').textContent = avg;
+        }
+        
+        // 상세 정보 표시
+        async function showDetail(id) {
+            const item = allData.find(d => d.id === id);
+            if (!item) return;
+            
+            // 기본 정보 표시
+            document.getElementById('modalQuery').textContent = item.query;
+            document.getElementById('modalUrl').textContent = item.url;
+            document.getElementById('modalUrl').href = item.url;
+            document.getElementById('modalScore').textContent = item.hybrid_score;
+            document.getElementById('modalEval').textContent = item.evaluation || '-';
+            
+            // 상세 JSON 파일 로드
+            try {
+                const date = item.date || item.timestamp.split(' ')[0];
+                const shortId = id.substring(0, 8);
+                const response = await fetch(`aeo_data/${date}/${date}_${shortId}.json`);
+                const detailData = await response.json();
+                
+                // 키워드 탭
+                renderKeywords(detailData.bm25);
+                
+                // 시맨틱 탭
+                renderSemantic(detailData.semantic);
+                
+                // 개선사항 탭
+                renderImprovements(detailData.aeo_recommendations);
+                
+                // 원본 JSON 탭
+                document.getElementById('rawJson').textContent = JSON.stringify(detailData, null, 2);
+            } catch (error) {
+                console.error('상세 데이터 로드 오류:', error);
+                document.getElementById('keywordsList').innerHTML = '<p>데이터를 불러올 수 없습니다.</p>';
+                document.getElementById('semanticContent').innerHTML = '<p>데이터를 불러올 수 없습니다.</p>';
+                document.getElementById('improvementsList').innerHTML = '<p>데이터를 불러올 수 없습니다.</p>';
+                document.getElementById('rawJson').textContent = '데이터를 불러올 수 없습니다.';
+            }
+            
+            // 모달 표시
+            document.getElementById('detailModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 키워드 렌더링
+        function renderKeywords(bm25Data) {
+            const container = document.getElementById('keywordsList');
+            
+            if (!bm25Data || !bm25Data.keywords || bm25Data.keywords.length === 0) {
+                container.innerHTML = '<p>키워드 정보가 없습니다.</p>';
+                return;
+            }
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">📊 총점</div>
+                            <div class="recommendation-text">${bm25Data.total_score || 0}점</div>
+                        </div>
+                        ${(bm25Data.strengths || bm25Data.strength) ? `
+                            <div class="recommendation-item" style="grid-column: 1 / -1;">
+                                <div class="recommendation-title">💪 강점</div>
+                                <div class="recommendation-text">${bm25Data.strengths || bm25Data.strength}</div>
+                            </div>
+                        ` : ''}
+                        ${(bm25Data.weaknesses || bm25Data.weakness) ? `
+                            <div class="recommendation-item" style="grid-column: 1 / -1;">
+                                <div class="recommendation-title">⚠️ 약점</div>
+                                <div class="recommendation-text">${bm25Data.weaknesses || bm25Data.weakness}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            html += '<div class="keyword-list">';
+            html += bm25Data.keywords.map(kw => `
+                <div class="keyword-item">
+                    <div class="keyword-header">
+                        <span class="keyword-term">${kw.keyword}</span>
+                        <span class="keyword-score">${kw.bm25_score || kw.score || 0}점</span>
+                    </div>
+                    <div class="keyword-details">
+                        <div><strong>빈도:</strong> ${kw.tf || 0}</div>
+                        <div><strong>관련도:</strong> ${kw.relevance || kw.rarity || '-'}</div>
+                        ${kw.idf_estimate ? `<div><strong>IDF:</strong> ${kw.idf_estimate}</div>` : ''}
+                        ${kw.position ? `<div><strong>위치:</strong> ${kw.position}</div>` : ''}
+                    </div>
+                    ${kw.reason ? `
+                        <div style="margin-top: 10px; color: #6c757d; font-size: 13px;">
+                            ${kw.reason}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+        
+        // 시맨틱 렌더링
+        function renderSemantic(semanticData) {
+            const container = document.getElementById('semanticContent');
+            
+            if (!semanticData) {
+                container.innerHTML = '<p>시맨틱 정보가 없습니다.</p>';
+                return;
+            }
+            
+            // v10 형식 처리 (객체 형태)
+            const topicMatch = semanticData.topic_match?.score ?? semanticData.topic_match ?? 0;
+            const topicMatchReason = semanticData.topic_match?.reason ?? semanticData.topic_match_reason ?? '-';
+            
+            const semanticRelevance = semanticData.semantic_relevance?.score ?? semanticData.semantic_relevance ?? 0;
+            const semanticRelevanceReason = semanticData.semantic_relevance?.reason ?? semanticData.semantic_relevance_reason ?? '-';
+            
+            const contextUnderstanding = semanticData.context_understanding?.score ?? semanticData.context_understanding ?? 0;
+            const contextUnderstandingReason = semanticData.context_understanding?.reason ?? semanticData.context_understanding_reason ?? '-';
+            
+            const infoCompleteness = semanticData.information_completeness?.score ?? semanticData.information_sufficiency ?? 0;
+            const infoCompletenessReason = semanticData.information_completeness?.reason ?? semanticData.information_sufficiency_reason ?? '-';
+            
+            const totalScore = semanticData.total_score ?? semanticData.total_semantic_score ?? 0;
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">📊 총 시맨틱 점수</div>
+                            <div class="recommendation-text" style="font-size: 24px; font-weight: bold; color: #667eea;">
+                                ${totalScore}점 / 48점
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="recommendation-title">🏷️ 쿼리 타입</div>
+                            <div class="recommendation-text">${semanticData.query_type || '-'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recommendation-section">
+                    <h3>📈 세부 평가 지표</h3>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-title">
+                            🎯 주제 일치도: ${topicMatch}/10
+                        </div>
+                        <div class="recommendation-text">${topicMatchReason}</div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-title">
+                            🔗 의미적 관련성: ${semanticRelevance}/10
+                        </div>
+                        <div class="recommendation-text">${semanticRelevanceReason}</div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-title">
+                            💡 맥락 이해도: ${contextUnderstanding}/10
+                        </div>
+                        <div class="recommendation-text">${contextUnderstandingReason}</div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="recommendation-title">
+                            ✅ 정보 충분성: ${infoCompleteness}/10
+                        </div>
+                        <div class="recommendation-text">${infoCompletenessReason}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (semanticData.strengths || semanticData.weaknesses) {
+                html += `
+                    <div class="recommendation-section" style="margin-top: 20px;">
+                        <h3>💪 강점 & 약점</h3>
+                        ${semanticData.strengths ? `
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">💪 강점</div>
+                                <div class="recommendation-text">${semanticData.strengths}</div>
+                            </div>
+                        ` : ''}
+                        ${semanticData.weaknesses ? `
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">⚠️ 약점</div>
+                                <div class="recommendation-text">${semanticData.weaknesses}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // 개선사항 렌더링
+        function renderImprovements(recommendations) {
+            const container = document.getElementById('improvementsList');
+            
+            if (!recommendations) {
+                container.innerHTML = '<p>개선 제안 정보가 없습니다.</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            if (recommendations.immediate_summary) {
+                html += `
+                    <div class="recommendation-section">
+                        <h3>📝 즉시 요약</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-text">${recommendations.immediate_summary}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 누락된 정보 (v10: missing_info)
+            const missingInfo = recommendations.missing_info || recommendations.missing_information || [];
+            if (missingInfo.length > 0) {
+                html += `
+                    <div class="recommendation-section">
+                        <h3>❌ 누락된 정보</h3>
+                        ${missingInfo.map(item => `
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">${item.item || item.info}</div>
+                                <div class="recommendation-text">
+                                    <strong>이유:</strong> ${item.reason}<br>
+                                    ${item.effect ? `<strong>효과:</strong> ${item.effect}` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // 실행 액션 (v10: action_items)
+            const actionItems = recommendations.action_items || recommendations.priority_actions || [];
+            if (actionItems.length > 0) {
+                html += `
+                    <div class="recommendation-section">
+                        <h3>🎯 실행 액션</h3>
+                        ${actionItems.map(action => `
+                            <div class="recommendation-item">
+                                <div class="recommendation-title">${action.action}</div>
+                                <div class="recommendation-text">
+                                    <strong>이유:</strong> ${action.reason}<br>
+                                    ${action.expected_result ? `<strong>예상 결과:</strong> ${action.expected_result}` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // 예상 점수 증가 (v10: expected_score_increase)
+            if (recommendations.expected_score_increase) {
+                const scoreIncrease = recommendations.expected_score_increase;
+                html += `
+                    <div class="recommendation-section">
+                        <h3>📈 예상 점수 증가</h3>
+                        <div class="recommendation-item">
+                            <div class="recommendation-text">
+                                <strong>BM25:</strong> +${scoreIncrease.bm25 || 0}점<br>
+                                <strong>시맨틱:</strong> +${scoreIncrease.semantic || 0}점<br>
+                                <strong>FAQ:</strong> +${scoreIncrease.faq || 0}점
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html || '<p>개선 제안 정보가 없습니다.</p>';
+        }
+        
+        // 탭 전환
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+        
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        // 점수 표시 업데이트
+        document.getElementById('scoreRange').addEventListener('input', (e) => {
+            document.getElementById('scoreDisplay').textContent = e.target.value + '점 이상';
+        });
+        
+        // 검색 입력 시 자동 적용
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        // 초기화
+        window.addEventListener('load', loadData);
+    </script>
+</body>
+</html>
