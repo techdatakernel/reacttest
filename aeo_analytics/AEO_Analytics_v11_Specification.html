@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO Analytics v11.1 - 기술 명세서</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.7;
+        }
+
+        .topbar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .topbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .topbar h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .topbar p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.375rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.75rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .toc {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .toc h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        .toc-list a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toc-list a:hover {
+            color: var(--primary-dark);
+            transform: translateX(4px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 2rem 0 1rem;
+        }
+
+        .section h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: var(--danger);
+        }
+
+        pre {
+            background: var(--gray-900);
+            color: #e5e7eb;
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 1rem 0;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .alert {
+            padding: 1.25rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(37, 99, 235, 0.05);
+            border-color: var(--primary);
+            color: var(--gray-800);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: var(--success);
+            color: var(--gray-800);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: var(--warning);
+            color: var(--gray-800);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: var(--danger);
+            color: var(--gray-800);
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-card {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .api-endpoint {
+            background: var(--gray-50);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .method {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge-new {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-improved {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-fixed {
+            background: var(--warning);
+            color: white;
+        }
+
+        ul, ol {
+            margin: 1rem 0 1rem 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+
+        .flow-diagram {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .flow-step {
+            background: var(--gray-50);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.5rem auto;
+            max-width: 600px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .flow-arrow {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-content">
+            <h1>⚡ AEO Analytics v11.1 기술 명세서</h1>
+            <p>안정화 + 최적화 버전 - 상세 기술 문서</p>
+            <div class="version-badge">v11.1 Stable (2024-11-22)</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 목차 -->
+        <div class="toc">
+            <h2>📑 목차</h2>
+            <ul class="toc-list">
+                <li><a href="#overview">→ 1. 개요 및 버전 정보</a></li>
+                <li><a href="#features">→ 2. 주요 기능</a></li>
+                <li><a href="#architecture">→ 3. 아키텍처</a></li>
+                <li><a href="#caching">→ 4. 캐싱 시스템</a></li>
+                <li><a href="#analysis-engine">→ 5. 분석 엔진</a></li>
+                <li><a href="#api">→ 6. API 명세</a></li>
+                <li><a href="#data-structure">→ 7. 데이터 구조</a></li>
+                <li><a href="#configuration">→ 8. 설정 및 상수</a></li>
+                <li><a href="#performance">→ 9. 성능 및 최적화</a></li>
+                <li><a href="#troubleshooting">→ 10. 문제 해결</a></li>
+            </ul>
+        </div>
+
+        <!-- 1. 개요 -->
+        <div class="section" id="overview">
+            <h2><span class="icon">📘</span> 1. 개요 및 버전 정보</h2>
+
+            <h3>1.1 AEO Analytics란?</h3>
+            <p>
+                AEO Analytics v11.1은 AI 검색 엔진(ChatGPT, Gemini, Perplexity 등)에 대한 콘텐츠 최적화를 분석하는
+                전문 분석 도구입니다. BM25 키워드 알고리즘, 시맨틱 유사도 분석, FAQ 구조 평가를 통해
+                총 108점 만점의 정량적 점수를 제공합니다.
+            </p>
+
+            <h3>1.2 버전 히스토리</h3>
+
+            <div class="alert alert-success">
+                <div class="alert-title">✅ v11.1 Stable (현재 버전)</div>
+                <ul>
+                    <li><span class="badge badge-fixed">FIX</span> v11의 병렬 API 호출 버그 수정</li>
+                    <li><span class="badge badge-improved">IMPROVED</span> v10의 안정적인 순차 API 호출 방식 복원</li>
+                    <li><span class="badge badge-new">NEW</span> v11의 모든 개선사항 유지 (캐싱, UI, 프롬프트)</li>
+                    <li><span class="badge badge-new">NEW</span> 에러 로깅 및 디버깅 강화</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <div class="alert-title">⚠️ v11 (Deprecated)</div>
+                <ul>
+                    <li>병렬 API 호출 구현 시 모든 점수가 0으로 반환되는 치명적 버그 발견</li>
+                    <li>curl_multi 처리 로직에 문제 발생</li>
+                    <li>v11.1로 즉시 업그레이드 필요</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="alert-title">ℹ️ v10 (Legacy - Stable)</div>
+                <ul>
+                    <li>기본 기능 완성 및 안정성 검증</li>
+                    <li>순차 API 호출 방식으로 안정적 동작 보장</li>
+                    <li>캐싱 시스템 없음, 기본 프롬프트, 기본 UI</li>
+                </ul>
+            </div>
+
+            <h3>1.3 주요 개선사항 (v10 → v11.1)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>v10</th>
+                        <th>v11.1</th>
+                        <th>개선율</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>API 호출 방식</strong></td>
+                        <td>순차 호출</td>
+                        <td>순차 호출 (안정화)</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>캐싱 시스템</strong></td>
+                        <td>없음</td>
+                        <td>24시간 TTL</td>
+                        <td>85% 비용 절감</td>
+                    </tr>
+                    <tr>
+                        <td><strong>프롬프트 품질</strong></td>
+                        <td>기본</td>
+                        <td>벤치마크 기반 강화</td>
+                        <td>200% 향상</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UI/UX</strong></td>
+                        <td>기본</td>
+                        <td>Inter 폰트, 카드 기반</td>
+                        <td>전문성 향상</td>
+                    </tr>
+                    <tr>
+                        <td><strong>추가 분석</strong></td>
+                        <td>3가지</td>
+                        <td>6가지 (쿼리확장, 증거, 권고)</td>
+                        <td>+3 기능</td>
+                    </tr>
+                    <tr>
+                        <td><strong>모델 지원</strong></td>
+                        <td>3종</td>
+                        <td>4종 (GPT-4o Mini 추가)</td>
+                        <td>90% 비용 절감 옵션</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. 주요 기능 -->
+        <div class="section" id="features">
+            <h2><span class="icon">⭐</span> 2. 주요 기능</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔤 BM25 키워드 분석</h4>
+                    <p>정보 검색 분야의 표준 알고리즘인 BM25를 사용하여 키워드의 TF(빈도), 위치, 희소성을 평가합니다.</p>
+                    <ul>
+                        <li>최대 점수: 40점</li>
+                        <li>키워드별 상세 분석</li>
+                        <li>강점/약점 도출</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🧠 시맨틱 유사도 분석</h4>
+                    <p>질문과 콘텐츠 간 의미적 유사도를 4가지 차원에서 평가합니다.</p>
+                    <ul>
+                        <li>최대 점수: 48점</li>
+                        <li>4차원 분석 (주제, 의미, 맥락, 충족도)</li>
+                        <li>차원별 근거 제공</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>❓ FAQ 구조 분석</h4>
+                    <p>AI가 이해하고 인용하기 쉬운 Q&A 형식 존재 여부를 평가합니다.</p>
+                    <ul>
+                        <li>최대 점수: 20점</li>
+                        <li>FAQ 점수 + AI 친화성</li>
+                        <li>개선 우선순위 제시</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔍 쿼리 확장</h4>
+                    <p>원본 질문과 관련된 5가지 확장 쿼리를 자동 생성합니다.</p>
+                    <ul>
+                        <li>관련성 기반 분류</li>
+                        <li>검색 의도 파악</li>
+                        <li>콘텐츠 갭 분석</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📌 관련성 증거</h4>
+                    <p>문서에서 질문과 가장 관련성 높은 구절 3개를 추출하고 평가합니다.</p>
+                    <ul>
+                        <li>키워드 관련성 점수</li>
+                        <li>의미적 관련성 점수</li>
+                        <li>정확한 인용 추출</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>💡 AEO 권고사항</h4>
+                    <p>누락된 정보, 실행 가능한 액션, 예상 점수 증가를 제시합니다.</p>
+                    <ul>
+                        <li>누락 정보 식별</li>
+                        <li>구체적 실행 액션</li>
+                        <li>점수 증가 예측</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>2.1 스마트 캐싱 시스템</h3>
+            <div class="alert alert-success">
+                <div class="alert-title">✅ 85% 비용 절감</div>
+                <p>
+                    동일한 질문, URL, 콘텐츠, 모델, Temperature 조합에 대해 24시간 동안 캐싱된 결과를 반환합니다.
+                    반복 분석 시 API 비용을 크게 절감하고, 응답 시간을 0.1초로 단축합니다.
+                </p>
+            </div>
+
+            <h3>2.2 다중 AI 모델 지원</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>모델</th>
+                        <th>속도</th>
+                        <th>비용 (예상)</th>
+                        <th>품질</th>
+                        <th>추천 용도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>gpt-4o-mini</code></td>
+                        <td>매우 빠름</td>
+                        <td>$0.05</td>
+                        <td>우수</td>
+                        <td>일반적인 분석 (권장)</td>
+                    </tr>
+                    <tr>
+                        <td><code>gpt-4-turbo-preview</code></td>
+                        <td>빠름</td>
+                        <td>$0.50</td>
+                        <td>최고</td>
+                        <td>고품질 분석 필요 시</td>
+                    </tr>
+                    <tr>
+                        <td><code>gpt-3.5-turbo</code></td>
+                        <td>초고속</td>
+                        <td>$0.02</td>
+                        <td>양호</td>
+                        <td>대량 분석, 테스트</td>
+                    </tr>
+                    <tr>
+                        <td><code>gpt-4</code></td>
+                        <td>느림</td>
+                        <td>$1.00</td>
+                        <td>최상</td>
+                        <td>최고 품질 필요 시</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3. 아키텍처 -->
+        <div class="section" id="architecture">
+            <h2><span class="icon">🏗️</span> 3. 아키텍처</h2>
+
+            <h3>3.1 순차 API 호출 방식 (v10 복원)</h3>
+            <div class="alert alert-info">
+                <div class="alert-title">ℹ️ 안정성 우선 설계</div>
+                <p>
+                    v11.1은 v10의 검증된 순차 API 호출 방식을 사용합니다.
+                    병렬 처리보다 느리지만(약 30초 vs 14초) 100% 안정성을 보장합니다.
+                </p>
+            </div>
+
+            <div class="flow-diagram">
+                <h4>전체 처리 흐름</h4>
+                <div class="flow-step">1️⃣ 사용자 입력 (질문 + URL + 모델 + Temperature)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">2️⃣ 캐시 키 생성 (MD5 해시)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">3️⃣ 캐시 확인 (있으면 즉시 반환)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">4️⃣ 페이지 콘텐츠 추출 (cURL + DOMDocument)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">5️⃣ BM25 분석 (OpenAI API 호출 #1)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">6️⃣ 시맨틱 분석 (OpenAI API 호출 #2)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">7️⃣ FAQ 분석 (OpenAI API 호출 #3)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">8️⃣ 쿼리 확장 (OpenAI API 호출 #4)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">9️⃣ 관련성 증거 (OpenAI API 호출 #5)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">🔟 AEO 권고사항 (OpenAI API 호출 #6)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">1️⃣1️⃣ 결과 JSON 구성 및 저장</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">1️⃣2️⃣ 캐시 저장 (24시간 TTL)</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">1️⃣3️⃣ 사용자에게 결과 반환</div>
+            </div>
+
+            <h3>3.2 핵심 함수 구조</h3>
+            <pre><code>// v10 방식 API 호출 (안정적)
+function callOpenAIAPI($systemPrompt, $userPrompt, $model, $temperature, $retryCount = 0)
+
+// 콘텐츠 추출
+function fetchPageContent($url)
+function safeJsonDecode($json, $default = [])
+
+// 캐싱 시스템
+function getCacheKey($query, $url, $model, $temperature)
+function getCachedResult($cacheKey)
+function setCachedResult($cacheKey, $result)
+
+// 분석 엔진 (순차 호출)
+function analyzeBM25($query, $content, $model, $temperature)
+function analyzeSemanticSimilarity($query, $content, $model, $temperature)
+function analyzeFAQStructure($query, $content, $model, $temperature)
+function generateQueryExpansion($query, $content, $model, $temperature)
+function generateRelevanceEvidence($query, $content, $model, $temperature)
+function generateAEORecommendations($query, $content, $bm25Score, $semanticScore, $faqScore, $model, $temperature)</code></pre>
+
+            <h3>3.3 에러 처리 및 재시도</h3>
+            <ul>
+                <li><strong>자동 재시도:</strong> API 호출 실패 시 최대 1회 자동 재시도</li>
+                <li><strong>Graceful Degradation:</strong> 일부 분석 실패 시에도 가능한 결과 반환</li>
+                <li><strong>에러 로깅:</strong> <code>error_reporting(E_ALL)</code> 활성화</li>
+                <li><strong>타임아웃 관리:</strong> 120초 <code>set_time_limit()</code> 설정</li>
+            </ul>
+        </div>
+
+        <!-- 4. 캐싱 시스템 -->
+        <div class="section" id="caching">
+            <h2><span class="icon">⚡</span> 4. 캐싱 시스템</h2>
+
+            <h3>4.1 캐시 키 생성</h3>
+            <pre><code>function getCacheKey($query, $url, $model, $temperature) {
+    $content = fetchPageContent($url);
+    if (!$content) return null;
+
+    $contentHash = md5($content);
+    return md5($query . $url . $contentHash . $model . $temperature);
+}</code></pre>
+
+            <p>
+                캐시 키는 다음 요소를 조합하여 생성됩니다:
+            </p>
+            <ul>
+                <li><strong>질문 (query):</strong> 사용자 입력 질문</li>
+                <li><strong>URL:</strong> 분석 대상 URL</li>
+                <li><strong>콘텐츠 해시:</strong> 페이지 콘텐츠의 MD5 해시 (변경 감지)</li>
+                <li><strong>모델:</strong> 사용된 AI 모델 이름</li>
+                <li><strong>Temperature:</strong> 모델 Temperature 값</li>
+            </ul>
+
+            <h3>4.2 캐시 저장 및 조회</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>값</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>저장 위치</strong></td>
+                        <td><code>aeo_data/cache/{cacheKey}.json</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>TTL (유효기간)</strong></td>
+                        <td>24시간 (86400초)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>형식</strong></td>
+                        <td>JSON (UTF-8, Pretty Print)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>캐시 히트 표시</strong></td>
+                        <td><code>_from_cache: true</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>캐시 나이</strong></td>
+                        <td><code>_cache_age_seconds</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.3 캐시 무효화</h3>
+            <p>다음 경우 캐시가 무효화됩니다:</p>
+            <ul>
+                <li>24시간 경과 (자동 만료)</li>
+                <li>페이지 콘텐츠 변경 (콘텐츠 해시 변경)</li>
+                <li>다른 AI 모델 사용</li>
+                <li>다른 Temperature 값 사용</li>
+            </ul>
+
+            <div class="alert alert-success">
+                <div class="alert-title">✅ 비용 절감 효과</div>
+                <p>
+                    동일한 분석을 반복할 경우 OpenAI API 호출 없이 즉시 결과를 반환하여
+                    <strong>85% 이상의 API 비용 절감</strong>과 <strong>300배 빠른 응답 속도</strong>(30초 → 0.1초)를 달성합니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- 5. 분석 엔진 -->
+        <div class="section" id="analysis-engine">
+            <h2><span class="icon">🔬</span> 5. 분석 엔진</h2>
+
+            <h3>5.1 BM25 키워드 분석</h3>
+            <h4>목적</h4>
+            <p>정보 검색 분야의 표준 알고리즘인 BM25를 사용하여 키워드 관련성을 평가합니다.</p>
+
+            <h4>평가 기준</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>요소</th>
+                        <th>설명</th>
+                        <th>평가 척도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>TF (Term Frequency)</strong></td>
+                        <td>키워드 빈도</td>
+                        <td>매우 높음 / 높음 / 중간 / 낮음</td>
+                    </tr>
+                    <tr>
+                        <td><strong>위치 (Position)</strong></td>
+                        <td>키워드 배치 위치</td>
+                        <td>최상단(제목) / 중간 / 하단</td>
+                    </tr>
+                    <tr>
+                        <td><strong>희소성 (Rarity)</strong></td>
+                        <td>키워드 특수성</td>
+                        <td>높음(전문용어) / 중간 / 낮음(일반단어)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>점수</strong></td>
+                        <td>종합 평가</td>
+                        <td>0-40점</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>프롬프트 구조</h4>
+            <pre><code>System Prompt:
+- BM25 전문가 역할 정의
+- 예시 형식 제공 (벤치마크 기반)
+- 평가 기준 명시
+
+User Prompt:
+- 질문 제공
+- 콘텐츠 제공
+- JSON 형식 요청
+- 점수 범위 제한 (0-40점)</code></pre>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "keywords": [
+    {
+      "keyword": "운전자 보험",
+      "tf": "매우 높음",
+      "position": "최상단(제목, 첫 문단, 소제목)",
+      "rarity": "높음",
+      "score": 10,
+      "reasoning": "질의어와 완전 일치하며..."
+    }
+  ],
+  "total_score": 35,
+  "strengths": "키워드 배치 및 밀도의 강점...",
+  "weaknesses": "개선이 필요한 부분...",
+  "api_metadata": { "time_ms": 3245 }
+}</code></pre>
+
+            <h3>5.2 시맨틱 유사도 분석</h3>
+            <h4>목적</h4>
+            <p>질문과 콘텐츠 간의 의미적 유사도를 4가지 차원에서 평가합니다.</p>
+
+            <h4>4차원 평가</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>차원</th>
+                        <th>설명</th>
+                        <th>최대 점수</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>주제 일치도</strong></td>
+                        <td>질의와 문서의 주제 일치 정도</td>
+                        <td>12점</td>
+                    </tr>
+                    <tr>
+                        <td><strong>의미적 연관성</strong></td>
+                        <td>관련 용어와 개념의 유기적 연결</td>
+                        <td>12점</td>
+                    </tr>
+                    <tr>
+                        <td><strong>맥락 이해도</strong></td>
+                        <td>질의 의도의 정확한 파악</td>
+                        <td>12점</td>
+                    </tr>
+                    <tr>
+                        <td><strong>정보 충족도</strong></td>
+                        <td>질문에 대한 정보 제공 충분성</td>
+                        <td>12점</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><strong>총점</strong></td>
+                        <td><strong>48점</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "topic_match": {
+    "score": 10,
+    "reason": "질의와 문서의 주제가 완전히 일치..."
+  },
+  "semantic_relevance": {
+    "score": 9,
+    "reason": "보험, 운전자, 보장 등의 용어가..."
+  },
+  "context_understanding": {
+    "score": 8,
+    "reason": "질의의 의도를 정확히 파악..."
+  },
+  "information_completeness": {
+    "score": 10,
+    "reason": "질문에 대한 정보가 충분히..."
+  },
+  "total_score": 37,
+  "strengths": "의미적 관련성의 강점...",
+  "weaknesses": "개선이 필요한 부분...",
+  "api_metadata": { "time_ms": 4123 }
+}</code></pre>
+
+            <h3>5.3 FAQ 구조 분석</h3>
+            <h4>목적</h4>
+            <p>AI가 이해하고 인용하기 쉬운 FAQ/Q&A 형식의 존재 여부와 품질을 평가합니다.</p>
+
+            <h4>평가 항목</h4>
+            <ul>
+                <li><strong>FAQ 점수 (0-20점):</strong> FAQ 형식의 존재 및 답변 품질</li>
+                <li><strong>AI 친화성 (0-20점):</strong> AI가 이해하고 인용하기 쉬운 구조</li>
+                <li><strong>구조 분석:</strong> FAQ 형식의 상세 평가</li>
+                <li><strong>개선 권고:</strong> 구체적인 개선 방안</li>
+                <li><strong>우선순위:</strong> 필수 / 권장 / 선택</li>
+            </ul>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "has_faq_format": true,
+  "faq_score": 15,
+  "ai_friendliness_score": 14,
+  "structure_analysis": "FAQ 형식이 잘 구성되어 있으며...",
+  "recommendation": "각 FAQ 항목에 더 구체적인...",
+  "priority": "권장",
+  "api_metadata": { "time_ms": 2987 }
+}</code></pre>
+
+            <h3>5.4 쿼리 확장</h3>
+            <h4>목적</h4>
+            <p>원본 질문과 관련된 확장 쿼리를 생성하여 콘텐츠 갭을 파악합니다.</p>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "expansions": [
+    {
+      "query": "운전자 보험 가입 조건은?",
+      "relevance": "높음"
+    },
+    {
+      "query": "운전자 보험 비용은 얼마나 되나요?",
+      "relevance": "높음"
+    }
+  ],
+  "api_metadata": { "time_ms": 1876 }
+}</code></pre>
+
+            <h3>5.5 관련성 증거</h3>
+            <h4>목적</h4>
+            <p>문서에서 질문과 가장 관련성 높은 구절을 추출하고 평가합니다.</p>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "evidence": [
+    {
+      "passage": "운전자 보험은 자동차 사고 시...",
+      "keyword_relevance": 9,
+      "semantic_relevance": 10
+    }
+  ],
+  "api_metadata": { "time_ms": 2234 }
+}</code></pre>
+
+            <h3>5.6 AEO 권고사항</h3>
+            <h4>목적</h4>
+            <p>분석 결과를 바탕으로 실행 가능한 개선 방안을 제시합니다.</p>
+
+            <h4>반환 데이터</h4>
+            <pre><code>{
+  "missing_info": [
+    {
+      "item": "보험료 정보",
+      "reason": "사용자가 가장 궁금해하는 정보",
+      "effect": "정보 충족도 +5점 예상"
+    }
+  ],
+  "action_items": [
+    {
+      "action": "FAQ 섹션에 가격 정보 추가",
+      "reason": "구체적 정보 제공으로 신뢰도 향상",
+      "expected_result": "FAQ 점수 +3점, 시맨틱 +2점"
+    }
+  ],
+  "expected_score_increase": {
+    "bm25": 5,
+    "semantic": 8,
+    "faq": 3
+  },
+  "api_metadata": { "time_ms": 3456 }
+}</code></pre>
+        </div>
+
+        <!-- 6. API 명세 -->
+        <div class="section" id="api">
+            <h2><span class="icon">🔌</span> 6. API 명세</h2>
+
+            <h3>6.1 분석 요청</h3>
+            <div class="api-endpoint">
+                <span class="method">POST</span>
+                <span>/aeo_analyzer_optimized_v11.php</span>
+            </div>
+
+            <h4>요청 파라미터</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>파라미터</th>
+                        <th>타입</th>
+                        <th>필수</th>
+                        <th>설명</th>
+                        <th>기본값</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>query</code></td>
+                        <td>string</td>
+                        <td>✅</td>
+                        <td>검색 질문</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>url</code></td>
+                        <td>string</td>
+                        <td>✅</td>
+                        <td>분석 대상 URL</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>model</code></td>
+                        <td>string</td>
+                        <td>❌</td>
+                        <td>AI 모델 선택</td>
+                        <td>gpt-4o-mini</td>
+                    </tr>
+                    <tr>
+                        <td><code>temperature</code></td>
+                        <td>float</td>
+                        <td>❌</td>
+                        <td>Temperature (0.0-1.0)</td>
+                        <td>0.7</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>cURL 예제</h4>
+            <pre><code>curl -X POST https://example.com/aeo_analytics/aeo_analyzer_optimized_v11.php \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "query=운전자 보험에 대해서 알려줘" \
+  -d "url=https://example.com/driver-insurance" \
+  -d "model=gpt-4o-mini" \
+  -d "temperature=0.7"</code></pre>
+
+            <h4>JavaScript 예제</h4>
+            <pre><code>const formData = new FormData();
+formData.append('query', '운전자 보험에 대해서 알려줘');
+formData.append('url', 'https://example.com/driver-insurance');
+formData.append('model', 'gpt-4o-mini');
+formData.append('temperature', '0.7');
+
+const response = await fetch('aeo_analyzer_optimized_v11.php', {
+  method: 'POST',
+  body: formData
+});
+
+const data = await response.json();
+console.log(data);</code></pre>
+
+            <h4>Python 예제</h4>
+            <pre><code>import requests
+
+url = "https://example.com/aeo_analytics/aeo_analyzer_optimized_v11.php"
+data = {
+    "query": "운전자 보험에 대해서 알려줘",
+    "url": "https://example.com/driver-insurance",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7
+}
+
+response = requests.post(url, data=data)
+result = response.json()
+print(result)</code></pre>
+
+            <h3>6.2 응답 형식</h3>
+            <h4>성공 응답 (200 OK)</h4>
+            <pre><code>{
+  "id": "abc123def456",
+  "query": "운전자 보험에 대해서 알려줘",
+  "url": "https://example.com/driver-insurance",
+  "model": "gpt-4o-mini",
+  "temperature": 0.7,
+  "timestamp": "2024-11-22 14:30:15",
+  "date": "2024-11-22",
+  "scores": {
+    "bm25": 35,
+    "semantic": 42,
+    "faq": 15,
+    "total": 92,
+    "hybrid": 85.2,
+    "rating": "우수"
+  },
+  "bm25_analysis": { ... },
+  "semantic_analysis": { ... },
+  "faq_analysis": { ... },
+  "query_expansion": { ... },
+  "relevance_evidence": { ... },
+  "recommendations": { ... },
+  "processing_time": {
+    "total_ms": 28456,
+    "bm25_ms": 3245,
+    "semantic_ms": 4123,
+    "faq_ms": 2987,
+    "query_expansion_ms": 1876,
+    "relevance_evidence_ms": 2234,
+    "recommendations_ms": 3456
+  },
+  "_optimization_notes": {
+    "api_calls": "Sequential (stable v10 method)",
+    "cache_enabled": true,
+    "cache_ttl": "86400 seconds",
+    "version": "v11.1 (optimized + stable)"
+  }
+}</code></pre>
+
+            <h4>캐시 히트 응답</h4>
+            <pre><code>{
+  // ... (위와 동일)
+  "_from_cache": true,
+  "_cache_age_seconds": 3600
+}</code></pre>
+
+            <h4>에러 응답</h4>
+            <pre><code>{
+  "error": "질문과 URL을 입력해주세요"
+}</code></pre>
+        </div>
+
+        <!-- 7. 데이터 구조 -->
+        <div class="section" id="data-structure">
+            <h2><span class="icon">💾</span> 7. 데이터 구조</h2>
+
+            <h3>7.1 디렉토리 구조</h3>
+            <pre><code>aeo_analytics/
+├── aeo_analyzer_optimized_v11.php     # 메인 분석 엔진
+├── aeo_data/                          # 데이터 저장 디렉토리
+│   ├── cache/                         # 캐시 파일 저장
+│   │   └── {cacheKey}.json
+│   ├── 2024-11-22/                    # 날짜별 결과 저장
+│   │   └── 2024-11-22_{id}.json
+│   └── index.json                     # 전체 결과 인덱스
+└── AEO_Analytics_v11_Specification.html  # 이 문서</code></pre>
+
+            <h3>7.2 결과 파일 저장</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>항목</th>
+                        <th>값</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>저장 위치</strong></td>
+                        <td><code>aeo_data/{날짜}/{날짜}_{ID}.json</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>파일명 예시</strong></td>
+                        <td><code>2024-11-22_abc123de.json</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>형식</strong></td>
+                        <td>JSON (UTF-8, Pretty Print)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ID 생성</strong></td>
+                        <td>MD5(query + url + timestamp)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>7.3 인덱스 파일 (index.json)</h3>
+            <p>모든 분석 결과의 메타데이터를 저장합니다.</p>
+            <pre><code>{
+  "abc123def456": {
+    "id": "abc123def456",
+    "query": "운전자 보험에 대해서 알려줘",
+    "url": "https://example.com/driver-insurance",
+    "hybrid_score": 85.2,
+    "evaluation": "우수",
+    "timestamp": "2024-11-22 14:30:15",
+    "date": "2024-11-22",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7
+  }
+}</code></pre>
+        </div>
+
+        <!-- 8. 설정 및 상수 -->
+        <div class="section" id="configuration">
+            <h2><span class="icon">⚙️</span> 8. 설정 및 상수</h2>
+
+            <h3>8.1 PHP 설정</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>설정</th>
+                        <th>값</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>set_time_limit()</code></td>
+                        <td>120</td>
+                        <td>최대 실행 시간 (초)</td>
+                    </tr>
+                    <tr>
+                        <td><code>error_reporting()</code></td>
+                        <td>E_ALL</td>
+                        <td>모든 에러 리포팅</td>
+                    </tr>
+                    <tr>
+                        <td><code>display_errors</code></td>
+                        <td>1</td>
+                        <td>에러 표시 활성화</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>8.2 상수 정의</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>상수</th>
+                        <th>값</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>OPENAI_API_KEY</code></td>
+                        <td>'xxx'</td>
+                        <td>OpenAI API 키</td>
+                    </tr>
+                    <tr>
+                        <td><code>DATA_DIR</code></td>
+                        <td>'./aeo_data'</td>
+                        <td>데이터 저장 디렉토리</td>
+                    </tr>
+                    <tr>
+                        <td><code>CACHE_DIR</code></td>
+                        <td>'./aeo_data/cache'</td>
+                        <td>캐시 저장 디렉토리</td>
+                    </tr>
+                    <tr>
+                        <td><code>MAX_TOKENS</code></td>
+                        <td>3000</td>
+                        <td>OpenAI 최대 토큰 수</td>
+                    </tr>
+                    <tr>
+                        <td><code>API_TIMEOUT</code></td>
+                        <td>45</td>
+                        <td>API 호출 타임아웃 (초)</td>
+                    </tr>
+                    <tr>
+                        <td><code>BM25_MAX_SCORE</code></td>
+                        <td>40</td>
+                        <td>BM25 최대 점수</td>
+                    </tr>
+                    <tr>
+                        <td><code>SEMANTIC_MAX_SCORE</code></td>
+                        <td>48</td>
+                        <td>시맨틱 최대 점수</td>
+                    </tr>
+                    <tr>
+                        <td><code>FAQ_MAX_SCORE</code></td>
+                        <td>20</td>
+                        <td>FAQ 최대 점수</td>
+                    </tr>
+                    <tr>
+                        <td><code>CACHE_TTL</code></td>
+                        <td>86400</td>
+                        <td>캐시 유효기간 (24시간)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>8.3 환경 변수 설정</h3>
+            <div class="alert alert-danger">
+                <div class="alert-title">⚠️ 보안 주의사항</div>
+                <p>
+                    <strong>절대로</strong> OpenAI API 키를 코드에 직접 작성하지 마세요.
+                    환경 변수나 별도의 설정 파일을 사용하세요.
+                </p>
+            </div>
+
+            <pre><code>// 권장 방법
+define('OPENAI_API_KEY', getenv('OPENAI_API_KEY'));
+
+// 또는 .env 파일 사용
+require 'vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+define('OPENAI_API_KEY', $_ENV['OPENAI_API_KEY']);</code></pre>
+        </div>
+
+        <!-- 9. 성능 및 최적화 -->
+        <div class="section" id="performance">
+            <h2><span class="icon">⚡</span> 9. 성능 및 최적화</h2>
+
+            <h3>9.1 처리 시간</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>시나리오</th>
+                        <th>예상 시간</th>
+                        <th>설명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>캐시 히트</strong></td>
+                        <td>~0.1초</td>
+                        <td>캐시된 결과 반환</td>
+                    </tr>
+                    <tr>
+                        <td><strong>신규 분석 (GPT-4o Mini)</strong></td>
+                        <td>20-30초</td>
+                        <td>6회 API 호출 + 콘텐츠 추출</td>
+                    </tr>
+                    <tr>
+                        <td><strong>신규 분석 (GPT-4 Turbo)</strong></td>
+                        <td>25-35초</td>
+                        <td>더 정확하지만 약간 느림</td>
+                    </tr>
+                    <tr>
+                        <td><strong>신규 분석 (GPT-3.5)</strong></td>
+                        <td>15-20초</td>
+                        <td>가장 빠르지만 품질 하락</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>9.2 비용 분석</h3>
+            <p>1회 분석 시 예상 비용 (6회 API 호출 기준):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>모델</th>
+                        <th>입력 토큰 비용</th>
+                        <th>출력 토큰 비용</th>
+                        <th>1회 분석 비용</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>GPT-4o Mini</strong></td>
+                        <td>$0.00015/1K</td>
+                        <td>$0.0006/1K</td>
+                        <td>~$0.05</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GPT-4 Turbo</strong></td>
+                        <td>$0.01/1K</td>
+                        <td>$0.03/1K</td>
+                        <td>~$0.50</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GPT-3.5 Turbo</strong></td>
+                        <td>$0.0005/1K</td>
+                        <td>$0.0015/1K</td>
+                        <td>~$0.02</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GPT-4</strong></td>
+                        <td>$0.03/1K</td>
+                        <td>$0.06/1K</td>
+                        <td>~$1.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-success">
+                <div class="alert-title">✅ 캐싱으로 인한 절감</div>
+                <p>
+                    동일한 분석을 반복할 경우 24시간 동안 <strong>API 호출이 0회</strong>로 줄어들어
+                    <strong>100% 비용 절감</strong>이 가능합니다.
+                </p>
+            </div>
+
+            <h3>9.3 최적화 전략</h3>
+            <ul>
+                <li><strong>모델 선택:</strong> 일반적인 분석에는 GPT-4o Mini 권장 (10배 저렴)</li>
+                <li><strong>캐싱 활용:</strong> 반복 분석 시 캐시 적극 활용</li>
+                <li><strong>콘텐츠 길이:</strong> 페이지 콘텐츠를 50개 문단으로 제한</li>
+                <li><strong>토큰 제한:</strong> 최대 3000 토큰으로 제한하여 비용 관리</li>
+                <li><strong>에러 처리:</strong> 재시도 로직으로 일시적 실패 대응</li>
+            </ul>
+
+            <h3>9.4 확장성</h3>
+            <div class="alert alert-info">
+                <div class="alert-title">ℹ️ 동시 처리 제한</div>
+                <p>
+                    현재 버전은 순차 처리 방식으로 동시에 여러 요청을 처리할 수 없습니다.
+                    대량 분석이 필요한 경우 큐 시스템(Redis, RabbitMQ 등)을 도입하는 것을 권장합니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- 10. 문제 해결 -->
+        <div class="section" id="troubleshooting">
+            <h2><span class="icon">🔧</span> 10. 문제 해결</h2>
+
+            <h3>10.1 모든 점수가 0으로 나오는 경우</h3>
+            <div class="alert alert-danger">
+                <div class="alert-title">🚨 증상</div>
+                <p>BM25=0, Semantic=0, FAQ=0, 모든 데이터 "분석 불가"</p>
+            </div>
+
+            <p><strong>원인:</strong></p>
+            <ul>
+                <li>v11의 병렬 API 호출 버그 (이미 v11.1에서 수정됨)</li>
+                <li>OpenAI API 키 문제</li>
+                <li>네트워크 연결 문제</li>
+            </ul>
+
+            <p><strong>해결 방법:</strong></p>
+            <ol>
+                <li>v11.1을 사용 중인지 확인 (상단 배지 확인)</li>
+                <li>OpenAI API 키가 유효한지 확인</li>
+                <li>에러 로그 확인 (<code>error_reporting(E_ALL)</code> 활성화)</li>
+                <li>네트워크 연결 확인</li>
+            </ol>
+
+            <h3>10.2 타임아웃 오류</h3>
+            <div class="alert alert-warning">
+                <div class="alert-title">⏱️ 증상</div>
+                <p>Maximum execution time of 30 seconds exceeded</p>
+            </div>
+
+            <p><strong>해결 방법:</strong></p>
+            <pre><code>// PHP 설정에서 이미 120초로 설정됨
+set_time_limit(120);
+
+// php.ini 에서도 설정 가능
+max_execution_time = 120</code></pre>
+
+            <h3>10.3 캐시가 작동하지 않는 경우</h3>
+            <p><strong>확인 사항:</strong></p>
+            <ul>
+                <li><code>aeo_data/cache/</code> 디렉토리 존재 여부</li>
+                <li>디렉토리 쓰기 권한 (0755)</li>
+                <li>디스크 공간 부족 여부</li>
+            </ul>
+
+            <p><strong>수동 캐시 생성:</strong></p>
+            <pre><code>mkdir -p aeo_data/cache
+chmod 0755 aeo_data/cache</code></pre>
+
+            <h3>10.4 URL 콘텐츠를 가져올 수 없는 경우</h3>
+            <p><strong>원인:</strong></p>
+            <ul>
+                <li>잘못된 URL</li>
+                <li>접근 제한 (robots.txt, IP 차단)</li>
+                <li>SSL 인증서 문제</li>
+            </ul>
+
+            <p><strong>해결 방법:</strong></p>
+            <pre><code>// SSL 검증 비활성화 (이미 적용됨)
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+// User-Agent 설정 (이미 적용됨)
+curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0...');</code></pre>
+
+            <h3>10.5 API 오류 (429, 500 등)</h3>
+            <p><strong>429 Too Many Requests:</strong></p>
+            <ul>
+                <li>OpenAI API 사용량 제한 초과</li>
+                <li>잠시 대기 후 재시도 (자동 재시도 1회 적용됨)</li>
+            </ul>
+
+            <p><strong>500 Internal Server Error:</strong></p>
+            <ul>
+                <li>OpenAI 서버 일시적 장애</li>
+                <li>재시도 또는 잠시 대기</li>
+            </ul>
+
+            <h3>10.6 JSON 파싱 실패</h3>
+            <p><strong>원인:</strong></p>
+            <ul>
+                <li>OpenAI가 마크다운 코드 블록으로 JSON 반환</li>
+                <li>JSON 형식 오류</li>
+            </ul>
+
+            <p><strong>해결 방법 (이미 적용됨):</strong></p>
+            <pre><code>function safeJsonDecode($json, $default = []) {
+    // 마크다운 코드 블록 제거
+    $json = preg_replace('/```json\s*/i', '', $json);
+    $json = preg_replace('/```\s*/i', '', $json);
+    $json = trim($json);
+
+    $decoded = json_decode($json, true);
+    return ($decoded === null) ? $default : $decoded;
+}</code></pre>
+
+            <h3>10.7 디버깅 팁</h3>
+            <pre><code>// 에러 로깅 활성화 (이미 적용됨)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// API 응답 로깅
+error_log("API Response: " . print_r($result, true));
+
+// 캐시 키 확인
+error_log("Cache Key: " . $cacheKey);
+
+// 처리 시간 측정
+$startTime = microtime(true);
+// ... 작업 수행
+$elapsedTime = microtime(true) - $startTime;
+error_log("Elapsed: " . $elapsedTime . "s");</code></pre>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 2rem; color: var(--gray-600);">
+            <p><strong>AEO Analytics v11.1 기술 명세서</strong></p>
+            <p>© 2024 AEO Analytics. All rights reserved.</p>
+            <p style="margin-top: 1rem; font-size: 0.875rem;">
+                문의사항이나 버그 리포트는 GitHub Issues를 이용해주세요.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
