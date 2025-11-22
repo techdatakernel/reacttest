@@ -1,0 +1,24 @@
+{
+    "cbecc42833e7b63ca22f346c98ce4b96": {
+        "id": "cbecc42833e7b63ca22f346c98ce4b96",
+        "query": "운전자보험에 대해서 알려줘",
+        "url": "https:\/\/www.banksalad.com\/articles\/%EC%9A%B4%EC%A0%84%EC%9E%90%EB%B3%B4%ED%97%98-%ED%95%84%EC%9A%94%EC%84%B1-%EB%B9%84%EA%B5%90-%EC%9E%90%EB%8F%99%EC%B0%A8%EB%B3%B4%ED%97%98-%EC%B0%A8%EC%9D%B4-%EA%B0%80%EA%B2%A9-%ED%95%84%EC%88%98?utm_source=bluedot_intelligence&utm_medium=referral",
+        "hybrid_score": 76.9,
+        "evaluation": "양호",
+        "timestamp": "2025-11-22 03:50:42",
+        "date": "2025-11-22",
+        "model": "gpt-4o-mini",
+        "temperature": 0.7
+    },
+    "c7ee4c753294bdf389af452a9a087a36": {
+        "id": "c7ee4c753294bdf389af452a9a087a36",
+        "query": "여름에 한맥 맥주는 어디서 마시면 좋을까?",
+        "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/summer-beach.php",
+        "hybrid_score": 71.3,
+        "evaluation": "보통",
+        "timestamp": "2025-11-22 06:30:28",
+        "date": "2025-11-22",
+        "model": "gpt-4o-mini",
+        "temperature": 0.7
+    }
+}
