@@ -4,21 +4,51 @@
  * v11.1 데이터 구조에 최적화된 백엔드 API
  */
 
+// 에러 처리
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // 프로덕션에서는 0
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 
-define('DATA_DIR', __DIR__ . '/aeo_data');
+// 데이터 디렉토리 설정 (절대 경로 우선, 없으면 상대 경로)
+if (file_exists(__DIR__ . '/aeo_data')) {
+    define('DATA_DIR', __DIR__ . '/aeo_data');
+} elseif (file_exists(__DIR__ . '/../aeo_data')) {
+    define('DATA_DIR', __DIR__ . '/../aeo_data');
+} else {
+    // 현재 디렉토리 기준
+    define('DATA_DIR', __DIR__ . '/aeo_data');
+}
+
 define('INDEX_FILE', DATA_DIR . '/index.json');
+define('DEBUG_MODE', isset($_GET['debug'])); // ?debug=1 로 디버그 모드 활성화
 
 // 인덱스 파일 로드
 function loadIndex() {
     if (!file_exists(INDEX_FILE)) {
+        if (DEBUG_MODE) {
+            error_log('Index file not found: ' . INDEX_FILE);
+        }
         return [];
     }
 
     $content = file_get_contents(INDEX_FILE);
+    if ($content === false) {
+        if (DEBUG_MODE) {
+            error_log('Failed to read index file: ' . INDEX_FILE);
+        }
+        return [];
+    }
+
     $data = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        if (DEBUG_MODE) {
+            error_log('JSON decode error: ' . json_last_error_msg());
+        }
+        return [];
+    }
 
     return $data ?? [];
 }
@@ -26,14 +56,43 @@ function loadIndex() {
 // 개별 JSON 파일 로드
 function loadDetailData($id, $date) {
     $dateDir = DATA_DIR . '/' . $date;
-    $files = glob($dateDir . '/*_' . substr($id, 0, 8) . '.json');
+
+    if (!is_dir($dateDir)) {
+        if (DEBUG_MODE) {
+            error_log('Date directory not found: ' . $dateDir);
+        }
+        return null;
+    }
+
+    // ID의 첫 8자로 파일 찾기
+    $pattern = $dateDir . '/' . $date . '_' . substr($id, 0, 8) . '.json';
+    $files = glob($pattern);
 
     if (empty($files)) {
+        if (DEBUG_MODE) {
+            error_log('Detail file not found with pattern: ' . $pattern);
+            error_log('Available files: ' . print_r(glob($dateDir . '/*.json'), true));
+        }
         return null;
     }
 
     $content = file_get_contents($files[0]);
-    return json_decode($content, true);
+    if ($content === false) {
+        if (DEBUG_MODE) {
+            error_log('Failed to read detail file: ' . $files[0]);
+        }
+        return null;
+    }
+
+    $data = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        if (DEBUG_MODE) {
+            error_log('JSON decode error in detail file: ' . json_last_error_msg());
+        }
+        return null;
+    }
+
+    return $data;
 }
 
 // 전체 데이터 목록 조회
@@ -207,40 +266,68 @@ function getStatistics() {
 }
 
 // 라우팅
-$action = $_GET['action'] ?? 'list';
+try {
+    $action = $_GET['action'] ?? 'list';
 
-switch ($action) {
-    case 'list':
-        $filters = [
-            'rating' => $_GET['rating'] ?? '',
-            'model' => $_GET['model'] ?? '',
-            'search' => $_GET['search'] ?? '',
-            'min_score' => $_GET['min_score'] ?? '',
-            'max_score' => $_GET['max_score'] ?? '',
-            'date_from' => $_GET['date_from'] ?? '',
-            'date_to' => $_GET['date_to'] ?? '',
-            'sort_by' => $_GET['sort_by'] ?? 'timestamp',
-            'sort_order' => $_GET['sort_order'] ?? 'desc',
-            'page' => $_GET['page'] ?? 1,
-            'per_page' => $_GET['per_page'] ?? 20
-        ];
-        echo json_encode(getAllData($filters), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        break;
+    // 디버그 모드
+    if ($action === 'debug') {
+        echo json_encode([
+            'success' => true,
+            'debug_info' => [
+                'php_version' => PHP_VERSION,
+                'data_dir' => DATA_DIR,
+                'data_dir_exists' => is_dir(DATA_DIR),
+                'data_dir_writable' => is_writable(DATA_DIR),
+                'index_file' => INDEX_FILE,
+                'index_exists' => file_exists(INDEX_FILE),
+                'index_readable' => is_readable(INDEX_FILE),
+                'current_dir' => __DIR__,
+                'script_name' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
+                'index_count' => count(loadIndex())
+            ]
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
+    }
 
-    case 'detail':
-        $id = $_GET['id'] ?? '';
-        if (empty($id)) {
-            echo json_encode(['success' => false, 'error' => 'ID가 필요합니다.'], JSON_UNESCAPED_UNICODE);
-        } else {
-            echo json_encode(getDetailData($id), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        }
-        break;
+    switch ($action) {
+        case 'list':
+            $filters = [
+                'rating' => $_GET['rating'] ?? '',
+                'model' => $_GET['model'] ?? '',
+                'search' => $_GET['search'] ?? '',
+                'min_score' => $_GET['min_score'] ?? '',
+                'max_score' => $_GET['max_score'] ?? '',
+                'date_from' => $_GET['date_from'] ?? '',
+                'date_to' => $_GET['date_to'] ?? '',
+                'sort_by' => $_GET['sort_by'] ?? 'timestamp',
+                'sort_order' => $_GET['sort_order'] ?? 'desc',
+                'page' => $_GET['page'] ?? 1,
+                'per_page' => $_GET['per_page'] ?? 20
+            ];
+            echo json_encode(getAllData($filters), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            break;
 
-    case 'stats':
-        echo json_encode(getStatistics(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        break;
+        case 'detail':
+            $id = $_GET['id'] ?? '';
+            if (empty($id)) {
+                echo json_encode(['success' => false, 'error' => 'ID가 필요합니다.'], JSON_UNESCAPED_UNICODE);
+            } else {
+                echo json_encode(getDetailData($id), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            }
+            break;
 
-    default:
-        echo json_encode(['success' => false, 'error' => '잘못된 액션입니다.'], JSON_UNESCAPED_UNICODE);
-        break;
+        case 'stats':
+            echo json_encode(getStatistics(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            break;
+
+        default:
+            echo json_encode(['success' => false, 'error' => '잘못된 액션입니다.'], JSON_UNESCAPED_UNICODE);
+            break;
+    }
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage(),
+        'trace' => DEBUG_MODE ? $e->getTraceAsString() : null
+    ], JSON_UNESCAPED_UNICODE);
 }
