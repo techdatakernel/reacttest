@@ -1,0 +1,217 @@
+
+{
+    "id": "cbecc42833e7b63ca22f346c98ce4b96",
+    "query": "운전자보험에 대해서 알려줘",
+    "url": "https:\/\/www.banksalad.com\/articles\/%EC%9A%B4%EC%A0%84%EC%9E%90%EB%B3%B4%ED%97%98-%ED%95%84%EC%9A%94%EC%84%B1-%EB%B9%84%EA%B5%90-%EC%9E%90%EB%8F%99%EC%B0%A8%EB%B3%B4%ED%97%98-%EC%B0%A8%EC%9D%B4-%EA%B0%80%EA%B2%A9-%ED%95%84%EC%88%98?utm_source=bluedot_intelligence&utm_medium=referral",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7,
+    "timestamp": "2025-11-22 03:50:42",
+    "date": "2025-11-22",
+    "scores": {
+        "bm25": 38,
+        "semantic": 37,
+        "faq": 8,
+        "total": 83,
+        "hybrid": 76.9,
+        "rating": "양호"
+    },
+    "bm25_analysis": {
+        "keywords": [
+            {
+                "keyword": "운전자보험",
+                "tf": "매우 높음",
+                "position": "최상단(제목, 첫 문단)",
+                "rarity": "높음(전문용어)",
+                "score": 10,
+                "reasoning": "운전자보험이라는 키워드는 제목과 첫 문단에 반복적으로 등장하며, 전문적인 용어로 인식되어 희소성이 높습니다."
+            },
+            {
+                "keyword": "자동차보험",
+                "tf": "높음",
+                "position": "중간",
+                "rarity": "중간",
+                "score": 7,
+                "reasoning": "자동차보험은 여러 소제목에서 비교와 설명에 활용되며, 일반적인 단어로 인식되지만 필요한 설명에서 충분한 맥락을 제공합니다."
+            },
+            {
+                "keyword": "필요성",
+                "tf": "중간",
+                "position": "중간",
+                "rarity": "중간",
+                "score": 5,
+                "reasoning": "필요성이라는 키워드는 주제와 관련된 논의에서 사용되며, 중간 정도의 빈도로 사용되어 있으나 전문적인 용어는 아닙니다."
+            },
+            {
+                "keyword": "형사합의금",
+                "tf": "중간",
+                "position": "하단",
+                "rarity": "높음(전문용어)",
+                "score": 6,
+                "reasoning": "형사합의금은 특정한 상황에서만 사용되는 전문 용어로, 내용의 중요한 부분을 차지하지만 빈도는 낮습니다."
+            },
+            {
+                "keyword": "보장",
+                "tf": "중간",
+                "position": "중간",
+                "rarity": "중간",
+                "score": 5,
+                "reasoning": "보장이라는 단어는 여러 소제목에서 사용되어 일반적인 의미를 가집니다. 빈도는 중간 정도입니다."
+            },
+            {
+                "keyword": "비교",
+                "tf": "중간",
+                "position": "중간",
+                "rarity": "낮음",
+                "score": 2,
+                "reasoning": "비교라는 단어는 일반적으로 자주 사용되며, 키워드 밀도는 낮지만 주요 내용과 관련성이 있습니다."
+            },
+            {
+                "keyword": "사고",
+                "tf": "중간",
+                "position": "중간",
+                "rarity": "낮음",
+                "score": 3,
+                "reasoning": "사고라는 단어는 일반적이며 자주 사용되는 용어로, 콘텐츠의 주제와 관련이 있지만 희소성은 낮습니다."
+            }
+        ],
+        "total_score": 38,
+        "strengths": "운전자보험이라는 키워드가 제목과 첫 문단에서 매우 높은 밀도로 등장하여 주제의 중심을 명확하게 하고 있습니다. 전문용어 사용이 적절하게 분포되어 있어 독자에게 명확한 정보를 제공합니다.",
+        "weaknesses": "자동차보험과 같은 일반적인 키워드가 다소 자주 등장하여 특정 전문용어의 희소성이 떨어지는 경향이 있습니다. 더욱 전문적인 용어의 사용이 필요할 수 있습니다.",
+        "api_metadata": {
+            "time_ms": 17081.72
+        }
+    },
+    "semantic_analysis": {
+        "topic_match": {
+            "score": 10,
+            "reason": "질문에서 요청한 '운전자보험'에 대한 정보가 콘텐츠의 주제와 직접적으로 연결되어 있습니다. 콘텐츠는 운전자보험의 필요성, 가격비교, 보장내용 등을 포괄적으로 다루고 있어 주제 일치도가 매우 높습니다."
+        },
+        "semantic_relevance": {
+            "score": 9,
+            "reason": "질문에 대한 콘텐츠는 운전자보험의 다양한 측면을 설명하고 있으며, 관련 용어와 개념(예: 형사합의금, 벌금, 변호사 비용 등)이 유기적으로 연결되어 있습니다. 그러나 '운전자보험'의 특정 상품이나 케이스에 대한 직접적인 정보는 다소 부족하여 점수가 약간 낮아졌습니다."
+        },
+        "context_understanding": {
+            "score": 8,
+            "reason": "질문의 의도인 운전자보험에 대한 기본 정보 제공을 콘텐츠가 잘 파악하고 있으며, 필요한 이유와 혜택을 설명하고 있습니다. 그러나 사용자 맞춤형 정보가 부족하여 점수가 다소 떨어졌습니다."
+        },
+        "information_completeness": {
+            "score": 10,
+            "reason": "운전자보험의 필요성, 보장내용, 가입 필요성이 충분히 설명되어 있어 질문에 대한 정보 충족도가 매우 높습니다. 다양한 상황에 따른 설명과 예시가 포함되어 있어 포괄적인 이해를 돕습니다."
+        },
+        "total_score": 37,
+        "strengths": "운전자보험에 대한 포괄적이고 상세한 설명이 포함되어 있어 정보의 깊이가 있습니다. 특히 법적 책임과 관련된 부분에 대한 설명이 잘 되어 있어 독자가 이해하기 쉽게 구성되어 있습니다.",
+        "weaknesses": "특정 상품이나 사례에 대한 보다 구체적인 정보가 부족하여 사용자 맞춤형 정보 제공에 한계가 있습니다. 또한, 운전자보험의 실제 가입 절차나 추천 상품에 대한 정보가 추가되면 더 유용할 것입니다.",
+        "api_metadata": {
+            "time_ms": 12505.04
+        }
+    },
+    "faq_analysis": {
+        "has_faq_format": false,
+        "faq_score": 8,
+        "ai_friendliness_score": 10,
+        "structure_analysis": "콘텐츠는 FAQ 형식이 아닌 서술형으로 구성되어 있어 AI가 이해하고 인용하기 어렵습니다. 특정 질문에 대한 명확한 답변이 없고, 정보가 여러 섹션에 나누어져 있어 접근성이 떨어집니다.",
+        "recommendation": "각 주요 주제에 대한 질문과 답변 형식으로 재구성하여 명확한 FAQ 섹션을 추가하는 것이 좋습니다. 예를 들어, '운전자보험이란 무엇인가요?'와 같은 질문을 포함하고, 이에 대한 간결한 답변을 제공해야 합니다.",
+        "priority": "필수",
+        "api_metadata": {
+            "time_ms": 3813.32
+        }
+    },
+    "query_expansion": {
+        "expansions": [
+            {
+                "query": "운전자보험이 꼭 필요한 이유는 무엇인가요?",
+                "relevance": "높음"
+            },
+            {
+                "query": "운전자보험과 자동차보험의 차이점은 무엇인가요?",
+                "relevance": "높음"
+            },
+            {
+                "query": "운전자보험의 주요 보장내용은 어떤 것이 있나요?",
+                "relevance": "중간"
+            },
+            {
+                "query": "운전자보험 가입 시 고려해야 할 사항은 무엇인가요?",
+                "relevance": "중간"
+            },
+            {
+                "query": "운전자보험 가격 비교는 어떻게 하나요?",
+                "relevance": "낮음"
+            }
+        ],
+        "api_metadata": {
+            "time_ms": 4718.91
+        }
+    },
+    "relevance_evidence": {
+        "evidence": [
+            {
+                "passage": "자동차보험이 있으니까 운전자보험은 필요 없다고 생각하기 쉽죠. 하지만 막상 사고가 나면 자동차보험이 보상하지 않는 형사합의금, 벌금, 변호사 비용이 생길 수 있어요. 이러한 보장을 받기 위해 ‘운전자보험’이 필요합니다.",
+                "keyword_relevance": 10,
+                "semantic_relevance": 10
+            },
+            {
+                "passage": "따라서 자동차보험만으로는 부족한 부분을 운전자보험이 보완해주는 것이죠. 사고가 났을 때 정작 운전자인 ‘나’에게 생기는 형사합의금, 벌금, 변호사 비용은 자동차보험으로 전부 해결할 수 없습니다.",
+                "keyword_relevance": 9,
+                "semantic_relevance": 10
+            },
+            {
+                "passage": "모든 운전자에게 운전자보험은 유용하지만, 운전 빈도가 높거나 중과실 사고 리스크에 대비하고 싶은 사람이라면 꼭 가입을 고려해야 합니다.",
+                "keyword_relevance": 8,
+                "semantic_relevance": 9
+            }
+        ],
+        "api_metadata": {
+            "time_ms": 6033.42
+        }
+    },
+    "recommendations": {
+        "missing_info": [
+            {
+                "item": "운전자보험 가입 방법 및 절차",
+                "reason": "운전자보험 가입을 원하는 독자에게 명확한 가이드를 제공하기 위해 필요",
+                "effect": "독자가 쉽게 보험에 가입할 수 있도록 도와줄 수 있음"
+            },
+            {
+                "item": "운전자보험의 실제 사례 및 고객 후기",
+                "reason": "실제 사례를 통해 독자가 운전자보험의 필요성을 더 잘 이해할 수 있도록 하기 위해 필요",
+                "effect": "신뢰성 증가 및 독자의 관심 유도"
+            }
+        ],
+        "action_items": [
+            {
+                "action": "운전자보험 가입 방법과 절차에 대한 세부 정보를 추가",
+                "reason": "독자가 실제로 보험에 가입할 때 필요한 정보를 제공하기 위해 필요",
+                "expected_result": "독자의 이해도 향상 및 가입 유도"
+            },
+            {
+                "action": "실제 운전자보험 이용자의 사례 및 후기를 수집하여 추가",
+                "reason": "독자가 보험의 효과를 실제로 느낄 수 있도록 하기 위해 필요",
+                "expected_result": "신뢰도 향상 및 독자의 관심 증가"
+            }
+        ],
+        "expected_score_increase": {
+            "bm25": 5,
+            "semantic": 8,
+            "faq": 3
+        },
+        "api_metadata": {
+            "time_ms": 6416.05
+        }
+    },
+    "processing_time": {
+        "total_ms": 51153.26,
+        "bm25_ms": 17081.72,
+        "semantic_ms": 12505.04,
+        "faq_ms": 3813.32,
+        "query_expansion_ms": 4718.91,
+        "relevance_evidence_ms": 6033.42,
+        "recommendations_ms": 6416.05
+    },
+    "_optimization_notes": {
+        "api_calls": "Sequential (stable v10 method)",
+        "cache_enabled": true,
+        "cache_ttl": "86400 seconds",
+        "version": "v11.1 (optimized + stable)"
+    }
+}
