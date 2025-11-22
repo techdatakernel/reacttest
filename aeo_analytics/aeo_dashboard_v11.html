@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO Analytics Dashboard v11</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .topbar {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .topbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .version-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-card.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .stat-card.primary .stat-label,
+        .stat-card.primary .stat-value {
+            color: white;
+        }
+
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.5rem 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .view-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .data-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-rating {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .rating-excellent { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .rating-good { background: rgba(37, 99, 235, 0.2); color: var(--primary); }
+        .rating-fair { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .rating-poor { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .card-query {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-url {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .data-table.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 0.875rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        tr {
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .page-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 1200px;
+            width: 100%;
+            margin: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--gray-100);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-200);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .score-item {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .score-item-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-item-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .keyword-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .keyword-table th {
+            background: var(--gray-50);
+        }
+
+        .dimension-card {
+            background: var(--gray-50);
+            padding: 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .dimension-name {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .dimension-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .dimension-reason {
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .list-item {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .list-item-header {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .list-item-content {
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+        }
+
+        .analysis-box {
+            background: var(--gray-50);
+            padding: 1.25rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-box.strength {
+            border-left-color: var(--success);
+        }
+
+        .analysis-box.weakness {
+            border-left-color: var(--warning);
+        }
+
+        .analysis-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .analysis-content {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .view-controls {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .modal-content {
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-content">
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+                <span>AEO Analytics Dashboard</span>
+            </div>
+            <div class="version-badge">v11.1</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 통계 카드 -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card primary">
+                <div class="stat-label">총 분석 건수</div>
+                <div class="stat-value" id="totalCount">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">평균 점수</div>
+                <div class="stat-value" id="avgScore">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">우수 (90+)</div>
+                <div class="stat-value" id="excellentCount">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">양호 (75+)</div>
+                <div class="stat-value" id="goodCount">-</div>
+            </div>
+        </div>
+
+        <!-- 필터 섹션 -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>평가</label>
+                    <select id="filterRating">
+                        <option value="">전체</option>
+                        <option value="우수">우수</option>
+                        <option value="양호">양호</option>
+                        <option value="보통">보통</option>
+                        <option value="미흡">미흡</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>모델</label>
+                    <select id="filterModel">
+                        <option value="">전체</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                        <option value="gpt-4">GPT-4</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>검색</label>
+                    <input type="text" id="filterSearch" placeholder="질문 또는 URL 검색...">
+                </div>
+                <div class="filter-group">
+                    <label>최소 점수</label>
+                    <input type="number" id="filterMinScore" placeholder="0" min="0" max="100">
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="btn btn-primary" onclick="applyFilters()">필터 적용</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">초기화</button>
+            </div>
+        </div>
+
+        <!-- 뷰 컨트롤 -->
+        <div class="view-controls">
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('card')">카드 뷰</button>
+                <button class="view-btn" onclick="switchView('table')">테이블 뷰</button>
+            </div>
+            <div class="sort-controls">
+                <select id="sortBy" onchange="applyFilters()">
+                    <option value="timestamp">날짜순</option>
+                    <option value="hybrid_score">점수순</option>
+                </select>
+                <select id="sortOrder" onchange="applyFilters()">
+                    <option value="desc">내림차순</option>
+                    <option value="asc">오름차순</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 로딩 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>데이터를 불러오는 중...</div>
+        </div>
+
+        <!-- 카드 그리드 -->
+        <div class="data-grid" id="cardGrid" style="display: none;"></div>
+
+        <!-- 테이블 뷰 -->
+        <div class="data-table" id="tableView">
+            <table>
+                <thead>
+                    <tr>
+                        <th>날짜</th>
+                        <th>질문</th>
+                        <th>URL</th>
+                        <th>점수</th>
+                        <th>평가</th>
+                        <th>모델</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- 빈 상태 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📊</div>
+            <h3>데이터가 없습니다</h3>
+            <p>필터 조건을 변경하거나 새로운 분석을 시작하세요.</p>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- 상세보기 모달 -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">분석 결과 상세</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let currentView = 'card';
+        let currentData = [];
+
+        // 초기 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadData();
+        });
+
+        // 통계 로드
+        async function loadStatistics() {
+            try {
+                const response = await fetch('aeo_data_manager_v11.php?action=stats');
+                const result = await response.json();
+
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('totalCount').textContent = stats.total_count;
+                    document.getElementById('avgScore').textContent = stats.avg_score;
+                    document.getElementById('excellentCount').textContent = stats.score_ranges['90-100'];
+                    document.getElementById('goodCount').textContent = stats.score_ranges['75-89'];
+                }
+            } catch (error) {
+                console.error('통계 로드 실패:', error);
+            }
+        }
+
+        // 데이터 로드
+        async function loadData() {
+            const loading = document.getElementById('loading');
+            const cardGrid = document.getElementById('cardGrid');
+            const tableView = document.getElementById('tableView');
+            const emptyState = document.getElementById('emptyState');
+
+            loading.style.display = 'block';
+            cardGrid.style.display = 'none';
+            tableView.style.display = 'none';
+            emptyState.style.display = 'none';
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'list',
+                    rating: document.getElementById('filterRating').value,
+                    model: document.getElementById('filterModel').value,
+                    search: document.getElementById('filterSearch').value,
+                    min_score: document.getElementById('filterMinScore').value,
+                    sort_by: document.getElementById('sortBy').value,
+                    sort_order: document.getElementById('sortOrder').value,
+                    page: currentPage,
+                    per_page: 20
+                });
+
+                const response = await fetch('aeo_data_manager_v11.php?' + params);
+                const result = await response.json();
+
+                loading.style.display = 'none';
+
+                if (result.success && result.data.length > 0) {
+                    currentData = result.data;
+                    renderData(result.data);
+                    renderPagination(result.pagination);
+
+                    if (currentView === 'card') {
+                        cardGrid.style.display = 'grid';
+                    } else {
+                        tableView.style.display = 'block';
+                    }
+                } else {
+                    emptyState.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+                loading.style.display = 'none';
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // 카드 렌더링
+        function renderData(data) {
+            const cardGrid = document.getElementById('cardGrid');
+            const tableBody = document.getElementById('tableBody');
+
+            cardGrid.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            data.forEach(item => {
+                // 카드 뷰
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                card.onclick = () => openDetail(item.id);
+
+                const ratingClass = item.hybrid_score >= 90 ? 'rating-excellent' :
+                                   item.hybrid_score >= 75 ? 'rating-good' :
+                                   item.hybrid_score >= 60 ? 'rating-fair' : 'rating-poor';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-score">${item.hybrid_score}</div>
+                        <div class="card-rating ${ratingClass}">${item.evaluation}</div>
+                    </div>
+                    <div class="card-query">${item.query}</div>
+                    <div class="card-url">${item.url}</div>
+                    <div class="card-meta">
+                        <span>${item.model}</span>
+                        <span>${item.timestamp}</span>
+                    </div>
+                `;
+
+                cardGrid.appendChild(card);
+
+                // 테이블 뷰
+                const row = document.createElement('tr');
+                row.onclick = () => openDetail(item.id);
+                row.innerHTML = `
+                    <td>${item.timestamp}</td>
+                    <td>${item.query}</td>
+                    <td>${item.url}</td>
+                    <td><strong>${item.hybrid_score}</strong></td>
+                    <td><span class="card-rating ${ratingClass}">${item.evaluation}</span></td>
+                    <td>${item.model}</td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 페이지네이션 렌더링
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+            container.innerHTML = '';
+
+            if (pagination.total_pages <= 1) return;
+
+            // 이전 버튼
+            if (pagination.page > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-btn';
+                prevBtn.textContent = '이전';
+                prevBtn.onclick = () => {
+                    currentPage--;
+                    loadData();
+                };
+                container.appendChild(prevBtn);
+            }
+
+            // 페이지 번호
+            for (let i = 1; i <= pagination.total_pages; i++) {
+                if (i === 1 || i === pagination.total_pages || (i >= pagination.page - 2 && i <= pagination.page + 2)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-btn' + (i === pagination.page ? ' active' : '');
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => {
+                        currentPage = i;
+                        loadData();
+                    };
+                    container.appendChild(pageBtn);
+                } else if (i === pagination.page - 3 || i === pagination.page + 3) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    dots.style.padding = '0.5rem';
+                    container.appendChild(dots);
+                }
+            }
+
+            // 다음 버튼
+            if (pagination.page < pagination.total_pages) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-btn';
+                nextBtn.textContent = '다음';
+                nextBtn.onclick = () => {
+                    currentPage++;
+                    loadData();
+                };
+                container.appendChild(nextBtn);
+            }
+        }
+
+        // 뷰 전환
+        function switchView(view) {
+            currentView = view;
+
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+
+            const cardGrid = document.getElementById('cardGrid');
+            const tableView = document.getElementById('tableView');
+
+            if (view === 'card') {
+                cardGrid.style.display = 'grid';
+                tableView.style.display = 'none';
+            } else {
+                cardGrid.style.display = 'none';
+                tableView.style.display = 'block';
+            }
+        }
+
+        // 필터 적용
+        function applyFilters() {
+            currentPage = 1;
+            loadData();
+        }
+
+        // 필터 초기화
+        function resetFilters() {
+            document.getElementById('filterRating').value = '';
+            document.getElementById('filterModel').value = '';
+            document.getElementById('filterSearch').value = '';
+            document.getElementById('filterMinScore').value = '';
+            document.getElementById('sortBy').value = 'timestamp';
+            document.getElementById('sortOrder').value = 'desc';
+            applyFilters();
+        }
+
+        // 상세보기 열기
+        async function openDetail(id) {
+            const modal = document.getElementById('detailModal');
+            const modalBody = document.getElementById('modalBody');
+
+            modal.classList.add('active');
+            modalBody.innerHTML = '<div class="loading"><div class="spinner"></div><div>상세 데이터를 불러오는 중...</div></div>';
+
+            try {
+                const response = await fetch(`aeo_data_manager_v11.php?action=detail&id=${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    renderDetail(result.data);
+                } else {
+                    modalBody.innerHTML = '<div class="empty-state"><p>데이터를 불러올 수 없습니다.</p></div>';
+                }
+            } catch (error) {
+                console.error('상세 데이터 로드 실패:', error);
+                modalBody.innerHTML = '<div class="empty-state"><p>데이터를 불러오는 중 오류가 발생했습니다.</p></div>';
+            }
+        }
+
+        // 상세 데이터 렌더링
+        function renderDetail(data) {
+            const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('modalTitle');
+
+            modalTitle.textContent = data.query;
+
+            let html = `
+                <!-- 기본 정보 -->
+                <div class="detail-section">
+                    <h3>📋 기본 정보</h3>
+                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 10px;">
+                        <p><strong>URL:</strong> <a href="${data.url}" target="_blank" style="color: var(--primary);">${data.url}</a></p>
+                        <p><strong>모델:</strong> ${data.model}</p>
+                        <p><strong>Temperature:</strong> ${data.temperature}</p>
+                        <p><strong>분석 시간:</strong> ${data.timestamp}</p>
+                    </div>
+                </div>
+
+                <!-- 점수 -->
+                <div class="detail-section">
+                    <h3>📊 점수</h3>
+                    <div class="score-grid">
+                        <div class="score-item">
+                            <div class="score-item-label">BM25 키워드</div>
+                            <div class="score-item-value">${data.scores.bm25}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem;">/ 40점</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">시맨틱 유사도</div>
+                            <div class="score-item-value">${data.scores.semantic}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem;">/ 48점</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">FAQ 구조</div>
+                            <div class="score-item-value">${data.scores.faq}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem;">/ 20점</div>
+                        </div>
+                        <div class="score-item" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white;">
+                            <div class="score-item-label" style="color: rgba(255,255,255,0.9);">종합 점수</div>
+                            <div class="score-item-value" style="color: white;">${data.scores.hybrid}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem; color: rgba(255,255,255,0.9);">${data.scores.rating}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BM25 분석 -->
+                <div class="detail-section">
+                    <h3>🔤 BM25 키워드 분석</h3>
+                    ${data.bm25_analysis.keywords && data.bm25_analysis.keywords.length > 0 ? `
+                    <table class="keyword-table">
+                        <thead>
+                            <tr>
+                                <th>키워드</th>
+                                <th>빈도(TF)</th>
+                                <th>위치</th>
+                                <th>희소성</th>
+                                <th>점수</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.bm25_analysis.keywords.map(kw => `
+                            <tr>
+                                <td><strong>${kw.keyword}</strong></td>
+                                <td>${kw.tf}</td>
+                                <td>${kw.position}</td>
+                                <td>${kw.rarity}</td>
+                                <td><strong>${kw.score}</strong></td>
+                            </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ` : '<p style="color: var(--gray-500);">키워드 데이터 없음</p>'}
+
+                    <div class="analysis-box strength">
+                        <div class="analysis-label">✓ 강점</div>
+                        <div class="analysis-content">${data.bm25_analysis.strengths || '-'}</div>
+                    </div>
+
+                    <div class="analysis-box weakness">
+                        <div class="analysis-label">✗ 개선 필요</div>
+                        <div class="analysis-content">${data.bm25_analysis.weaknesses || '-'}</div>
+                    </div>
+                </div>
+
+                <!-- 시맨틱 분석 -->
+                <div class="detail-section">
+                    <h3>🧠 시맨틱 유사도 분석</h3>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <div class="dimension-name">1️⃣ 주제 일치도</div>
+                            <div class="dimension-score">${data.semantic_analysis.topic_match?.score || 0}</div>
+                        </div>
+                        <div class="dimension-reason">${data.semantic_analysis.topic_match?.reason || '-'}</div>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <div class="dimension-name">2️⃣ 의미적 연관성</div>
+                            <div class="dimension-score">${data.semantic_analysis.semantic_relevance?.score || 0}</div>
+                        </div>
+                        <div class="dimension-reason">${data.semantic_analysis.semantic_relevance?.reason || '-'}</div>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <div class="dimension-name">3️⃣ 맥락 이해도</div>
+                            <div class="dimension-score">${data.semantic_analysis.context_understanding?.score || 0}</div>
+                        </div>
+                        <div class="dimension-reason">${data.semantic_analysis.context_understanding?.reason || '-'}</div>
+                    </div>
+
+                    <div class="dimension-card">
+                        <div class="dimension-header">
+                            <div class="dimension-name">4️⃣ 정보 충족도</div>
+                            <div class="dimension-score">${data.semantic_analysis.information_completeness?.score || 0}</div>
+                        </div>
+                        <div class="dimension-reason">${data.semantic_analysis.information_completeness?.reason || '-'}</div>
+                    </div>
+
+                    <div class="analysis-box strength">
+                        <div class="analysis-label">✓ 강점</div>
+                        <div class="analysis-content">${data.semantic_analysis.strengths || '-'}</div>
+                    </div>
+
+                    <div class="analysis-box weakness">
+                        <div class="analysis-label">✗ 개선 필요</div>
+                        <div class="analysis-content">${data.semantic_analysis.weaknesses || '-'}</div>
+                    </div>
+                </div>
+
+                <!-- FAQ 분석 -->
+                <div class="detail-section">
+                    <h3>❓ FAQ 구조 분석</h3>
+
+                    <div class="score-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="score-item">
+                            <div class="score-item-label">FAQ 점수</div>
+                            <div class="score-item-value">${data.faq_analysis.faq_score || 0}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem;">/ 20점</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">AI 친화성</div>
+                            <div class="score-item-value">${data.faq_analysis.ai_friendliness_score || 0}</div>
+                            <div class="score-item-label" style="margin-top: 0.25rem;">/ 20점</div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-box">
+                        <div class="analysis-label">📋 구조 분석</div>
+                        <div class="analysis-content">${data.faq_analysis.structure_analysis || '-'}</div>
+                    </div>
+
+                    <div class="analysis-box">
+                        <div class="analysis-label">💡 개선 권고</div>
+                        <div class="analysis-content">${data.faq_analysis.recommendation || '-'}</div>
+                        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--gray-200);">
+                            <strong>우선순위:</strong> <span style="color: var(--primary); font-weight: 600;">${data.faq_analysis.priority || '-'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 쿼리 확장 -->
+                ${data.query_expansion && data.query_expansion.expansions && data.query_expansion.expansions.length > 0 ? `
+                <div class="detail-section">
+                    <h3>🔍 쿼리 확장 결과</h3>
+                    ${data.query_expansion.expansions.map(exp => `
+                    <div class="list-item">
+                        <div class="list-item-header">${exp.query}</div>
+                        <div class="list-item-content">관련성: <strong>${exp.relevance}</strong></div>
+                    </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+
+                <!-- 관련성 증거 -->
+                ${data.relevance_evidence && data.relevance_evidence.evidence && data.relevance_evidence.evidence.length > 0 ? `
+                <div class="detail-section">
+                    <h3>📌 관련성 증거</h3>
+                    ${data.relevance_evidence.evidence.map(ev => `
+                    <div class="list-item">
+                        <div class="list-item-content" style="margin-bottom: 0.75rem;">"${ev.passage}"</div>
+                        <div style="display: flex; gap: 1rem; font-size: 0.875rem;">
+                            <div>키워드 관련성: <strong style="color: var(--primary);">${ev.keyword_relevance}/10</strong></div>
+                            <div>의미 관련성: <strong style="color: var(--secondary);">${ev.semantic_relevance}/10</strong></div>
+                        </div>
+                    </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+
+                <!-- AEO 권고사항 -->
+                <div class="detail-section">
+                    <h3>💡 AEO 개선 권고사항</h3>
+
+                    ${data.recommendations.missing_info && data.recommendations.missing_info.length > 0 ? `
+                    <h4 style="color: var(--danger); margin-bottom: 1rem;">📌 누락된 정보</h4>
+                    ${data.recommendations.missing_info.map(item => `
+                    <div class="list-item">
+                        <div class="list-item-header">${item.item}</div>
+                        <div class="list-item-content">
+                            <div style="margin-bottom: 0.5rem;"><strong>필요 이유:</strong> ${item.reason}</div>
+                            <div><strong>예상 효과:</strong> ${item.effect}</div>
+                        </div>
+                    </div>
+                    `).join('')}
+                    ` : ''}
+
+                    ${data.recommendations.action_items && data.recommendations.action_items.length > 0 ? `
+                    <h4 style="color: var(--success); margin: 2rem 0 1rem;">🎯 실행 액션</h4>
+                    ${data.recommendations.action_items.map(item => `
+                    <div class="list-item">
+                        <div class="list-item-header">${item.action}</div>
+                        <div class="list-item-content">
+                            <div style="margin-bottom: 0.5rem;"><strong>필요 이유:</strong> ${item.reason}</div>
+                            <div><strong>예상 결과:</strong> ${item.expected_result}</div>
+                        </div>
+                    </div>
+                    `).join('')}
+                    ` : ''}
+
+                    <h4 style="color: var(--primary); margin: 2rem 0 1rem;">📈 예상 점수 증가</h4>
+                    <div class="score-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="score-item">
+                            <div class="score-item-label">BM25</div>
+                            <div class="score-item-value" style="color: var(--success);">+${data.recommendations.expected_score_increase?.bm25 || 0}</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">시맨틱</div>
+                            <div class="score-item-value" style="color: var(--success);">+${data.recommendations.expected_score_increase?.semantic || 0}</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">FAQ</div>
+                            <div class="score-item-value" style="color: var(--success);">+${data.recommendations.expected_score_increase?.faq || 0}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 처리 시간 -->
+                <div class="detail-section">
+                    <h3>⏱️ 처리 시간</h3>
+                    <div class="score-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="score-item">
+                            <div class="score-item-label">전체</div>
+                            <div class="score-item-value" style="font-size: 1.25rem;">${(data.processing_time.total_ms / 1000).toFixed(1)}s</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">BM25</div>
+                            <div class="score-item-value" style="font-size: 1.25rem;">${(data.processing_time.bm25_ms / 1000).toFixed(1)}s</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">시맨틱</div>
+                            <div class="score-item-value" style="font-size: 1.25rem;">${(data.processing_time.semantic_ms / 1000).toFixed(1)}s</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-item-label">FAQ</div>
+                            <div class="score-item-value" style="font-size: 1.25rem;">${(data.processing_time.faq_ms / 1000).toFixed(1)}s</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modalBody.innerHTML = html;
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 모달 배경 클릭 시 닫기
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
