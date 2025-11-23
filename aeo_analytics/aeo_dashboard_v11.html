@@ -201,6 +201,34 @@
             background: var(--gray-300);
         }
 
+        .btn-generate-questions {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-generate-questions:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-generate-questions:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .view-controls {
             display: flex;
             justify-content: space-between;
@@ -1166,6 +1194,30 @@
                     </div>
                 </div>
 
+                <!-- 질문 리스트 생성 -->
+                <div class="detail-section">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;">📋 AI 질문 리스트 생성</h3>
+                        <button onclick="generateQuestions('${data.id}')" class="btn-generate-questions" id="btnGenerateQuestions">
+                            질문 리스트 생성하기
+                        </button>
+                    </div>
+                    <div class="info-box collapsible collapsed" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 질문 리스트란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            AEO 최적화 전략의 핵심은 사용자들이 실제로 검색할 법한 질문들을 사전에 파악하고 답변을 제공하는 것입니다.
+                            이 기능은 현재 분석된 콘텐츠를 바탕으로 <strong>사용자들이 자주 검색할 만한 7-10개의 질문</strong>을 AI가 자동으로 생성해줍니다.
+                            생성된 질문 리스트를 활용하여 콘텐츠를 보완하면 AI 검색 엔진에서 더 높은 노출과 답변 채택률을 기대할 수 있습니다.
+                        </div>
+                    </div>
+                    <div id="questionsList" style="display: none; margin-top: 1rem;">
+                        <!-- 생성된 질문들이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+
                 <!-- 점수 -->
                 <div class="detail-section">
                     <h3>📊 점수</h3>
@@ -1520,6 +1572,132 @@
                 closeModal();
             }
         });
+
+        // 질문 리스트 생성
+        async function generateQuestions(id) {
+            const btn = document.getElementById('btnGenerateQuestions');
+            const questionsList = document.getElementById('questionsList');
+
+            if (!btn || !questionsList) {
+                console.error('버튼 또는 질문 리스트 컨테이너를 찾을 수 없습니다.');
+                return;
+            }
+
+            // 버튼 상태 변경
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> 생성 중...';
+
+            try {
+                const response = await fetch(`${API_ENDPOINT}?action=generate_questions&id=${encodeURIComponent(id)}`);
+                const result = await response.json();
+
+                if (result.success && result.data.questions) {
+                    displayQuestions(result.data);
+                    btn.innerHTML = '✓ 생성 완료';
+                    btn.style.background = 'var(--success)';
+                } else {
+                    throw new Error(result.error || '질문 생성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('질문 생성 오류:', error);
+                alert('질문 생성 중 오류가 발생했습니다: ' + error.message);
+                btn.disabled = false;
+                btn.innerHTML = '질문 리스트 생성하기';
+            }
+        }
+
+        // 질문 리스트 표시
+        function displayQuestions(data) {
+            const questionsList = document.getElementById('questionsList');
+
+            if (!questionsList || !data.questions || data.questions.length === 0) {
+                return;
+            }
+
+            const questionsHTML = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="margin: 0; color: white;">
+                            💡 AI가 생성한 공통 질문 리스트 (총 ${data.total_count}개)
+                        </h4>
+                        <button onclick="copyQuestionList()" class="btn-copy" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s;">
+                            📋 복사하기
+                        </button>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 1rem; border-radius: 8px; backdrop-filter: blur(10px);">
+                        <div id="questionsContent" style="font-size: 0.95rem; line-height: 1.8;">
+                            ${data.questions.map((q, i) => `
+                                <div style="padding: 0.5rem; background: rgba(255,255,255,0.1); margin-bottom: 0.5rem; border-radius: 6px; border-left: 3px solid rgba(255,255,255,0.5);">
+                                    ${i + 1}. ${q}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.85rem;">
+                        <strong>📌 활용 방법:</strong><br>
+                        • 위 질문들을 FAQ 섹션에 추가하여 콘텐츠를 보완하세요<br>
+                        • 각 질문에 대한 명확하고 구체적인 답변을 제공하세요<br>
+                        • AI 검색 엔진이 이해하기 쉬운 구조화된 형식으로 작성하세요
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.85rem; opacity: 0.8;">
+                        <strong>분석 컨텍스트:</strong> ${data.context.query}<br>
+                        <strong>주요 키워드:</strong> ${data.context.keywords.join(', ')}
+                    </div>
+                </div>
+            `;
+
+            questionsList.innerHTML = questionsHTML;
+            questionsList.style.display = 'block';
+
+            // 부드럽게 스크롤
+            setTimeout(() => {
+                questionsList.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // 질문 리스트 복사
+        function copyQuestionList() {
+            const questionsContent = document.getElementById('questionsContent');
+
+            if (!questionsContent) {
+                return;
+            }
+
+            // 텍스트만 추출 (HTML 태그 제거)
+            const text = questionsContent.innerText;
+
+            // 클립보드에 복사
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('✓ 질문 리스트가 클립보드에 복사되었습니다!');
+                }).catch(err => {
+                    console.error('복사 실패:', err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        // 클립보드 API가 지원되지 않을 때 대체 방법
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                alert('✓ 질문 리스트가 클립보드에 복사되었습니다!');
+            } catch (err) {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다. 수동으로 선택하여 복사해주세요.');
+            }
+
+            document.body.removeChild(textarea);
+        }
     </script>
 </body>
 </html>
