@@ -49,11 +49,12 @@
             display: none;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
+            overflow: auto;
         }
         
         .slide.active {
-            display: block;
-            opacity: 1;
+            display: block !important;
+            opacity: 1 !important;
         }
         
         .nav-button {
@@ -124,109 +125,7 @@
             color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
             font-weight: 500;
-        }
-        
-        /* Common slide styles */
-        .gradient-bg {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
-        }
-        
-        .grid-pattern {
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        
-        .geometric-shape {
-            position: absolute;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(107, 114, 128, 0.1) 0%, rgba(156, 163, 175, 0.2) 100%);
-            animation: float 15s infinite ease-in-out;
-        }
-        
-        .shape-1 {
-            width: 400px;
-            height: 400px;
-            bottom: -100px;
-            left: -100px;
-            animation-delay: 0s;
-        }
-        
-        .shape-2 {
-            width: 300px;
-            height: 300px;
-            top: -50px;
-            right: -50px;
-            animation-delay: -5s;
-        }
-        
-        .shape-3 {
-            width: 200px;
-            height: 200px;
-            bottom: 100px;
-            right: 100px;
-            animation-delay: -10s;
-        }
-        
-        .aeo-highlight {
-            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            display: inline;
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-20px) scale(1.05);
-            }
-        }
-        
-        .accent-line {
-            height: 4px;
-            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
-            width: 120px;
-            margin: 1.5rem auto;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .icon-circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-        }
-        
-        .section-title {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-        
-        .section-title:before {
-            content: "";
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            z-index: 1001;
         }
     </style>
 </head>
@@ -236,6 +135,7 @@
             <div class="slide-counter">
                 <span id="current-slide">1</span> / <span id="total-slides">10</span>
             </div>
+
 
 <!-- Slide 1 -->
 <div class="slide gradient-bg grid-pattern flex flex-col items-center justify-center p-16 relative">
@@ -2041,6 +1941,8 @@
             const slides = document.querySelectorAll('.slide');
             const indicators = document.getElementById('indicators');
             
+            console.log('Found', slides.length, 'slides');
+            
             // Create indicators
             for (let i = 0; i < totalSlides; i++) {
                 const indicator = document.createElement('div');
@@ -2060,7 +1962,7 @@
             const nextBtn = document.getElementById('nextBtn');
             const currentSlideSpan = document.getElementById('current-slide');
             
-            // Wrap around
+            // Bounds checking
             if (n >= totalSlides) {
                 currentSlide = totalSlides - 1;
                 return;
@@ -2073,12 +1975,16 @@
             currentSlide = n;
             
             // Hide all slides
-            slides.forEach(slide => slide.classList.remove('active'));
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.display = 'none';
+            });
             indicators.forEach(ind => ind.classList.remove('active'));
             
             // Show current slide
             if (slides[currentSlide]) {
                 slides[currentSlide].classList.add('active');
+                slides[currentSlide].style.display = 'block';
             }
             if (indicators[currentSlide]) {
                 indicators[currentSlide].classList.add('active');
@@ -2090,6 +1996,8 @@
             // Update button states
             prevBtn.disabled = currentSlide === 0;
             nextBtn.disabled = currentSlide === totalSlides - 1;
+            
+            console.log('Showing slide', currentSlide + 1);
         }
         
         function changeSlide(direction) {
