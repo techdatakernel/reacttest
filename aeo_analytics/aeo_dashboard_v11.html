@@ -1588,7 +1588,7 @@
             btn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> 생성 중...';
 
             try {
-                const response = await fetch(`${API_ENDPOINT}?action=generate_questions&id=${encodeURIComponent(id)}`);
+                const response = await fetch(`aeo_data_manager_v11.php?action=generate_questions&id=${encodeURIComponent(id)}`);
                 const result = await response.json();
 
                 if (result.success && result.data.questions) {
