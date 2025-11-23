@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   핵심 성공 지표
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com">
+  </script>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            
+            background-size: 40px 40px;
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 80px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .formula {
+            background-color: rgba(243, 244, 246, 0.8);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: monospace;
+        }
+    
+html {
+    overflow: hidden;
+}
+  </style>
+ </head>
+ <body>
+  <div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-4">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     핵심 성공 지표
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Introduction -->
+   <div class="mb-4">
+    <p class="text-gray-600 text-lg">
+     AI 검색 시대의 성공은 더 이상 단순한 &#39;클릭&#39; 수에 의존하지 않습니다. 이제는 AI가 우리 브랜드를 얼마나 &#39;인용&#39;하고 &#39;노출&#39;하는지가 핵심적인 성공 지표가 됩니다.
+    </p>
+   </div>
+   <!-- Main Content - Two Key Metrics -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Brand Visibility -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="metric-icon mr-3" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+        <i class="fas fa-eye text-white">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        브랜드 가시성
+       </h2>
+      </div>
+      <div class="space-y-3 flex-1">
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         정의
+        </h3>
+        <p class="text-gray-600">
+         특정 주제와 관련된 사용자 질문에 대해 AI가 생성한 답변에서 귀사의 브랜드가 얼마나 자주 언급되는지를 측정하는 지표
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         중요성
+        </h3>
+        <p class="text-gray-600">
+         AI 검색 결과 최상단 노출을 통한 잠재 고객 초기 인식 단계에서의 강력한 영향력 확보
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         목표
+        </h3>
+        <p class="text-gray-600">
+         100점에 가까울수록, 관련된 모든 질문에 대해 AI가 귀사 브랜드를 최소 1회 이상 언급하여 압도적인 인지도 확보
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         계산식
+        </h3>
+        <div class="formula text-gray-700">
+         브랜드 가시성 (%) = (귀사 브랜드 언급 답변 수 / 총 답변 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Domain Citation Rate -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="metric-icon mr-3" style="background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
+        <i class="fas fa-link text-white">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        도메인 인용率
+       </h2>
+      </div>
+      <div class="space-y-3 flex-1">
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         정의
+        </h3>
+        <p class="text-gray-600">
+         AI가 답변을 생성할 때, 정보의 출처(Source)로서 귀사의 공식 웹사이트(도메인)를 얼마나 자주 인용하는지를 측정
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         중요성
+        </h3>
+        <p class="text-gray-600">
+         AI가 귀사 웹사이트 콘텐츠를 신뢰할 수 있는 정보로 판단하고 있음을 의미하며, 전문가 및 권위자로서 공인받는 효과
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         목표
+        </h3>
+        <p class="text-gray-600">
+         100점에 가까울수록, AI가 생성하는 모든 답변이 귀사 웹사이트를 정보의 원천으로 활용하여 최고의 정보 권위 달성
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         계산식
+        </h3>
+        <div class="formula text-gray-700">
+         도메인 인용率 (%) = (귀사 웹사이트 인용 답변 수 / 총 답변 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     5 / 10
+    </div>
+   </div>
+  </div>
+ 
+
+</body></html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   도메인 인용률
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://d3js.org/d3.v7.min.js">
+  </script>
+  <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com">
+  </script>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            
+            background-size: 40px 40px;
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 80px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .formula {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .citation-node {
+            fill: #e4e8eb;
+            stroke: #8b5cf6;
+            stroke-width: 2px;
+        }
+        
+        .source-node {
+            fill: #10b981;
+            stroke: #059669;
+            stroke-width: 2px;
+        }
+        
+        .link {
+            stroke: #6b7280;
+            stroke-width: 1.5px;
+        }
+        
+        .node-label {
+            font-size: 12px;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 500;
+        }
+    
+html {
+    overflow: hidden;
+}
+  </style>
+ </head>
+ <body>
+  <div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-5">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     도메인 인용率
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-8">
+    <!-- Left Column -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col justify-between">
+      <div>
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-link text-xl text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         정의
+        </h2>
+       </div>
+       <p class="text-gray-600 mb-4 pl-16">
+        도메인 인용率은 AI가 답변을 생성할 때, 정보의 출처(Source)로서 귀사의 공식 웹사이트를 얼마나 자주 인용하는지를 측정하는 지표입니다.
+       </p>
+       <div class="flex items-center mb-3 mt-4">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-star text-xl text-green-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         중요성
+        </h2>
+       </div>
+       <ul class="text-gray-600 space-y-2 pl-16">
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          AI가 귀사 웹사이트 콘텐츠를 신뢰할 수 있는 정보로 판단
+         </span>
+        </li>
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          해당 분야의 전문가 및 권위자로서 공인받는 효과
+         </span>
+        </li>
+       </ul>
+      </div>
+      <div class="mt-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-4" style="width: 40px; height: 40px;">
+         <i class="fas fa-bullseye text-lg text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-700">
+         목표
+        </h2>
+       </div>
+       <p class="text-gray-600 pl-14">
+        100점에 가까울수록 AI가 생성하는 답변이 귀사 웹사이트를 정보의 원천으로 활용하여 최고의 정보 권위를 달성했음을 의미합니다.
+       </p>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-1/2">
+     <div class="h-full flex flex-col space-y-4">
+      <!-- Visualization -->
+      <div class="card p-5 flex-1">
+       <h3 class="text-xl font-semibold text-gray-700 mb-3">
+        도메인 인용率 시각화
+       </h3>
+       <div class="h-40 w-full" data-sk-source-container="chart" data-sk-source-id="1992133214351994897" data-sk-source-type="pdf" id="citation-network">
+       </div>
+      </div>
+      <!-- Formula -->
+      <div class="card p-4 flex-1">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-4" style="width: 36px; height: 36px;">
+         <i class="fas fa-calculator text-lg text-green-500">
+         </i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-700">
+         계산식
+        </h3>
+       </div>
+       <div class="formula text-gray-700">
+        도메인 인용率 (%) =
+        <div class="border-t border-gray-300 my-1">
+        </div>
+        <div class="pl-4">
+         (귀사 웹사이트를 출처로 인용한 답변의 수 /
+         <br/>
+         분석 기간 동안 수집된 총 답변의 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     7 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Citation network visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('citation-network').clientWidth;
+            const height = document.getElementById('citation-network').clientHeight;
+            
+            const svg = d3.select('#citation-network')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Create a simple network diagram to illustrate domain citation rate
+            const nodes = [
+                {id: "ai", label: "AI", x: width * 0.5, y: height * 0.2, type: "ai"},
+                {id: "website", label: "귀사 웹사이트", x: width * 0.5, y: height * 0.6, type: "source"},
+                {id: "answer1", label: "답변", x: width * 0.25, y: height * 0.4, type: "citation"},
+                {id: "answer2", label: "답변", x: width * 0.75, y: height * 0.4, type: "citation"},
+                {id: "answer3", label: "답변", x: width * 0.5, y: height * 0.25, type: "citation"},
+                {id: "external1", label: "기타 출처", x: width * 0.2, y: height * 0.7, type: "citation"},
+                {id: "external2", label: "기타 출처", x: width * 0.8, y: height * 0.7, type: "citation"}
+            ];
+            
+            const links = [
+                {source: "ai", target: "answer1"},
+                {source: "ai", target: "answer2"},
+                {source: "ai", target: "answer3"},
+                {source: "website", target: "answer1"},
+                {source: "website", target: "answer2"},
+                {source: "external1", target: "answer3"},
+                {source: "external2", target: "answer3"}
+            ];
+            
+            // Add links
+            svg.selectAll('.link')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('class', 'link')
+                .attr('x1', d => {
+                    const source = nodes.find(node => node.id === d.source);
+                    return source.x;
+                })
+                .attr('y1', d => {
+                    const source = nodes.find(node => node.id === d.source);
+                    return source.y;
+                })
+                .attr('x2', d => {
+                    const target = nodes.find(node => node.id === d.target);
+                    return target.x;
+                })
+                .attr('y2', d => {
+                    const target = nodes.find(node => node.id === d.target);
+                    return target.y;
+                });
+                
+            // Add node groups
+            const nodeGroups = svg.selectAll('.node')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                
+            // Add circles for nodes
+            nodeGroups.append('circle')
+                .attr('r', d => d.type === "ai" ? 22 : 18)
+                .attr('class', d => d.type === "source" ? "source-node" : "citation-node")
+                .style('opacity', d => d.type === "ai" ? 0.9 : 0.7);
+                
+            // Add icons to nodes
+            nodeGroups.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central')
+                .attr('class', 'fa')
+                .style('font-family', 'FontAwesome')
+                .style('font-size', '12px')
+                .style('fill', d => d.type === "ai" ? "#ffffff" : "#ffffff")
+                .text(d => {
+                    if (d.type === "ai") return '\uf544'; // brain icon
+                    if (d.type === "source") return '\uf0e8'; // sitemap icon
+                    return '\uf00c'; // check icon
+                });
+                
+            // Add labels below nodes
+            nodeGroups.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('y', d => d.type === "ai" ? 32 : 27)
+                .attr('class', 'node-label')
+                .style('fill', d => d.type === "source" ? "#059669" : "#4b5563")
+                .style('font-weight', d => d.type === "source" ? "bold" : "normal")
+                .text(d => d.label);
+                
+            // Add percentage label on the side
+            svg.append('text')
+                .attr('x', width * 0.8)
+                .attr('y', height * 0.6)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '20px')
+                .style('font-weight', 'bold')
+                .style('fill', '#10b981')
+                .text('85%');
+                
+            svg.append('text')
+                .attr('x', width * 0.8)
+                .attr('y', height * 0.65)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('fill', '#4b5563')
+                .text('인용률');
+                
+            // Add a visual indicator for the citation rate
+            const meterWidth = 100;
+            const meterHeight = 8;
+            
+            const meterG = svg.append('g')
+                .attr('transform', `translate(${width * 0.8 - meterWidth/2}, ${height * 0.7})`);
+                
+            meterG.append('rect')
+                .attr('width', meterWidth)
+                .attr('height', meterHeight)
+                .attr('rx', meterHeight/2)
+                .attr('fill', '#e5e7eb');
+                
+            meterG.append('rect')
+                .attr('width', meterWidth * 0.85)
+                .attr('height', meterHeight)
+                .attr('rx', meterHeight/2)
+                .attr('fill', '#10b981');
+        });
+  </script>
+ 
+
+</body></html>
