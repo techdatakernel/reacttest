@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        .presentation-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .slide-wrapper {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .slide {
+            width: 1280px;
+            height: 720px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-button:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .nav-button.prev {
+            left: -70px;
+        }
+        
+        .nav-button.next {
+            right: -70px;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .slide-indicators {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+        
+        .indicator {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: white;
+            width: 30px;
+            border-radius: 5px;
+        }
+        
+        .slide-counter {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Common slide styles */
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
+        .geometric-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.1) 0%, rgba(156, 163, 175, 0.2) 100%);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+        
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            top: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+        
+        .shape-3 {
+            width: 200px;
+            height: 200px;
+            bottom: 100px;
+            right: 100px;
+            animation-delay: -10s;
+        }
+        
+        .aeo-highlight {
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 120px;
+            margin: 1.5rem auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title:before {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-wrapper">
+            <div class="slide-counter">
+                <span id="current-slide">1</span> / <span id="total-slides">10</span>
+            </div>
+
+<!-- Slide 1 -->
+<div class="slide gradient-bg grid-pattern flex flex-col items-center justify-center p-16 relative">
+   <!-- Geometric shapes for visual interest -->
+   <div class="geometric-shape shape-1">
+   </div>
+   <div class="geometric-shape shape-2">
+   </div>
+   <div class="geometric-shape shape-3">
+   </div>
+   <!-- Content container -->
+   <div class="z-10 text-center max-w-4xl">
+    <!-- Date -->
+    <div class="text-gray-500 mb-4">
+     2025년 11월 22일
+    </div>
+    <!-- Main title -->
+    <h1 class="text-5xl font-bold text-gray-800 mb-4 tracking-tight">
+     2026년 브랜드 웹사이트
+     <span class="aeo-highlight">
+      AEO
+     </span>
+     최적화 개발 전략 보고서
+    </h1>
+    <!-- Accent line -->
+    <div class="accent-line">
+    </div>
+    <!-- Subtitle -->
+    <p class="text-2xl text-gray-600 font-medium mt-6">
+     AI 검색 시대를 선도하는 웹사이트 개발 전략 제안서
+    </p>
+    <!-- AEO description -->
+    <p class="text-xl text-gray-500 mt-4">
+     AEO(Answer Engine Optimization) 기반의 데이터 중심 개발 패러다임 전환
+    </p>
+    <!-- Company placeholder -->
+    <div class="mt-16 text-xl text-gray-700 font-medium">
+     제안사: [귀사명]
+    </div>
+   </div>
+   <!-- Bottom decorative elements -->
+   <div class="absolute bottom-8 left-0 right-0 flex justify-center">
+    <div class="flex space-x-3">
+     <div class="w-3 h-3 rounded-full bg-gray-300">
+     </div>
+     <div class="w-3 h-3 rounded-full bg-green-400">
+     </div>
+     <div class="w-3 h-3 rounded-full bg-purple-400">
+     </div>
+    </div>
+   </div>
+  </div>
+
+<!-- Slide 2 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-12 relative">
+   <!-- Background shapes -->
+   <div class="geometric-shape shape-1">
+   </div>
+   <div class="geometric-shape shape-2">
+   </div>
+   <div class="geometric-shape shape-3">
+   </div>
+   
+   <div class="z-10 flex flex-col h-full">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+     <div class="text-gray-500 text-xl font-medium">
+      2026년 전략 발표
+     </div>
+     <div class="text-gray-500 text-xl">
+      Page 2/10
+     </div>
+    </div>
+    
+    <!-- Content -->
+    <div class="flex flex-1">
+     <!-- Left side - image -->
+     <div class="flex-1 p-4 flex flex-col">
+      <img alt="클리이언트 2026년 AEO 전략 보고 자료" class="rounded-lg shadow-lg object-cover w-full h-full" src="https://skyagent-artifacts.skywork.ai/ppt_images/2025-11-22/1992132952463593472/ae6af63f_1763839975.webp"/>
+     </div>
+     
+     <!-- Right side - text content -->
+     <div class="flex-1 p-4">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">
+       <span class="section-title">클리이언트 포트폴리오</span>
+      </h2>
+      
+      <!-- Features grid -->
+      <div class="space-y-4">
+       <div class="flex items-start">
+        <i class="fas fa-chart-line text-2xl aeo-highlight mr-4 mt-1"></i>
+        <div>
+         <h3 class="text-xl font-medium text-gray-800 mb-1">수익 성장 전략</h3>
+         <p class="text-gray-600">고객 잠재력 기반 측정 시스템으로 생산성 극대화와 높은 성과 최대화</p>
+        </div>
+       </div>
+       
+       <div class="flex items-start">
+        <i class="fas fa-search text-2xl aeo-highlight mr-4 mt-1"></i>
+        <div>
+         <h3 class="text-xl font-medium text-gray-800 mb-1">인식 확대 기술</h3>
+         <p class="text-gray-600">AI 기반 검색 엔진 결합으로 가시성 4.25% 증가 효과를 높이도록 구축</p>
+        </div>
+       </div>
+       
+       <div class="flex items-start">
+        <i class="fas fa-mobile-alt text-2xl aeo-highlight mr-4 mt-1"></i>
+        <div>
+         <h3 class="text-xl font-medium text-gray-800 mb-1">모바일 최적화</h3>
+         <p class="text-gray-600">祥린 과외 연합 제조사 구현 프로젝트로 마케팅 ROAS 55.7% 증감 개선</p>
+        </div>
+       </div>
+       
+       <div class="flex items-start">
+        <i class="fas fa-users text-2xl aeo-highlight mr-4 mt-1"></i>
+        <div>
+         <h3 class="text-xl font-medium text-gray-800 mb-1">고객 데이터 분석</h3>
+         <p class="text-gray-600">기본 가치 수치(AOV) 증가로 네트워크 전환율(CVR) 및 평균 구매 빈도 고도화</p>
+        </div>
+       </div>
+       
+       <div class="flex items-start">
+        <i class="fas fa-cogs text-2xl aeo-highlight mr-4 mt-1"></i>
+        <div>
+         <h3 class="text-xl font-medium text-gray-800 mb-1">통합 시스템 구축</h3>
+         <p class="text-gray-600">CGM 관리 시스템과의 안정적 연동으로 데이터 타당성 38.2% 증가 형성</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="mt-8 text-center">
+     <p class="text-gray-500">
+      <span class="aeo-highlight font-medium mr-2">실적 개선 사례</span> | 
+      2026년 1톤 기사워드_클리이언트 프로젝트 | 
+      <span class="font-medium">마케팅/디지털팀</span>
+     </p>
+    </div>
+   </div>
+  </div>
+
+<!-- Slide 3 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     제안 배경
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1">
+    <!-- Left Column -->
+    <div class="w-1/2 pr-8">
+     <div class="card p-5 h-full flex flex-col justify-between">
+      <div>
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-globe text-2xl text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         디지털 정보 환경의 변화
+        </h2>
+       </div>
+       <p class="text-gray-600 mb-3">
+        디지털 정보 환경이 변화하고 있으며, 검색 패러다임이 AI 기반 &#39;답변 엔진&#39; 시대로 전환되고 있습니다.
+       </p>
+      </div>
+      <div class="mt-4">
+       <div class="flex items-center mb-2">
+        <i class="fas fa-chart-line text-green-500 mr-2">
+        </i>
+        <span class="text-lg font-medium text-gray-700">
+         시장 동향
+        </span>
+       </div>
+       <p class="text-gray-600">
+        글로벌 IT 자문기관 가트너(Gartner)는 2026년까지 전통적 검색 엔진 검색량이
+        <span class="font-bold text-red-500">
+         25% 감소
+        </span>
+        할 것으로 예측했습니다.
+       </p>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-1/2 pl-8">
+     <div class="h-full flex flex-col">
+      <!-- Traffic Decrease Visualization -->
+      <div class="card p-5 mb-4 flex-1">
+       <h3 class="text-xl font-semibold text-gray-700 mb-3">
+        검색 엔진 트래픽 변화 예측
+       </h3>
+       <div class="h-40 w-full" id="traffic-chart">
+       </div>
+      </div>
+      <!-- New Strategy Need -->
+      <div class="card p-5 flex-1">
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-lightbulb text-2xl text-green-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         새로운 웹사이트 개발 전략의 필요성
+        </h2>
+       </div>
+       <ul class="text-gray-600 space-y-2">
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          웹사이트의 트래픽 발생 경로와 브랜드 노출 방식에 혁명적인 변화
+         </span>
+        </li>
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          AI가 가장 신뢰하고 우선적으로 인용하는 정보 소源이 되는 전략 필요
+         </span>
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     3 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Traffic chart visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('traffic-chart').clientWidth;
+            const height = document.getElementById('traffic-chart').clientHeight;
+            
+            const svg = d3.select('#traffic-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Data based on the 25% decrease mentioned in the document
+            const data = [
+                {year: '2023', value: 100},
+                {year: '2024', value: 85},
+                {year: '2025', value: 70},
+                {year: '2026', value: 55}
+            ];
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.year))
+                .range([0, innerWidth])
+                .padding(0.3);
+                
+            const y = d3.scaleLinear()
+                .domain([0, 100])
+                .range([innerHeight, 0]);
+                
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+            // Add X axis
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(x))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis label
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 0 - margin.left)
+                .attr('x', 0 - (innerHeight / 2))
+                .attr('dy', '1em')
+                .style('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .text('검색 엔진 트래픽 (%)');
+                
+            // Add bars
+            g.selectAll('.bar')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('class', 'bar')
+                .attr('x', d => x(d.year))
+                .attr('y', d => y(d.value))
+                .attr('width', x.bandwidth())
+                .attr('height', d => innerHeight - y(d.value))
+                .attr('fill', (d, i) => {
+                    const colors = ['#10b981', '#34d399', '#6ee7b7', '#8b5cf6'];
+                    return colors[i];
+                });
+                
+            // Add value labels on top of bars
+            g.selectAll('.label')
+                .data(data)
+                .enter()
+                .append('text')
+                .attr('class', 'label')
+                .attr('x', d => x(d.year) + x.bandwidth() / 2)
+                .attr('y', d => y(d.value) - 5)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .style('font-weight', 'bold')
+                .text(d => d.value + '%');
+                
+            // Add a line connecting the bars to show the trend
+            const line = d3.line()
+                .x(d => x(d.year) + x.bandwidth() / 2)
+                .y(d => y(d.value));
+                
+            g.append('path')
+                .datum(data)
+                .attr('class', 'line')
+                .attr('d', line)
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('fill', 'none');
+                
+            // Add dots at each data point
+            g.selectAll('.dot')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('class', 'dot')
+                .attr('cx', d => x(d.year) + x.bandwidth() / 2)
+                .attr('cy', d => y(d.value))
+                .attr('r', 4)
+                .attr('fill', '#8b5cf6');
+        });
+  </script>
+
+<!-- Slide 4 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative">
+   <!-- Header -->
+   <div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     시장 변화와 새로운 목표
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-8">
+    <!-- Market Changes Section -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-5">
+       <div class="icon-box mr-4">
+        <i class="fas fa-chart-line text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        시장 변화
+       </h2>
+      </div>
+      <div class="mb-6">
+       <p class="text-gray-600 mb-4">
+        글로벌 IT 자문기관 가트너(Gartner)는 2026년까지 전통적인 검색 엔진의 검색량이
+        <span class="font-bold text-red-500">
+         25% 감소
+        </span>
+        할 것으로 예측했습니다.
+       </p>
+       <p class="text-gray-600">
+        AI 챗봇과 가상 에이전트가 사용자 질의를 더 많이 처리하기 때문입니다.
+       </p>
+      </div>
+      <!-- Traffic Visualization -->
+      <div class="flex-1">
+       <h3 class="text-xl font-medium text-gray-700 mb-3">
+        검색 엔진 트래픽 감소 추세
+       </h3>
+       <div class="h-52 w-full" id="traffic-chart">
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- New Goals Section -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-5">
+       <div class="icon-box mr-4">
+        <i class="fas fa-bullseye text-2xl text-green-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        새로운 목표
+       </h2>
+      </div>
+      <div class="mb-6">
+       <p class="text-gray-600">
+        사용자는 이제 질문에 대한 직접적이고 종합적인 답변을 즉시 제공받기를 기대합니다.
+       </p>
+      </div>
+      <!-- AEO Strategy -->
+      <div class="flex-1 flex flex-col">
+       <h3 class="text-xl font-medium text-gray-700 mb-4">
+        AEO를 통한 브랜드 디지털 권위 확립
+       </h3>
+       <div class="flex items-center mb-4">
+        <div class="w-1/2 flex items-center">
+         <div class="icon-box mr-3">
+          <i class="fas fa-search text-xl text-gray-600">
+          </i>
+         </div>
+         <div>
+          <h4 class="text-lg font-medium text-gray-700">
+           전통적 SEO
+          </h4>
+          <p class="text-sm text-gray-500">
+           키워드 중심 최적화
+          </p>
+         </div>
+        </div>
+        <div class="w-1/2 flex items-center">
+         <div class="icon-box mr-3">
+          <i class="fas fa-robot text-xl text-gray-600">
+          </i>
+         </div>
+         <div>
+          <h4 class="text-lg font-medium text-gray-700">
+           AEO
+          </h4>
+          <p class="text-sm text-gray-500">
+           답변 엔진 중심 최적화
+          </p>
+         </div>
+        </div>
+       </div>
+       <div class="flex-1 flex items-center justify-center">
+        <div class="w-full">
+         <div class="flex justify-between items-center mb-2">
+          <div class="w-5/12 text-right pr-4">
+           <div class="text-lg font-medium text-gray-700">
+            답변 생성 시
+           </div>
+           <div class="text-sm text-gray-500">
+            출처 인용
+           </div>
+          </div>
+          <div class="w-2/12 flex justify-center">
+           <i class="fas fa-arrow-right text-2xl text-purple-400">
+           </i>
+          </div>
+          <div class="w-5/12 pl-4">
+           <div class="text-lg font-medium text-gray-700">
+            AI 검색 결과
+           </div>
+           <div class="text-sm text-gray-500">
+            브랜드 노출
+           </div>
+          </div>
+         </div>
+         <div class="text-center mt-4">
+          <p class="text-lg font-medium">
+           <span class="highlight-text">
+            AEO(답변 엔진 최적화)
+           </span>
+           를 통해 브랜드의 디지털 권위를 확립하는 것이 새로운 시대의 핵심 목표
+          </p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-6 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     4 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Traffic chart visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('traffic-chart').clientWidth;
+            const height = document.getElementById('traffic-chart').clientHeight;
+            
+            const svg = d3.select('#traffic-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Data based on the 25% decrease mentioned in the document
+            const data = [
+                {year: '2023', value: 100},
+                {year: '2024', value: 85},
+                {year: '2025', value: 70},
+                {year: '2026', value: 55}
+            ];
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.year))
+                .range([0, innerWidth])
+                .padding(0.3);
+                
+            const y = d3.scaleLinear()
+                .domain([0, 100])
+                .range([innerHeight, 0]);
+                
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+            // Add X axis
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(x))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis label
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 0 - margin.left)
+                .attr('x', 0 - (innerHeight / 2))
+                .attr('dy', '1em')
+                .style('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .text('검색 엔진 트래픽 (%)');
+                
+            // Add the line
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('d', d3.line()
+                    .x(d => x(d.year) + x.bandwidth()/2)
+                    .y(d => y(d.value))
+                );
+                
+            // Add the points
+            g.selectAll('dot')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('cx', d => x(d.year) + x.bandwidth()/2)
+                .attr('cy', d => y(d.value))
+                .attr('r', 5)
+                .attr('fill', '#8b5cf6');
+                
+            // Add the bars
+            g.selectAll('rect')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('x', d => x(d.year))
+                .attr('y', d => y(d.value))
+                .attr('width', x.bandwidth())
+                .attr('height', d => innerHeight - y(d.value))
+                .attr('fill', (d, i) => {
+                    const colors = ['#10b981', '#34d399', '#6ee7b7', '#8b5cf6'];
+                    return colors[i];
+                });
+                
+            // Add value labels
+            g.selectAll('.text')
+                .data(data)
+                .enter()
+                .append('text')
+                .attr('class', 'label')
+                .attr('x', d => x(d.year) + x.bandwidth()/2)
+                .attr('y', d => y(d.value) - 10)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .style('font-weight', 'bold')
+                .text(d => d.value + '%');
+        });
+  </script>
+
+<!-- Slide 5 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-4">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     핵심 성공 지표
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Introduction -->
+   <div class="mb-4">
+    <p class="text-gray-600 text-lg">
+     AI 검색 시대의 성공은 더 이상 단순한 &#39;클릭&#39; 수에 의존하지 않습니다. 이제는 AI가 우리 브랜드를 얼마나 &#39;인용&#39;하고 &#39;노출&#39;하는지가 핵심적인 성공 지표가 됩니다.
+    </p>
+   </div>
+   <!-- Main Content - Two Key Metrics -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Brand Visibility -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="metric-icon mr-3" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+        <i class="fas fa-eye text-white">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        브랜드 가시성
+       </h2>
+      </div>
+      <div class="space-y-3 flex-1">
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         정의
+        </h3>
+        <p class="text-gray-600">
+         특정 주제와 관련된 사용자 질문에 대해 AI가 생성한 답변에서 귀사의 브랜드가 얼마나 자주 언급되는지를 측정하는 지표
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         중요성
+        </h3>
+        <p class="text-gray-600">
+         AI 검색 결과 최상단 노출을 통한 잠재 고객 초기 인식 단계에서의 강력한 영향력 확보
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         목표
+        </h3>
+        <p class="text-gray-600">
+         100점에 가까울수록, 관련된 모든 질문에 대해 AI가 귀사 브랜드를 최소 1회 이상 언급하여 압도적인 인지도 확보
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         계산식
+        </h3>
+        <div class="formula text-gray-700">
+         브랜드 가시성 (%) = (귀사 브랜드 언급 답변 수 / 총 답변 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Domain Citation Rate -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="metric-icon mr-3" style="background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);">
+        <i class="fas fa-link text-white">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        도메인 인용率
+       </h2>
+      </div>
+      <div class="space-y-3 flex-1">
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         정의
+        </h3>
+        <p class="text-gray-600">
+         AI가 답변을 생성할 때, 정보의 출처(Source)로서 귀사의 공식 웹사이트(도메인)를 얼마나 자주 인용하는지를 측정
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         중요성
+        </h3>
+        <p class="text-gray-600">
+         AI가 귀사 웹사이트 콘텐츠를 신뢰할 수 있는 정보로 판단하고 있음을 의미하며, 전문가 및 권위자로서 공인받는 효과
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         목표
+        </h3>
+        <p class="text-gray-600">
+         100점에 가까울수록, AI가 생성하는 모든 답변이 귀사 웹사이트를 정보의 원천으로 활용하여 최고의 정보 권위 달성
+        </p>
+       </div>
+       <div>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">
+         계산식
+        </h3>
+        <div class="formula text-gray-700">
+         도메인 인용率 (%) = (귀사 웹사이트 인용 답변 수 / 총 답변 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     5 / 10
+    </div>
+   </div>
+  </div>
+
+<!-- Slide 6 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     브랜드 가시성
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Left Column -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-eye text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        정의
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-4">
+       브랜드 가시성은 사용자 질문에 대한 AI 답변에서 귀사의 브랜드가 얼마나 자주 언급되는지를 측정하는 지표입니다.
+      </p>
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-star text-2xl text-green-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        중요성
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-4">
+       AI 검색 결과 최상단 노출을 통한 잠재 고객 초기 인식 단계에서의 영향력 확보를 통해 브랜드 인지도를 높입니다.
+      </p>
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-bullseye text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        목표
+       </h2>
+      </div>
+      <p class="text-gray-600">
+       100점에 가까울수록, 관련된 질문에 대해 AI가 귀사 브랜드를 최소 1회 이상 언급하여 압도적 인지도를 확보했음을 의미합니다.
+      </p>
+     </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-1/2">
+     <div class="flex flex-col h-full space-y-4">
+      <!-- Formula Section -->
+      <div class="card p-5">
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-calculator text-2xl text-green-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         계산식
+        </h2>
+       </div>
+       <div class="formula text-lg">
+        브랜드 가시성 (%) =
+        <span class="block mt-1 text-center">
+         <span class="highlight">
+          (귀사 브랜드를 1번이라도 언급한 답변의 수 / 분석 기간 동안 수집된 총 답변의 수)
+         </span>
+         × 100
+        </span>
+       </div>
+      </div>
+      <!-- Visualization Section -->
+      <div class="card p-5 flex-1">
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-chart-bar text-2xl text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         브랜드 가시성 시각화
+        </h2>
+       </div>
+       <div class="h-40 w-full" id="visibility-chart">
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     6 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Brand visibility chart visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('visibility-chart').clientWidth;
+            const height = document.getElementById('visibility-chart').clientHeight;
+            
+            const svg = d3.select('#visibility-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Create a visualization that represents brand visibility
+            // We'll create a simple gauge chart to represent the concept
+            
+            const margin = {top: 20, right: 30, bottom: 30, left: 30};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+            // Create gauge background
+            const gaugeWidth = innerWidth;
+            const gaugeHeight = innerHeight * 0.5;
+            const gaugeX = 0;
+            const gaugeY = innerHeight * 0.25;
+            
+            // Add gauge background
+            g.append('rect')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY)
+                .attr('width', gaugeWidth)
+                .attr('height', gaugeHeight)
+                .attr('rx', gaugeHeight / 2)
+                .attr('ry', gaugeHeight / 2)
+                .attr('fill', '#e5e7eb');
+                
+            // Add gauge fill (representing brand visibility)
+            const fillWidth = gaugeWidth * 0.8; // 80% visibility as example
+            g.append('rect')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY)
+                .attr('width', fillWidth)
+                .attr('height', gaugeHeight)
+                .attr('rx', gaugeHeight / 2)
+                .attr('ry', gaugeHeight / 2)
+                .attr('fill', linearGradient);
+                
+            // Add gauge labels
+            g.append('text')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('0%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('50%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280')
+                .attr('text-anchor', 'middle');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('100%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280')
+                .attr('text-anchor', 'end');
+                
+            // Add brand icon in the middle
+            g.append('circle')
+                .attr('cx', gaugeX + gaugeWidth / 2)
+                .attr('cy', gaugeY + gaugeHeight / 2)
+                .attr('r', gaugeHeight / 2 - 10)
+                .attr('fill', 'white')
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('class', 'pulse');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY + gaugeHeight / 2 + 5)
+                .text('品牌')
+                .attr('font-size', '14px')
+                .attr('fill', '#8b5cf6')
+                .attr('text-anchor', 'middle')
+                .attr('font-weight', 'bold');
+                
+            // Add title
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY - 10)
+                .text('브랜드 가시성 지표')
+                .attr('font-size', '16px')
+                .attr('fill', '#374151')
+                .attr('font-weight', 'bold')
+                .attr('text-anchor', 'middle');
+                
+            // Define gradient
+            const linearGradient = 'linearGradient-1';
+            
+            svg.append('defs')
+                .append('linearGradient')
+                .attr('id', linearGradient)
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '100%')
+                .attr('y2', '0%')
+                .selectAll('stop')
+                .data([
+                    {offset: '0%', color: '#10b981'},
+                    {offset: '100%', color: '#8b5cf6'}
+                ])
+                .enter()
+                .append('stop')
+                .attr('offset', d => d.offset)
+                .attr('stop-color', d => d.color);
+        });
+  </script>
+
+<!-- Slide 7 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-5">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     도메인 인용率
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-8">
+    <!-- Left Column -->
+    <div class="w-1/2">
+     <div class="card p-5 h-full flex flex-col justify-between">
+      <div>
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-link text-xl text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         정의
+        </h2>
+       </div>
+       <p class="text-gray-600 mb-4 pl-16">
+        도메인 인용率은 AI가 답변을 생성할 때, 정보의 출처(Source)로서 귀사의 공식 웹사이트를 얼마나 자주 인용하는지를 측정하는 지표입니다.
+       </p>
+       <div class="flex items-center mb-3 mt-4">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-star text-xl text-green-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         중요성
+        </h2>
+       </div>
+       <ul class="text-gray-600 space-y-2 pl-16">
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          AI가 귀사 웹사이트 콘텐츠를 신뢰할 수 있는 정보로 판단
+         </span>
+        </li>
+        <li class="flex items-start">
+         <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+         </i>
+         <span>
+          해당 분야의 전문가 및 권위자로서 공인받는 효과
+         </span>
+        </li>
+       </ul>
+      </div>
+      <div class="mt-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-4" style="width: 40px; height: 40px;">
+         <i class="fas fa-bullseye text-lg text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-700">
+         목표
+        </h2>
+       </div>
+       <p class="text-gray-600 pl-14">
+        100점에 가까울수록 AI가 생성하는 답변이 귀사 웹사이트를 정보의 원천으로 활용하여 최고의 정보 권위를 달성했음을 의미합니다.
+       </p>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-1/2">
+     <div class="h-full flex flex-col space-y-4">
+      <!-- Visualization -->
+      <div class="card p-5 flex-1">
+       <h3 class="text-xl font-semibold text-gray-700 mb-3">
+        도메인 인용率 시각화
+       </h3>
+       <div class="h-40 w-full" data-sk-source-container="chart" data-sk-source-id="1992133214351994897" data-sk-source-type="pdf" id="citation-network">
+       </div>
+      </div>
+      <!-- Formula -->
+      <div class="card p-4 flex-1">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-4" style="width: 36px; height: 36px;">
+         <i class="fas fa-calculator text-lg text-green-500">
+         </i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-700">
+         계산식
+        </h3>
+       </div>
+       <div class="formula text-gray-700">
+        도메인 인용率 (%) =
+        <div class="border-t border-gray-300 my-1">
+        </div>
+        <div class="pl-4">
+         (귀사 웹사이트를 출처로 인용한 답변의 수 /
+         <br/>
+         분석 기간 동안 수집된 총 답변의 수) × 100
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     7 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Citation network visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('citation-network').clientWidth;
+            const height = document.getElementById('citation-network').clientHeight;
+            
+            const svg = d3.select('#citation-network')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Create a simple network diagram to illustrate domain citation rate
+            const nodes = [
+                {id: "ai", label: "AI", x: width * 0.5, y: height * 0.2, type: "ai"},
+                {id: "website", label: "귀사 웹사이트", x: width * 0.5, y: height * 0.6, type: "source"},
+                {id: "answer1", label: "답변", x: width * 0.25, y: height * 0.4, type: "citation"},
+                {id: "answer2", label: "답변", x: width * 0.75, y: height * 0.4, type: "citation"},
+                {id: "answer3", label: "답변", x: width * 0.5, y: height * 0.25, type: "citation"},
+                {id: "external1", label: "기타 출처", x: width * 0.2, y: height * 0.7, type: "citation"},
+                {id: "external2", label: "기타 출처", x: width * 0.8, y: height * 0.7, type: "citation"}
+            ];
+            
+            const links = [
+                {source: "ai", target: "answer1"},
+                {source: "ai", target: "answer2"},
+                {source: "ai", target: "answer3"},
+                {source: "website", target: "answer1"},
+                {source: "website", target: "answer2"},
+                {source: "external1", target: "answer3"},
+                {source: "external2", target: "answer3"}
+            ];
+            
+            // Add links
+            svg.selectAll('.link')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('class', 'link')
+                .attr('x1', d => {
+                    const source = nodes.find(node => node.id === d.source);
+                    return source.x;
+                })
+                .attr('y1', d => {
+                    const source = nodes.find(node => node.id === d.source);
+                    return source.y;
+                })
+                .attr('x2', d => {
+                    const target = nodes.find(node => node.id === d.target);
+                    return target.x;
+                })
+                .attr('y2', d => {
+                    const target = nodes.find(node => node.id === d.target);
+                    return target.y;
+                });
+                
+            // Add node groups
+            const nodeGroups = svg.selectAll('.node')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.x}, ${d.y})`);
+                
+            // Add circles for nodes
+            nodeGroups.append('circle')
+                .attr('r', d => d.type === "ai" ? 22 : 18)
+                .attr('class', d => d.type === "source" ? "source-node" : "citation-node")
+                .style('opacity', d => d.type === "ai" ? 0.9 : 0.7);
+                
+            // Add icons to nodes
+            nodeGroups.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central')
+                .attr('class', 'fa')
+                .style('font-family', 'FontAwesome')
+                .style('font-size', '12px')
+                .style('fill', d => d.type === "ai" ? "#ffffff" : "#ffffff")
+                .text(d => {
+                    if (d.type === "ai") return '\uf544'; // brain icon
+                    if (d.type === "source") return '\uf0e8'; // sitemap icon
+                    return '\uf00c'; // check icon
+                });
+                
+            // Add labels below nodes
+            nodeGroups.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('y', d => d.type === "ai" ? 32 : 27)
+                .attr('class', 'node-label')
+                .style('fill', d => d.type === "source" ? "#059669" : "#4b5563")
+                .style('font-weight', d => d.type === "source" ? "bold" : "normal")
+                .text(d => d.label);
+                
+            // Add percentage label on the side
+            svg.append('text')
+                .attr('x', width * 0.8)
+                .attr('y', height * 0.6)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '20px')
+                .style('font-weight', 'bold')
+                .style('fill', '#10b981')
+                .text('85%');
+                
+            svg.append('text')
+                .attr('x', width * 0.8)
+                .attr('y', height * 0.65)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('fill', '#4b5563')
+                .text('인용률');
+                
+            // Add a visual indicator for the citation rate
+            const meterWidth = 100;
+            const meterHeight = 8;
+            
+            const meterG = svg.append('g')
+                .attr('transform', `translate(${width * 0.8 - meterWidth/2}, ${height * 0.7})`);
+                
+            meterG.append('rect')
+                .attr('width', meterWidth)
+                .attr('height', meterHeight)
+                .attr('rx', meterHeight/2)
+                .attr('fill', '#e5e7eb');
+                
+            meterG.append('rect')
+                .attr('width', meterWidth * 0.85)
+                .attr('height', meterHeight)
+                .attr('rx', meterHeight/2)
+                .attr('fill', '#10b981');
+        });
+  </script>
+
+<!-- Slide 8 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     AEO Analytics v11.1 솔루션
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Left Column: Solution Description -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-3">
+       AI 검색 엔진 분석 전문 도구
+      </h2>
+      <p class="text-gray-600 mb-5">
+       AEO 전략은 정밀한 데이터 분석에서 시작됩니다. AI 검색 엔진의 복잡한 알고리즘에 대응하기 위해 개발한 전문 분석 솔루션 &#39;AEO Analytics v11.1&#39;은 웹사이트 콘텐츠를 과학적으로 진단하고 최적화 방향을 제시합니다.
+      </p>
+      <div class="flex-1 flex flex-col justify-between">
+       <div class="mb-5">
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">
+         주요 기능
+        </h3>
+        <ul class="space-y-2">
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-search text-purple-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            AI 검색 엔진 평가 분석
+           </span>
+           <p class="text-gray-600 text-sm">
+            ChatGPT, Gemini, Perplexity 등 주요 AI 검색 엔진이 콘텐츠를 어떻게 평가하는지를 분석
+           </p>
+          </div>
+         </li>
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-chart-bar text-green-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            정량적 AEO 점수화
+           </span>
+           <p class="text-gray-600 text-sm">
+            정보 검색 알고리즘, 자연어 처리 기술을 기반으로 콘텐츠의 AEO 잠재력을 108점 만점으로 평가
+           </p>
+          </div>
+         </li>
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-lightbulb text-purple-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            개선 방안 도출
+           </span>
+           <p class="text-gray-600 text-sm">
+            콘텐츠의 강점과 약점을 분석하여 구체적인 최적화 방안을 제안
+           </p>
+          </div>
+         </li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column: Process and Score Visualization -->
+    <div class="w-1/2">
+     <div class="flex flex-col h-full space-y-5">
+      <!-- Analysis Process -->
+      <div class="card p-6 flex-1">
+       <h3 class="text-xl font-semibold text-gray-700 mb-3">
+        분석 프로세스
+       </h3>
+       <div class="flex items-center justify-between mt-4">
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-file-alt text-green-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          웹사이트 콘텐츠
+         </span>
+        </div>
+        <div class="process-arrow flex-grow">
+        </div>
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-cogs text-purple-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          알고리즘 분석
+         </span>
+        </div>
+        <div class="process-arrow flex-grow">
+        </div>
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-chart-line text-green-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          AEO 점수
+         </span>
+        </div>
+       </div>
+      </div>
+      <!-- Score Visualization -->
+      <div class="card p-6 flex-1 flex flex-col items-center justify-center">
+       <h3 class="text-xl font-semibold text-gray-700 mb-4">
+        AEO 점수 시스템
+       </h3>
+       <div class="flex items-center justify-center w-full">
+        <div class="score-circle mr-6">
+         <div class="text-3xl font-bold text-gray-800">
+          108
+         </div>
+         <div class="text-sm text-gray-600">
+          최고 점수
+         </div>
+        </div>
+        <div class="flex flex-col justify-center flex-1">
+         <div class="mb-3">
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            정보 검색
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-green-500 rounded-full" style="width: 90%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            90%
+           </span>
+          </div>
+         </div>
+         <div class="mb-3">
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            natural language
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-purple-500 rounded-full" style="width: 85%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            85%
+           </span>
+          </div>
+         </div>
+         <div>
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            데이터 구조화
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-green-500 rounded-full" style="width: 80%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            80%
+           </span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     8 / 10
+    </div>
+   </div>
+  </div>
+
+<!-- Slide 9 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-14 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     주요 분석 기능
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Left Column - Evaluation System -->
+    <div class="w-1/3">
+     <div class="feature-card p-5 flex flex-col h-full">
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-chart-bar text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        정량적 평가 시스템
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-3">
+       AEO Analytics v11.1은 AI 검색 엔진의 복잡한 알고리즘에 대응하기 위해 108점 만점의 평가 시스템을 통해 콘텐츠의 AEO 잠재력을 측정합니다.
+      </p>
+      <div class="flex justify-center my-3">
+       <div class="progress-ring" id="score-ring">
+       </div>
+      </div>
+      <div class="mt-auto">
+       <div class="flex items-center mb-1">
+        <i class="fas fa-check-circle text-green-500 mr-2">
+        </i>
+        <span class="text-gray-700">
+         정보 검색 알고리즘 기반 분석
+        </span>
+       </div>
+       <div class="flex items-center mb-1">
+        <i class="fas fa-check-circle text-green-500 mr-2">
+        </i>
+        <span class="text-gray-700">
+         자연어 처리 기술 활용
+        </span>
+       </div>
+       <div class="flex items-center">
+        <i class="fas fa-check-circle text-green-500 mr-2">
+        </i>
+        <span class="text-gray-700">
+         구체적인 개선 방안 제시
+        </span>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column - Analysis Features -->
+    <div class="w-2/3">
+     <div class="grid grid-cols-2 gap-4 h-full">
+      <!-- Feature 1 -->
+      <div class="feature-card p-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-3 flex-shrink-0">
+         <i class="fas fa-search text-xl text-green-500">
+         </i>
+        </div>
+        <div>
+         <h3 class="text-xl font-semibold text-gray-700">
+          검색 엔진 평가 분석
+         </h3>
+         <span class="score-badge">
+          최대 30점
+         </span>
+        </div>
+       </div>
+       <p class="text-gray-600 text-sm">
+        ChatGPT, Gemini 등 주요 AI 검색 엔진이 콘텐츠를 어떻게 평가하는지를 분석하여 검색 엔진 최적화를 제공합니다.
+       </p>
+      </div>
+      <!-- Feature 2 -->
+      <div class="feature-card p-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-3 flex-shrink-0">
+         <i class="fas fa-sitemap text-xl text-purple-500">
+         </i>
+        </div>
+        <div>
+         <h3 class="text-xl font-semibold text-gray-700">
+          사이트 구조 분석
+         </h3>
+         <span class="score-badge">
+          최대 20점
+         </span>
+        </div>
+       </div>
+       <p class="text-gray-600 text-sm">
+        웹사이트의 URL 구조, 내비게이션, 링크 구조 등 AI 검색 엔진이 사이트를 크롤링하는 데 영향을 미치는 요소들을 평가합니다.
+       </p>
+      </div>
+      <!-- Feature 3 -->
+      <div class="feature-card p-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-3 flex-shrink-0">
+         <i class="fas fa-file-alt text-xl text-green-500">
+         </i>
+        </div>
+        <div>
+         <h3 class="text-xl font-semibold text-gray-700">
+          콘텐츠 품질 평가
+         </h3>
+         <span class="score-badge">
+          최대 25점
+         </span>
+        </div>
+       </div>
+       <p class="text-gray-600 text-sm">
+        콘텐츠의 신뢰성, 유용성, 완전성 등을 분석하여 AI가 생성한 답변에서의 인용 가능성을 높입니다.
+       </p>
+      </div>
+      <!-- Feature 4 -->
+      <div class="feature-card p-4">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-3 flex-shrink-0">
+         <i class="fas fa-users text-xl text-purple-500">
+         </i>
+        </div>
+        <div>
+         <h3 class="text-xl font-semibold text-gray-700">
+          사용자 경험 분석
+         </h3>
+         <span class="score-badge">
+          최대 15점
+         </span>
+        </div>
+       </div>
+       <p class="text-gray-600 text-sm">
+        페이지 로드 속도, 모바일 적합성, 사용자 상호작용 등 사용자 경험과 관련된 요소들을 평가합니다.
+       </p>
+      </div>
+      <!-- Feature 5 -->
+      <div class="feature-card p-4 col-span-2">
+       <div class="flex items-center mb-2">
+        <div class="icon-circle mr-3 flex-shrink-0">
+         <i class="fas fa-lightbulb text-xl text-green-500">
+         </i>
+        </div>
+        <div>
+         <h3 class="text-xl font-semibold text-gray-700">
+          개선 방안 제안
+         </h3>
+         <span class="score-badge">
+          최대 18점
+         </span>
+        </div>
+       </div>
+       <p class="text-gray-600 text-sm">
+        구체적이고 실행 가능한 개선 방안을 제안하여 AEO 전략 수립에 도움을 줍니다. AI 검색 엔진의 알고리즘에 맞춘 최적화를 지원합니다.
+       </p>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     9 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Progress ring visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = 100;
+            const height = 100;
+            const radius = Math.min(width, height) / 2;
+            const innerRadius = radius * 0.7;
+            
+            const svg = d3.select('#score-ring')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .append('g')
+                .attr('transform', `translate(${width / 2}, ${height / 2})`);
+                
+            // Background circle
+            svg.append('circle')
+                .attr('r', radius)
+                .attr('fill', 'none')
+                .attr('stroke', '#e5e7eb')
+                .attr('stroke-width', 8);
+                
+            // Progress arc
+            const arc = d3.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(radius)
+                .startAngle(0)
+                .endAngle(Math.PI * 2 * 0.85); // 85% progress
+                
+            svg.append('path')
+                .attr('d', arc)
+                .attr('fill', 'url(#gradient)');
+                
+            // Add gradient
+            const gradient = svg.append('defs')
+                .append('linearGradient')
+                .attr('id', 'gradient')
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '100%')
+                .attr('y2', '0%');
+                
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', '#10b981');
+                
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', '#8b5cf6');
+                
+            // Center text
+            svg.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '0.3em')
+                .attr('font-size', '24px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#4b5563')
+                .text('108점');
+                
+            svg.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '1.8em')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280')
+                .text('만점 평가 시스템');
+        });
+  </script>
+
+<!-- Slide 10 -->
+<div class="slide gradient-bg grid-pattern flex flex-col p-16 relative">
+   <!-- Header -->
+   <div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     결론 및 제언
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-8">
+    <!-- Left Column: Core Strategy -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-4">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-lightbulb text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        전략의 핵심
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-6">
+       귀사의 웹사이트는 더 이상 단순한 디지털 브로슈어가 아닌,
+       <span class="highlight-text font-semibold">
+        AI 시대에 브랜드의 목소리를 내고 신뢰를 구축하는 가장 중요한 자산
+       </span>
+       이 되어야 합니다.
+      </p>
+      <div class="flex-1 flex flex-col justify-center">
+       <div class="strategy-item flex items-start mb-5">
+        <div class="mr-4 mt-1">
+         <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+          <i class="fas fa-sync text-green-500">
+          </i>
+         </div>
+        </div>
+        <div>
+         <h3 class="text-lg font-medium text-gray-700 mb-1">
+          개발 방식의 대전환
+         </h3>
+         <p class="text-gray-600">
+          기존의 관성적인 개발 방식에서 벗어나, AI의 언어로 소통하고 사용자의 질문에 가장 정확한 해답을 제공하는 콘텐츠 전략으로의 대전환이 시급합니다.
+         </p>
+        </div>
+       </div>
+       <div class="strategy-item flex items-start">
+        <div class="mr-4 mt-1">
+         <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+          <i class="fas fa-chart-line text-purple-500">
+          </i>
+         </div>
+        </div>
+        <div>
+         <h3 class="text-lg font-medium text-gray-700 mb-1">
+          데이터 기반 접근
+         </h3>
+         <p class="text-gray-600">
+          AEO Analytics v11.1을 활용한 정밀한 분석과 최적화를 통해, 브랜드의 디지털 권위를 점진적으로 확장해 나가는 전략이 필요합니다.
+         </p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column: Future Plans &amp; CTA -->
+    <div class="w-1/2 flex flex-col space-y-6">
+     <!-- Future Plans -->
+     <div class="card p-6 flex-1">
+      <div class="flex items-center mb-4">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-road text-2xl text-green-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        향후 계획
+       </h2>
+      </div>
+      <ul class="text-gray-600 space-y-3">
+       <li class="flex items-start">
+        <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+        </i>
+        <span>
+         AEO Analytics v11.1을 활용한 데이터 기반의 진단과 최적화
+        </span>
+       </li>
+       <li class="flex items-start">
+        <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+        </i>
+        <span>
+         AEO 중심의 콘텐츠 개발 및 운영 관리 시스템 구축
+        </span>
+       </li>
+       <li class="flex items-start">
+        <i class="fas fa-check-circle text-green-500 mt-1 mr-2">
+        </i>
+        <span>
+         다가오는 2026년 AI 검색 시장의 리더로의 브랜드 자리매김 지원
+        </span>
+       </li>
+      </ul>
+     </div>
+     <!-- Call to Action -->
+     <div class="card p-6 flex-1 flex flex-col justify-between">
+      <div>
+       <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+        다음 단계
+       </h2>
+       <p class="text-gray-600 mb-4">
+        본 제안에 대한 긍정적인 검토를 부탁드리며, 구체적인 실행 계획 논의를 위한 후속 미팅을 제안합니다.
+       </p>
+      </div>
+      <div class="flex justify-center">
+       <button class="cta-button flex items-center">
+        <span class="mr-2">
+         미팅 일정 조율하기
+        </span>
+        <i class="fas fa-arrow-right">
+        </i>
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-6 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     10 / 10
+    </div>
+   </div>
+  </div>
+
+            <!-- Navigation Buttons -->
+            <button class="nav-button prev" id="prevBtn" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-button next" id="nextBtn" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <!-- Slide Indicators -->
+            <div class="slide-indicators" id="indicators"></div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 10;
+        
+        // Initialize slides
+        function initSlides() {
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.getElementById('indicators');
+            
+            // Create indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                indicator.onclick = () => goToSlide(i);
+                indicators.appendChild(indicator);
+            }
+            
+            // Show first slide
+            showSlide(0);
+        }
+        
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.indicator');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentSlideSpan = document.getElementById('current-slide');
+            
+            // Wrap around
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+                return;
+            }
+            if (n < 0) {
+                currentSlide = 0;
+                return;
+            }
+            
+            currentSlide = n;
+            
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(ind => ind.classList.remove('active'));
+            
+            // Show current slide
+            if (slides[currentSlide]) {
+                slides[currentSlide].classList.add('active');
+            }
+            if (indicators[currentSlide]) {
+                indicators[currentSlide].classList.add('active');
+            }
+            
+            // Update counter
+            currentSlideSpan.textContent = currentSlide + 1;
+            
+            // Update button states
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+        
+        function goToSlide(n) {
+            showSlide(n);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initSlides);
+    </script>
+</body>
+</html>
