@@ -458,6 +458,70 @@
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-tooltip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: help;
+            margin-left: 0.5rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(139, 92, 246, 0.05));
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        .info-box-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box-content {
+            color: var(--gray-700);
+        }
+
+        .info-box.collapsible {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .info-box.collapsible:hover {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(139, 92, 246, 0.08));
+        }
+
+        .info-box.collapsed .info-box-content {
+            display: none;
+        }
+
+        .info-box.collapsed .toggle-icon::before {
+            content: '▶';
+        }
+
+        .toggle-icon::before {
+            content: '▼';
+            font-size: 0.75rem;
+            color: var(--primary);
         }
 
         .score-grid {
@@ -1132,6 +1196,19 @@
                 <!-- BM25 분석 -->
                 <div class="detail-section">
                     <h3>🔤 BM25 키워드 분석</h3>
+
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 BM25란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            BM25(Best Matching 25)는 검색 엔진에서 사용되는 키워드 기반 관련성 평가 알고리즘입니다.
+                            문서 내 키워드의 <strong>빈도(TF)</strong>, <strong>위치</strong>, <strong>희소성(IDF)</strong> 등을 종합적으로 분석하여
+                            검색어와 문서의 매칭도를 점수화합니다. 높은 점수는 AI 검색 엔진이 해당 콘텐츠를 더 관련성 있는 답변으로 인식한다는 의미입니다.
+                        </div>
+                    </div>
+
                     ${data.bm25_analysis.keywords && data.bm25_analysis.keywords.length > 0 ? `
                     <table class="keyword-table">
                         <thead>
@@ -1171,6 +1248,18 @@
                 <!-- 시맨틱 분석 -->
                 <div class="detail-section">
                     <h3>🧠 시맨틱 유사도 분석</h3>
+
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 시맨틱 분석이란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            시맨틱(Semantic) 분석은 AI가 텍스트의 의미를 이해하고 평가하는 방식입니다.
+                            단순 키워드 매칭을 넘어 <strong>주제 일치도</strong>, <strong>의미적 관련성</strong>, <strong>맥락 이해도</strong>, <strong>정보 충족도</strong> 등을
+                            종합적으로 분석하여 콘텐츠의 품질을 평가합니다. ChatGPT, Gemini 같은 AI 검색 엔진이 답변을 선택하는 핵심 기준입니다.
+                        </div>
+                    </div>
 
                     <div class="dimension-card">
                         <div class="dimension-header">
@@ -1219,6 +1308,18 @@
                 <div class="detail-section">
                     <h3>❓ FAQ 구조 분석</h3>
 
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 FAQ 구조 분석이란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            FAQ(Frequently Asked Questions) 구조 분석은 콘텐츠가 <strong>질문-답변 형식</strong>으로 구성되어 있는지 평가합니다.
+                            AI 검색 엔진은 명확한 Q&A 형식의 콘텐츠를 선호하며, 이를 통해 사용자 질문에 더 정확한 답변을 제공할 수 있습니다.
+                            <strong>AI 친화성</strong>은 AI가 이해하고 인용하기 쉬운 구조인지를 측정합니다.
+                        </div>
+                    </div>
+
                     <div class="score-grid" style="grid-template-columns: 1fr 1fr;">
                         <div class="score-item">
                             <div class="score-item-label">FAQ 점수</div>
@@ -1250,6 +1351,19 @@
                 ${data.query_expansion && data.query_expansion.expansions && data.query_expansion.expansions.length > 0 ? `
                 <div class="detail-section">
                     <h3>🔍 쿼리 확장 결과</h3>
+
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 쿼리 확장이란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            쿼리 확장(Query Expansion)은 원본 질문과 관련된 <strong>추가 검색 질문들을 자동 생성</strong>하는 기능입니다.
+                            사용자가 실제로 궁금해할 수 있는 관련 질문들을 파악하여, 콘텐츠에 이러한 정보가 포함되어 있는지 확인할 수 있습니다.
+                            <strong>콘텐츠 갭</strong>(누락된 주제)을 발견하고 보완하는데 유용합니다.
+                        </div>
+                    </div>
+
                     ${data.query_expansion.expansions.map(exp => `
                     <div class="list-item">
                         <div class="list-item-header">${exp.query}</div>
@@ -1263,6 +1377,20 @@
                 ${data.relevance_evidence && data.relevance_evidence.evidence && data.relevance_evidence.evidence.length > 0 ? `
                 <div class="detail-section">
                     <h3>📌 관련성 증거</h3>
+
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 관련성 증거란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            관련성 증거는 문서에서 <strong>질문과 가장 관련성 높은 구절</strong>을 추출하여 평가한 결과입니다.
+                            <strong>키워드 관련성</strong>은 검색어가 얼마나 잘 포함되어 있는지를,
+                            <strong>의미 관련성</strong>은 문맥상 의미가 얼마나 일치하는지를 나타냅니다.
+                            AI가 실제로 인용할 가능성이 높은 부분을 확인할 수 있습니다.
+                        </div>
+                    </div>
+
                     ${data.relevance_evidence.evidence.map(ev => `
                     <div class="list-item">
                         <div class="list-item-content" style="margin-bottom: 0.75rem;">"${ev.passage}"</div>
@@ -1278,6 +1406,18 @@
                 <!-- AEO 권고사항 -->
                 <div class="detail-section">
                     <h3>💡 AEO 개선 권고사항</h3>
+
+                    <div class="info-box collapsible" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 AEO 개선 제안이란?</span>
+                        </div>
+                        <div class="info-box-content">
+                            Answer Engine Optimization(AEO) 개선 제안은 AI 검색 엔진에서 더 나은 답변 제공을 위한 최적화 방안입니다.
+                            <strong>누락된 정보</strong>를 파악하여 보완하고, <strong>실행 가능한 액션</strong>을 제시하며,
+                            개선 시 <strong>예상되는 점수 증가</strong>를 확인할 수 있습니다. 실질적인 콘텐츠 개선 방향을 제공합니다.
+                        </div>
+                    </div>
 
                     ${data.recommendations.missing_info && data.recommendations.missing_info.length > 0 ? `
                     <h4 style="color: var(--danger); margin-bottom: 1rem;">📌 누락된 정보</h4>
@@ -1325,6 +1465,19 @@
                 <!-- 처리 시간 -->
                 <div class="detail-section">
                     <h3>⏱️ 처리 시간</h3>
+
+                    <div class="info-box collapsible collapsed" onclick="this.classList.toggle('collapsed')">
+                        <div class="info-box-title">
+                            <span class="toggle-icon"></span>
+                            <span>💡 처리 시간 분석</span>
+                        </div>
+                        <div class="info-box-content">
+                            각 분석 단계별 소요 시간을 표시합니다. v11.1은 <strong>순차 처리 방식</strong>을 사용하여 안정성을 보장하며,
+                            동일한 분석은 <strong>캐싱</strong>을 통해 즉시 반환됩니다(~0.1초).
+                            처음 분석 시 20-30초가 소요되지만, 이후 24시간 동안은 캐시된 결과를 빠르게 제공합니다.
+                        </div>
+                    </div>
+
                     <div class="score-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                         <div class="score-item">
                             <div class="score-item-label">전체</div>
