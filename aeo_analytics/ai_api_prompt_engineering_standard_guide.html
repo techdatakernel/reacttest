@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI API 프로그램 개발 프롬프트 엔지니어링 표준 가이드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.8;
+            color: #2c3e50;
+            background: #fff;
+        }
+        
+        .container {
+            width: 100%;
+            padding: 0;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        
+        nav {
+            background: #34495e;
+            color: white;
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 30px;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.7;
+        }
+        
+        section {
+            padding: 50px 40px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+        
+        h3 {
+            font-size: 20px;
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .concept-box {
+            background: #f0f4ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .tip-box {
+            background: #e8f8f5;
+            border-left: 5px solid #27ae60;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #f39c12;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .code-block code {
+            color: #ecf0f1;
+        }
+        
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .example-table th,
+        .example-table td {
+            border: 1px solid #bdc3c7;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .example-table th {
+            background: #34495e;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .example-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .example-table tr:hover {
+            background: #ecf0f1;
+        }
+        
+        .process-step {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-content h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            border: 2px solid #ecf0f1;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        
+        .comparison-item.bad {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .comparison-item.good {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        .comparison-item h4 {
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .comparison-item.bad h4 {
+            color: #f44336;
+        }
+        
+        .comparison-item.good h4 {
+            color: #4caf50;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+        }
+        
+        .highlight {
+            background: #ffffcc;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px;
+            margin-top: 50px;
+        }
+        
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .checklist li {
+            list-style: none;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .checklist li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                padding: 40px 20px;
+            }
+            
+            section {
+                padding: 30px 20px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI API 프로그램 개발 프롬프트 엔지니어링 표준 가이드</h1>
+            <p>AI 에이전트 프로그램의 응답 품질을 좌우하는 프롬프트 설계의 모든 것</p>
+        </header>
+        
+        <nav>
+            <a href="#chapter1">1. 핵심 개념</a>
+            <a href="#chapter2">2. 구조화된 설계</a>
+            <a href="#chapter3">3. 실무 패턴</a>
+            <a href="#chapter4">4. 고급 기법</a>
+            <a href="#chapter5">5. 최적화 전략</a>
+        </nav>
+        
+        <!-- Chapter 1: 핵심 개념 -->
+        <section id="chapter1">
+            <h2>1. AI API 프로그램에서 프롬프트 엔지니어링의 역할</h2>
+            
+            <div class="concept-box">
+                <strong>💡 핵심 원칙:</strong> 같은 AI 모델(GPT-4, Claude 등)도 프롬프트에 따라 응답 품질이 50~90% 달라진다. 프롬프트는 "AI의 뇌를 지시하는 명령어"이다.
+            </div>
+            
+            <h3>1.1 프롬프트 엔지니어링이 중요한 이유</h3>
+            
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>응답 일관성 확보</h4>
+                    <p>같은 입력에 항상 비슷한 형식과 수준의 응답을 받을 수 있음</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>API 비용 절감</h4>
+                    <p>효율적인 프롬프트는 불필요한 재생성을 줄여 토큰 사용량 감소</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>응답 속도 개선</h4>
+                    <p>명확한 지시는 AI의 사고 시간을 단축하여 빠른 응답 생성</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>오류율 감소</h4>
+                    <p>체계적인 프롬프트는 환각(hallucination)과 오류를 최소화</p>
+                </div>
+            </div>
+            
+            <h3>1.2 AI API 프로그램 개발의 전형적인 구조</h3>
+            
+            <p>데이터 입력 → 프롬프트 생성 → API 호출 → 응답 처리 → 출력</p>
+            
+            <p>이 과정에서 <span class="highlight">프롬프트 생성 단계</span>가 전체 품질을 결정합니다.</p>
+        </section>
+        
+        <!-- Chapter 2: 구조화된 설계 -->
+        <section id="chapter2">
+            <h2>2. 프롬프트의 구조화된 설계</h2>
+            
+            <div class="concept-box">
+                <strong>📐 구조화의 핵심:</strong> 프롬프트 = 시스템 프롬프트 + 유저 프롬프트 + 컨텍스트 데이터
+            </div>
+            
+            <h3>2.1 프롬프트의 3계층 구조</h3>
+            
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>시스템 프롬프트 (System Prompt)</h4>
+                    <p>AI의 역할, 성격, 전문성, 응답 스타일을 정의<br/>
+                    <strong>역할:</strong> "당신은 마케팅 카피라이터입니다"<br/>
+                    <strong>범위:</strong> "한국 시장 기준으로"<br/>
+                    <strong>스타일:</strong> "간결하고 설득력 있게"</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>컨텍스트 데이터 (Context)</h4>
+                    <p>AI가 참고할 배경 정보 제공<br/>
+                    <strong>예:</strong> 상품 상세 정보, 브랜드 특징, 타겟 고객층</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>유저 프롬프트 (User Prompt)</h4>
+                    <p>구체적인 작업 지시와 제약조건 설정<br/>
+                    <strong>작업:</strong> "카피 작성"<br/>
+                    <strong>제약:</strong> "12자 이내", "설명 없이 문구만"</p>
+                </div>
+            </div>
+            
+            <h3>2.2 실제 코드 예시 (hmall_product_manager 패턴)</h3>
+            
+            <div class="code-block"><code>// 시스템 프롬프트: AI의 역할 정의
+$systemPrompt = "당신은 이커머스 마케팅 전문가입니다. ...";
+
+// 컨텍스트 데이터: 상품 정보
+$contextData = "상품명: {$productName}\n카테고리: {$category}\n...";
+
+// 유저 프롬프트: 구체적 지시와 제약
+$userPrompt = $contextData;
+$userPrompt .= "위 상품명에 맞는 12자 이내의 간결한 문구만 작성해주세요. ";
+$userPrompt .= "설명 없이 문구만 제공해주세요.";
+
+// API 호출
+$data = [
+    'model' => 'gpt-4',
+    'messages' => [
+        ['role' => 'system', 'content' => $systemPrompt],
+        ['role' => 'user', 'content' => $userPrompt]
+    ],
+    'temperature' => 0.8,
+    'max_tokens' => 100
+];</code></div>
+            
+            <h3>2.3 프롬프트 작성의 4가지 핵심 원칙</h3>
+            
+            <table class="example-table">
+                <tr>
+                    <th>원칙</th>
+                    <th>설명</th>
+                    <th>효과</th>
+                </tr>
+                <tr>
+                    <td><strong>명확성 (Clarity)</strong></td>
+                    <td>애매한 표현 제거, 구체적 지시</td>
+                    <td>오류율 ↓, 일관성 ↑</td>
+                </tr>
+                <tr>
+                    <td><strong>제약조건 (Constraints)</strong></td>
+                    <td>글자수, 형식, 스타일 명시</td>
+                    <td>응답 시간 ↓, 비용 ↓</td>
+                </tr>
+                <tr>
+                    <td><strong>컨텍스트 (Context)</strong></td>
+                    <td>배경 정보와 참고자료 제공</td>
+                    <td>정확도 ↑, 관련성 ↑</td>
+                </tr>
+                <tr>
+                    <td><strong>역할 정의 (Role)</strong></td>
+                    <td>AI의 전문성과 성격 설정</td>
+                    <td>응답 톤 ↑, 신뢰도 ↑</td>
+                </tr>
+            </table>
+        </section>
+        
+        <!-- Chapter 3: 실무 패턴 -->
+        <section id="chapter3">
+            <h2>3. AI 프로그램 개발의 실무 프롬프트 패턴</h2>
+            
+            <h3>3.1 패턴 1: 텍스트 생성형 (문구 생성, 카피 작성)</h3>
+            
+            <div class="tip-box">
+                <strong>📋 활용 분야:</strong> 상품 설명, 마케팅 카피, 광고 문구, 블로그 제목
+            </div>
+            
+            <div class="code-block"><code>// 시스템 프롬프트
+$systemPrompt = "당신은 전문 이커머스 카피라이터입니다. 
+한국 소비자의 심리를 파악하여 설득력 있고 간결한 문구를 작성합니다.";
+
+// 유저 프롬프트
+$userPrompt = "상품명: " . $productName . "\n";
+$userPrompt .= "카테고리: " . $category . "\n";
+$userPrompt .= "특징: " . $features . "\n";
+$userPrompt .= "---\n";
+$userPrompt .= "위 상품의 12자 이내 마케팅 문구를 작성하세요. ";
+$userPrompt .= "설명은 제외하고 문구만 제공하세요.";
+
+// 파라미터 설정
+'temperature' => 0.8,           // 창의성 (0.5~1.0)
+'max_tokens' => 100             // 응답 길이 제한</code></div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item bad">
+                    <h4>❌ 잘못된 예</h4>
+                    <p>"상품에 대한 설명을 작성해주세요"</p>
+                    <p style="margin-top: 10px; font-size: 13px; color: #666;">→ 너무 모호함. AI가 자의적으로 길고 자세하게 작성할 수 있음</p>
+                </div>
+                <div class="comparison-item good">
+                    <h4>✅ 올바른 예</h4>
+                    <p>"상품의 12자 이내 마케팅 카피를 작성하세요. 상품 특징만 강조하고, 설명은 포함하지 마세요."</p>
+                    <p style="margin-top: 10px; font-size: 13px; color: #666;">→ 구체적 제약조건으로 일관된 결과 획득</p>
+                </div>
+            </div>
+            
+            <h3>3.2 패턴 2: 분석 및 추출형 (정보 추출, 분류, 평가)</h3>
+            
+            <div class="tip-box">
+                <strong>📋 활용 분야:</strong> 리뷰 분석, 데이터 분류, 키워드 추출, 감정 분석
+            </div>
+            
+            <div class="code-block"><code>// 시스템 프롬프트
+$systemPrompt = "당신은 데이터 분석 전문가입니다. 
+정확하고 객관적인 분석을 JSON 형식으로 제공합니다.";
+
+// 유저 프롬프트
+$userPrompt = "다음 리뷰를 분석하세요:\n\n" . $reviewText . "\n\n";
+$userPrompt .= "다음 항목을 JSON 형식으로 추출하세요:\n";
+$userPrompt .= "- 감정: (긍정/중립/부정)\n";
+$userPrompt .= "- 평점: (1~5)\n";
+$userPrompt .= "- 주요 키워드: (최대 3개)\n";
+$userPrompt .= "JSON 형식만 응답하세요.";
+
+// 파라미터 설정
+'temperature' => 0.3,           // 일관성 중시 (0.0~0.5)
+'max_tokens' => 200</code></div>
+            
+            <h3>3.3 패턴 3: 대화형 (Q&A, FAQ, 상담)</h3>
+            
+            <div class="tip-box">
+                <strong>📋 활용 분야:</strong> 챗봇, 고객 상담, FAQ 자동 응답, 튜토리얼
+            </div>
+            
+            <div class="code-block"><code>// 시스템 프롬프트
+$systemPrompt = "당신은 친절한 고객 상담사입니다. 
+{$brandName}의 상품에 대해 정확하고 이해하기 쉽게 설명합니다.";
+
+// 유저 프롬프트
+$userPrompt = "제품 정보:\n" . $productInfo . "\n\n";
+$userPrompt .= "고객 질문: " . $customerQuestion . "\n\n";
+$userPrompt .= "지침:\n";
+$userPrompt .= "- 1~2문단으로 간결하게 답변하세요\n";
+$userPrompt .= "- 제품 기술 사양이 아닌 고객 이익에 초점을 맞추세요\n";
+$userPrompt .= "- 불확실한 부분은 '확인 후 연락드리겠습니다'로 응답하세요";
+
+// 파라미터 설정
+'temperature' => 0.6,
+'max_tokens' => 300</code></div>
+            
+            <h3>3.4 온도(Temperature) 파라미터 가이드</h3>
+            
+            <table class="example-table">
+                <tr>
+                    <th>온도 범위</th>
+                    <th>사용 사례</th>
+                    <th>특징</th>
+                </tr>
+                <tr>
+                    <td><strong>0.0~0.3</strong></td>
+                    <td>데이터 추출, 분류, 분석</td>
+                    <td>매우 일관적, 객관적</td>
+                </tr>
+                <tr>
+                    <td><strong>0.4~0.7</strong></td>
+                    <td>일반 답변, 설명, 기본 창의 작업</td>
+                    <td>균형잡힌 응답</td>
+                </tr>
+                <tr>
+                    <td><strong>0.8~1.0</strong></td>
+                    <td>광고 카피, 창의 콘텐츠, 아이디어</td>
+                    <td>다양성 높음</td>
+                </tr>
+            </table>
+        </section>
+        
+        <!-- Chapter 4: 고급 기법 -->
+        <section id="chapter4">
+            <h2>4. 고급 프롬프트 엔지니어링 기법</h2>
+            
+            <h3>4.1 Chain-of-Thought (CoT) 기법</h3>
+            
+            <div class="concept-box">
+                <strong>💡 원리:</strong> AI가 단계별로 "생각하도록" 유도하면 복잡한 문제의 정확도가 크게 향상됨
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item bad">
+                    <h4>❌ 직접 요청</h4>
+                    <p>"이 상품이 어떤 타겟 고객에게 어울릴까?"</p>
+                </div>
+                <div class="comparison-item good">
+                    <h4>✅ CoT 기법</h4>
+                    <p>"이 상품이 어떤 타겟 고객에게 어울릴까요? 다음 단계로 생각하세요:\n1. 상품 특징 분석\n2. 각 특징이 누구에게 도움될지 생각\n3. 타겟 고객 도출"</p>
+                </div>
+            </div>
+            
+            <h3>4.2 Few-Shot Prompting (예제 기반)</h3>
+            
+            <div class="tip-box">
+                <strong>📋 효과:</strong> 1~2개의 예제를 제공하면 AI가 패턴을 이해하고 더 정확한 결과 생성
+            </div>
+            
+            <div class="code-block"><code>$userPrompt = "아래 형식으로 상품 카피를 작성하세요.\n\n";
+$userPrompt .= "예시 1:\n";
+$userPrompt .= "입력: 에어프라이어, 간편함, 건강식\n";
+$userPrompt .= "출력: 기름 없이 바삭하게, 건강하게 즐기다\n\n";
+$userPrompt .= "예시 2:\n";
+$userPrompt .= "입력: 세탁기, 드럼식, 대용량\n";
+$userPrompt .= "출력: 많을수록 편리하게, 드럼식 대승리\n\n";
+$userPrompt .= "이제 다음을 같은 형식으로 작성하세요:\n";
+$userPrompt .= "입력: " . $productInput . "\n";
+$userPrompt .= "출력: "</code></div>
+            
+            <h3>4.3 JSON 응답 강제</h3>
+            
+            <div class="tip-box">
+                <strong>📋 장점:</strong> 프로그래밍에서 직접 파싱 가능, 데이터 구조 보장
+            </div>
+            
+            <div class="code-block"><code>$userPrompt = "아래 JSON 스키마로 응답하세요:\n";
+$userPrompt .= "{\n";
+$userPrompt .= '  "title": "상품 카피 (12자 이내)",\n';
+$userPrompt .= '  "reason": "선택 이유 (30자 이내)",\n';
+$userPrompt .= '  "confidence": "신뢰도 (0-100)"\n';
+$userPrompt .= "}\n\n";
+$userPrompt .= "상품정보: " . $productInfo;
+
+// 응답 처리
+$result = json_decode($response, true);
+$title = $result['title'];
+$reason = $result['reason'];</code></div>
+            
+            <h3>4.4 Role Playing (역할 강화)</h3>
+            
+            <div class="warning-box">
+                <strong>⚠️ 주의:</strong> 역할이 구체할수록 좋지만, 너무 과도하면 오류 증가
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item bad">
+                    <h4>❌ 약한 역할</h4>
+                    <p>"마케팅 전문가처럼 설명하세요"</p>
+                </div>
+                <div class="comparison-item good">
+                    <h4>✅ 강한 역할</h4>
+                    <p>"당신은 20년 경력의 이커머스 마케팅 디렉터입니다. 한국 시장 소비자 심리를 깊이 이해하고, 간결하면서도 설득력 있는 카피를 만듭니다."</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Chapter 5: 최적화 전략 -->
+        <section id="chapter5">
+            <h2>5. 프로덕션 환경의 최적화 전략</h2>
+            
+            <h3>5.1 비용 최적화</h3>
+            
+            <ul>
+                <li><strong>모델 선택:</strong> GPT-4 (정확도 높음) vs GPT-3.5-turbo (비용 1/10) 비교 테스트 필수</li>
+                <li><strong>max_tokens 조정:</strong> 필요한 최소값만 설정 (예: 100자 응답 필요 → max_tokens: 150)</li>
+                <li><strong>캐싱 구현:</strong> 같은 프롬프트는 재사용 (DB 저장)</li>
+                <li><strong>배치 처리:</strong> 대량 생성 필요시 배치 API 사용 (10~30% 비용 절감)</li>
+            </ul>
+            
+            <div class="code-block"><code>// 캐싱 예제
+$cacheKey = md5($systemPrompt . $userPrompt);
+$cached = $cache->get($cacheKey);
+
+if ($cached) {
+    return $cached;  // 캐시에서 반환 (비용 0)
+}
+
+$response = callOpenAIAPI($data);
+$cache->set($cacheKey, $response, 3600);  // 1시간 캐싱
+return $response;</code></div>
+            
+            <h3>5.2 에러 처리 및 폴백</h3>
+            
+            <div class="checklist">
+                <ul>
+                    <li>API 타임아웃 발생 → 재시도 로직 (exponential backoff)</li>
+                    <li>JSON 파싱 실패 → 응답 정제 또는 재요청</li>
+                    <li>부적절한 응답 → 다른 온도로 재시도</li>
+                    <li>반복 실패 → 기본값 반환 또는 사용자 알림</li>
+                </ul>
+            </div>
+            
+            <h3>5.3 모니터링 및 피드백 루프</h3>
+            
+            <table class="example-table">
+                <tr>
+                    <th>모니터링 항목</th>
+                    <th>측정 방법</th>
+                    <th>개선 액션</th>
+                </tr>
+                <tr>
+                    <td>응답 품질</td>
+                    <td>사용자 만족도 평점, 재생성 요청률</td>
+                    <td>프롬프트 개선, 모델 변경</td>
+                </tr>
+                <tr>
+                    <td>API 성능</td>
+                    <td>평균 응답 시간, 에러율</td>
+                    <td>캐싱 강화, 타임아웃 조정</td>
+                </tr>
+                <tr>
+                    <td>비용 효율성</td>
+                    <td>토큰/요청당 평균 비용</td>
+                    <td>프롬프트 최적화, 모델 다운그레이드</td>
+                </tr>
+                <tr>
+                    <td>사용 패턴</td>
+                    <td>시간대별/카테고리별 사용량</td>
+                    <td>리소스 배분 최적화</td>
+                </tr>
+            </table>
+            
+            <h3>5.4 프롬프트 테스트 체크리스트</h3>
+            
+            <div class="checklist">
+                <ul>
+                    <li>정상 케이스: 예상된 입력으로 올바른 결과 생성</li>
+                    <li>엣지 케이스: 매우 긴 입력, 특수 문자, 다국어 입력</li>
+                    <li>부정 케이스: 관련 없는 입력에 적절히 거절</li>
+                    <li>일관성 테스트: 같은 입력으로 5~10회 반복해서 결과 일관성 확인</li>
+                    <li>성능 테스트: 응답 시간 측정, 토큰 사용량 확인</li>
+                    <li>비용 테스트: 모델별 토큰 사용량 비교</li>
+                </ul>
+            </div>
+            
+            <h3>5.5 버전 관리</h3>
+            
+            <div class="code-block"><code>// 프롬프트 버전 관리 구조
+class PromptManager {
+    private $prompts = [
+        'v1' => ['system' => '...', 'created' => '2025-11-01'],
+        'v2' => ['system' => '...', 'created' => '2025-11-10'],
+        'v3' => ['system' => '...', 'created' => '2025-11-14']
+    ];
+    
+    public function getActive($task) {
+        // 활성 버전 반환
+        return $this->prompts['v3'];
+    }
+    
+    public function rollback($task, $version) {
+        // 이전 버전으로 롤백
+        return $this->prompts[$version];
+    }
+}</code></div>
+        </section>
+        
+        <!-- 마무리 -->
+        <section>
+            <h2>6. 실제 구현 단계별 가이드</h2>
+            
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>프롬프트 초안 작성</h4>
+                    <p>시스템 프롬프트, 컨텍스트, 유저 프롬프트 구분해서 작성</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>ChatGPT/Claude에서 수동 테스트</h4>
+                    <p>10개 이상의 다양한 입력으로 응답 품질 평가</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>프로그래밍 통합 및 자동화 테스트</h4>
+                    <p>API 연동, 응답 파싱, 에러 처리 구현</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>A/B 테스트 (선택사항)</h4>
+                    <p>기존 프롬프트 vs 신규 프롬프트 비교</p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>모니터링 및 지속적 개선</h4>
+                    <p>사용자 피드백 수집, 성능 지표 추적, 정기적 업데이트</p>
+                </div>
+            </div>
+            
+            <h2>7. 핵심 요약</h2>
+            
+            <div class="concept-box">
+                <strong>✨ 프롬프트 엔지니어링의 3가지 황금 법칙:</strong>
+                <ul style="margin-top: 15px;">
+                    <li><strong>명확함이 최고의 기술이다:</strong> 애매한 표현 제거, 구체적인 지시</li>
+                    <li><strong>제약조건이 품질을 만든다:</strong> 글자수, 형식, 스타일 명시로 일관성 확보</li>
+                    <li><strong>반복적 개선이 최적화다:</strong> 테스트 → 피드백 → 수정의 사이클이 중요</li>
+                </ul>
+            </div>
+        </section>
+        
+        <footer>
+            <p><strong>AI API 프로그램 개발 프롬프트 엔지니어링 표준 가이드</strong></p>
+            <p>최종 업데이트: 2025년 11월 14일</p>
+            <p>© 2025 All Rights Reserved</p>
+        </footer>
+    </div>
+</body>
+</html>
