@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO 보고서 이용 가이드 - 쉽게 이해하기</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 50px;
+            border-left: 5px solid #667eea;
+        }
+
+        .intro h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .section {
+            margin-bottom: 60px;
+            padding: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 2.5rem;
+        }
+
+        .what-is-it {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .what-is-it h3 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .what-is-it p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .example-box h4 {
+            color: #856404;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-box p,
+        .example-box ul {
+            color: #856404;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .example-box ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        .example-box li {
+            margin-bottom: 8px;
+        }
+
+        .tip-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .tip-box h4 {
+            color: #0c5460;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tip-box p,
+        .tip-box ul {
+            color: #0c5460;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .tip-box ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        .tip-box li {
+            margin-bottom: 8px;
+        }
+
+        .score-card {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 18px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1.05rem;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .good {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        .bad {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight-box h4 {
+            color: #4a148c;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .highlight-box p {
+            color: #4a148c;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+            margin: 25px 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 60px;
+            position: relative;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .toc h3 {
+            color: #667eea;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: #495057;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .toc a:hover {
+            color: #667eea;
+            padding-left: 10px;
+        }
+
+        .toc a i {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> AEO 보고서 이용 가이드</h1>
+            <p>누구나 쉽게 이해할 수 있는 AEO 분석 보고서 활용 방법</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2><i class="fas fa-lightbulb"></i> 이 가이드는 무엇인가요?</h2>
+                <p>
+                    AEO 분석 보고서는 AI 검색 엔진(ChatGPT, Gemini, Perplexity 등)에서 여러분의 웹페이지가 얼마나 잘 노출되는지 분석한 결과입니다.
+                    이 가이드는 IT 전문 지식이 없는 분들도 보고서의 각 항목을 쉽게 이해하고 활용할 수 있도록 만들어졌습니다.
+                </p>
+                <p style="margin-top: 15px;">
+                    <strong>💡 핵심 요약:</strong> 보고서의 점수가 높을수록 AI가 여러분의 페이지를 더 자주 추천합니다!
+                </p>
+            </div>
+
+            <!-- 목차 -->
+            <div class="toc">
+                <h3><i class="fas fa-list"></i> 목차</h3>
+                <ul>
+                    <li><a href="#section-score"><i class="fas fa-chart-line"></i> 1. 종합 점수 이해하기</a></li>
+                    <li><a href="#section-bm25"><i class="fas fa-key"></i> 2. BM25 키워드 분석 (단어 찾기)</a></li>
+                    <li><a href="#section-semantic"><i class="fas fa-brain"></i> 3. 시맨틱 유사도 (의미 이해하기)</a></li>
+                    <li><a href="#section-faq"><i class="fas fa-question-circle"></i> 4. FAQ 구조 분석 (질문-답변 형식)</a></li>
+                    <li><a href="#section-query"><i class="fas fa-search"></i> 5. 쿼리 확장 결과 (관련 질문들)</a></li>
+                    <li><a href="#section-evidence"><i class="fas fa-check-double"></i> 6. 관련성 증거 (얼마나 관련있나)</a></li>
+                    <li><a href="#section-recommendation"><i class="fas fa-magic"></i> 7. AEO 개선 권고사항 (무엇을 고쳐야 할까)</a></li>
+                    <li><a href="#section-ai-questions"><i class="fas fa-robot"></i> 8. AI 질문 리스트 (자주 묻는 질문 예측)</a></li>
+                    <li><a href="#section-time"><i class="fas fa-clock"></i> 9. 처리 시간</a></li>
+                </ul>
+            </div>
+
+            <!-- 1. 종합 점수 -->
+            <div class="section" id="section-score">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    <span>1. 종합 점수 이해하기</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 종합 점수란?</h3>
+                    <p>
+                        종합 점수는 여러분의 웹페이지가 AI 검색에 얼마나 최적화되어 있는지를 100점 만점으로 보여줍니다.
+                        이 점수는 세 가지 항목을 합산한 결과입니다.
+                    </p>
+                </div>
+
+                <div class="score-card">
+                    <i class="fas fa-star"></i> 69.4점
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>분석 항목</th>
+                            <th>점수</th>
+                            <th>만점</th>
+                            <th>평가</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>BM25 키워드</strong> (단어 찾기)</td>
+                            <td class="good">33점</td>
+                            <td>40점</td>
+                            <td class="good">우수 ✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>시맨틱 유사도</strong> (의미 이해)</td>
+                            <td class="good">37점</td>
+                            <td>43점</td>
+                            <td class="good">우수 ✓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FAQ 구조</strong> (질문-답변)</td>
+                            <td class="bad">5점</td>
+                            <td>20점</td>
+                            <td class="bad">개선 필요 ✗</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-lightbulb"></i> 실생활 비유</h4>
+                    <p>
+                        종합 점수를 시험 점수라고 생각해보세요:
+                    </p>
+                    <ul>
+                        <li><strong>90점 이상:</strong> A+ (탁월함) - AI가 적극 추천합니다</li>
+                        <li><strong>70~89점:</strong> B+ (우수함) - 좋은 상태이나 개선 여지가 있습니다</li>
+                        <li><strong>50~69점:</strong> C+ (보통) - 개선이 필요합니다</li>
+                        <li><strong>50점 미만:</strong> D (부족) - 많은 개선이 필요합니다</li>
+                    </ul>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-rocket"></i> 점수 향상 팁</h4>
+                    <p>위 예시에서 FAQ 구조 점수가 낮습니다. 질문-답변 형식의 콘텐츠를 추가하면 점수가 크게 향상됩니다!</p>
+                </div>
+            </div>
+
+            <!-- 2. BM25 키워드 분석 -->
+            <div class="section" id="section-bm25">
+                <div class="section-title">
+                    <i class="fas fa-key"></i>
+                    <span>2. BM25 키워드 분석 (단어 찾기)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> BM25란 무엇인가요?</h3>
+                    <p>
+                        <strong>BM25</strong>는 "단어 찾기" 방식입니다. 사용자가 검색한 단어가 여러분의 페이지에 얼마나 많이, 어떤 위치에 있는지를 확인합니다.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        쉽게 말해, <strong>단어 매칭 점수</strong>입니다.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-search"></i> 실제 예시로 이해하기</h4>
+                    <p><strong>사용자 검색:</strong> "운전자보험 추천 좋은 곳"</p>
+                    <p><strong>페이지 분석 결과:</strong></p>
+                    <ul>
+                        <li><strong>운전자보험</strong> - 페이지 제목에 있음 (높은 점수) ✓</li>
+                        <li><strong>보험료</strong> - 본문에 여러 번 나옴 (중간 점수)</li>
+                        <li><strong>자동차 사고</strong> - 본문에 몇 번 나옴 (중간 점수)</li>
+                        <li><strong>간병인</strong> - 본문에 있지만 덜 중요함 (낮은 점수)</li>
+                        <li><strong>보장</strong> - 본문에 적게 나옴 (낮은 점수)</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🎯 BM25 점수 향상 방법</h4>
+                    <p>
+                        <strong>1. 제목에 중요한 키워드 넣기:</strong> 제목에 있는 단어는 가장 높은 점수를 받습니다.<br>
+                        <strong>2. 반복하되 자연스럽게:</strong> 중요한 단어를 본문에 여러 번 넣되, 너무 많으면 오히려 점수가 낮아집니다.<br>
+                        <strong>3. 첫 부분에 배치:</strong> 페이지 앞쪽에 나오는 단어가 더 중요하게 평가됩니다.
+                    </p>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>위치</th>
+                            <th>중요도</th>
+                            <th>예시</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>제목 (H1, H2)</strong></td>
+                            <td class="good">매우 높음 ★★★</td>
+                            <td>"운전자보험 비교 가이드"</td>
+                        </tr>
+                        <tr>
+                            <td><strong>첫 문단</strong></td>
+                            <td class="good">높음 ★★</td>
+                            <td>"운전자보험은 자동차 사고 시..."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>본문</strong></td>
+                            <td class="warning">중간 ★</td>
+                            <td>"보험료 비교를 통해..."</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 3. 시맨틱 유사도 -->
+            <div class="section" id="section-semantic">
+                <div class="section-title">
+                    <i class="fas fa-brain"></i>
+                    <span>3. 시맨틱 유사도 (의미 이해하기)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 시맨틱 유사도란?</h3>
+                    <p>
+                        <strong>시맨틱(Semantic)</strong>은 "의미"라는 뜻입니다. 시맨틱 유사도는 단순히 단어를 찾는 것이 아니라,
+                        <strong>페이지의 내용이 사용자의 질문과 의미적으로 얼마나 관련있는지</strong>를 AI가 판단한 결과입니다.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        ChatGPT나 Gemini 같은 AI는 단어 그대로가 아니라 <strong>"무엇을 말하고 있는지"</strong>를 이해합니다.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-comments"></i> 실제 예시로 이해하기</h4>
+                    <p><strong>사용자 질문:</strong> "운전자보험 추천 좋은 곳"</p>
+                    <p><strong>두 페이지 비교:</strong></p>
+
+                    <p style="margin-top: 15px;"><strong>페이지 A (낮은 시맨틱 점수):</strong></p>
+                    <ul>
+                        <li>"운전자보험" 단어만 10번 반복</li>
+                        <li>실제 추천이나 비교 내용 없음</li>
+                        <li>→ BM25는 높지만 시맨틱 점수는 낮음</li>
+                    </ul>
+
+                    <p style="margin-top: 15px;"><strong>페이지 B (높은 시맨틱 점수):</strong></p>
+                    <ul>
+                        <li>다양한 보험 상품 비교</li>
+                        <li>각 보험의 장단점 설명</li>
+                        <li>가격대별 추천</li>
+                        <li>실제 선택 방법 안내</li>
+                        <li>→ 사용자 질문에 완벽하게 답함</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>📊 시맨틱 점수의 4가지 구성 요소</h4>
+                    <p>
+                        <strong>1. 주제 일치도 (10점):</strong> 질문과 페이지 주제가 얼마나 일치하나?<br>
+                        <strong>2. 의미적 연관성 (9점):</strong> 질문과 관련된 내용을 다루고 있나?<br>
+                        <strong>3. 핵심 어휘도 (8점):</strong> 중요한 전문 용어를 적절히 사용했나?<br>
+                        <strong>4. 정보 충족도 (10점):</strong> 사용자가 원하는 정보를 충분히 제공하나?
+                    </p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-star"></i> 시맨틱 점수 향상 팁</h4>
+                    <ul>
+                        <li><strong>질문에 직접 답하기:</strong> "어떤 운전자보험이 좋나요?" → "추천하는 3가지 보험은..."</li>
+                        <li><strong>관련 정보 포함:</strong> 가격, 보장 범위, 선택 기준 등</li>
+                        <li><strong>구체적인 예시:</strong> "A사는 월 3만원, B사는 월 2.5만원"</li>
+                        <li><strong>자연스러운 문장:</strong> 키워드만 나열하지 말고 완전한 문장으로 작성</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 4. FAQ 구조 -->
+            <div class="section" id="section-faq">
+                <div class="section-title">
+                    <i class="fas fa-question-circle"></i>
+                    <span>4. FAQ 구조 분석 (질문-답변 형식)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> FAQ 구조란?</h3>
+                    <p>
+                        <strong>FAQ(Frequently Asked Questions)</strong>는 "자주 묻는 질문"입니다.
+                        AI 검색 엔진은 질문-답변 형식으로 되어 있는 콘텐츠를 특히 좋아합니다.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        왜냐하면 사용자가 질문하면 AI가 바로 답변을 찾아서 제시할 수 있기 때문입니다.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-times-circle"></i> 나쁜 예 (FAQ 구조 없음)</h4>
+                    <p style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        운전자보험은 자동차 사고 시 필요한 보험입니다. 보험료는 3만원 정도이고 보장 범위는 다양합니다.
+                        여러 상품이 있으며 선택 시 비교가 필요합니다.
+                    </p>
+                    <p style="margin-top: 10px; color: #dc3545;">
+                        ✗ 정보는 있지만 질문-답변 형식이 아니라서 AI가 찾기 어렵습니다.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-check-circle"></i> 좋은 예 (FAQ 구조 있음)</h4>
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <p style="color: #667eea; font-weight: 600; margin-bottom: 8px;">Q. 운전자보험이란 무엇인가요?</p>
+                        <p style="color: #495057; margin-bottom: 15px;">A. 운전자보험은 자동차 사고 시 운전자에게 발생하는 비용을 보장하는 보험입니다.</p>
+
+                        <p style="color: #667eea; font-weight: 600; margin-bottom: 8px;">Q. 보험료는 얼마나 하나요?</p>
+                        <p style="color: #495057; margin-bottom: 15px;">A. 평균 월 3만원 정도이며, 보장 범위에 따라 2만원~5만원 사이입니다.</p>
+
+                        <p style="color: #667eea; font-weight: 600; margin-bottom: 8px;">Q. 어떤 보험이 좋나요?</p>
+                        <p style="color: #495057;">A. 본인의 운전 패턴과 예산에 맞춰 선택하시면 됩니다. 추천하는 3가지 상품은...</p>
+                    </div>
+                    <p style="margin-top: 10px; color: #28a745;">
+                        ✓ 질문-답변 형식으로 되어 있어 AI가 쉽게 찾고 인용할 수 있습니다!
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>💎 FAQ 구조의 장점</h4>
+                    <p>
+                        <strong>1. AI가 찾기 쉬움:</strong> 질문에 바로 매칭되는 답변을 제공<br>
+                        <strong>2. 높은 인용률:</strong> ChatGPT 등이 여러분의 답변을 직접 인용<br>
+                        <strong>3. 사용자 만족도:</strong> 명확한 구조로 사용자도 이해하기 쉬움<br>
+                        <strong>4. 검색 최적화:</strong> 구글 등 기존 검색엔진에도 유리
+                    </p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-magic"></i> FAQ 작성 팁</h4>
+                    <ul>
+                        <li><strong>실제 질문 형태로:</strong> "운전자보험이란?" 보다 "운전자보험이란 무엇인가요?"가 좋음</li>
+                        <li><strong>7~10개 작성:</strong> 너무 적으면 효과가 없고, 너무 많으면 복잡함</li>
+                        <li><strong>구체적인 답변:</strong> "다양합니다" 보다 "3가지 주요 유형은..."</li>
+                        <li><strong>사용자 입장에서:</strong> 실제로 자주 묻는 질문 위주로 구성</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 5. 쿼리 확장 -->
+            <div class="section" id="section-query">
+                <div class="section-title">
+                    <i class="fas fa-search"></i>
+                    <span>5. 쿼리 확장 결과 (관련 질문들)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 쿼리 확장이란?</h3>
+                    <p>
+                        <strong>쿼리 확장(Query Expansion)</strong>은 사용자가 입력한 질문과 관련된 다른 질문들을 찾아내는 것입니다.
+                    </p>
+                    <p style="margin-top: 10px;">
+                        예를 들어, "운전자보험 추천"을 검색한 사람은 다음과 같은 질문도 할 가능성이 높습니다:
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-list-ul"></i> 쿼리 확장 예시</h4>
+                    <p><strong>원래 질문:</strong> "운전자보험 추천 좋은 곳"</p>
+                    <p><strong>관련 질문들:</strong></p>
+                    <ul>
+                        <li>운전자보험 추천 비교 사이트는 어디인가요?</li>
+                        <li>운전자보험 가입 시 고려해야 할 사항은 무엇인가요?</li>
+                        <li>운전자보험과 자동차보험의 차이점은 무엇인가요?</li>
+                        <li>DB손해보험 운전자보험의 특징은 무엇인가요?</li>
+                        <li>운전자보험 할인 혜택은 어떤 것이 있나요?</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🎯 쿼리 확장이 중요한 이유</h4>
+                    <p>
+                        사용자들은 같은 내용을 다양한 방식으로 질문합니다. 여러분의 페이지가 이런 다양한 질문에 모두 답할 수 있다면,
+                        AI가 여러분의 페이지를 더 자주 추천하게 됩니다.
+                    </p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-lightbulb"></i> 활용 방법</h4>
+                    <p>
+                        보고서의 쿼리 확장 결과를 보고, 여러분의 페이지에 없는 질문들을 찾아보세요.
+                        그 질문들에 대한 답변을 추가하면 더 많은 검색에 노출될 수 있습니다!
+                    </p>
+                </div>
+            </div>
+
+            <!-- 6. 관련성 증거 -->
+            <div class="section" id="section-evidence">
+                <div class="section-title">
+                    <i class="fas fa-check-double"></i>
+                    <span>6. 관련성 증거 (얼마나 관련있나)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 관련성 증거란?</h3>
+                    <p>
+                        관련성 증거는 여러분의 페이지가 사용자의 질문과 <strong>얼마나 관련있는지를 증명하는 부분</strong>입니다.
+                        두 가지 방식으로 관련성을 평가합니다:
+                    </p>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>평가 방식</th>
+                            <th>설명</th>
+                            <th>예시</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>키워드 관련성</strong></td>
+                            <td>검색 단어가 페이지에 있는지</td>
+                            <td>"운전자보험" 단어가 10번 나옴 → 10/10</td>
+                        </tr>
+                        <tr>
+                            <td><strong>의미 관련성</strong></td>
+                            <td>내용이 질문과 관련있는지</td>
+                            <td>보험 비교, 추천, 가격 정보 포함 → 10/10</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-balance-scale"></i> 비율로 보는 관련성</h4>
+                    <p><strong>예시 결과:</strong></p>
+                    <ul>
+                        <li><strong>키워드 관련성:</strong> 10/10 (매우 좋음)</li>
+                        <li><strong>의미 관련성:</strong> 8/10 (좋음)</li>
+                    </ul>
+                    <p style="margin-top: 15px;">
+                        <strong>해석:</strong> 단어는 충분히 포함되어 있지만, 의미적으로 조금 더 깊이 있는 내용이 필요합니다.
+                    </p>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-arrow-up"></i> 관련성 향상 방법</h4>
+                    <ul>
+                        <li><strong>키워드 관련성이 낮을 때:</strong> 중요한 단어를 제목과 본문에 추가</li>
+                        <li><strong>의미 관련성이 낮을 때:</strong> 질문에 대한 구체적인 답변과 예시 추가</li>
+                        <li><strong>둘 다 낮을 때:</strong> 페이지 주제를 다시 검토하고 재작성 고려</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. AEO 개선 권고사항 -->
+            <div class="section" id="section-recommendation">
+                <div class="section-title">
+                    <i class="fas fa-magic"></i>
+                    <span>7. AEO 개선 권고사항 (무엇을 고쳐야 할까)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 개선 권고사항이란?</h3>
+                    <p>
+                        분석 결과를 바탕으로 <strong>AI가 자동으로 제안하는 개선 방법</strong>입니다.
+                        이 항목들을 따라 페이지를 수정하면 점수가 향상됩니다.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>📋 개선 권고사항의 3가지 유형</h4>
+                    <p>
+                        <strong>1. 누락된 정보:</strong> 페이지에 없지만 추가하면 좋을 내용<br>
+                        <strong>2. 비교 분석 정보:</strong> 여러 옵션을 비교하는 내용<br>
+                        <strong>3. 실행 핵심:</strong> 사용자가 바로 행동할 수 있는 구체적인 가이드
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-tasks"></i> 실제 권고사항 예시</h4>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                        <p style="color: #dc3545; font-weight: 600; margin-bottom: 10px;">
+                            <i class="fas fa-exclamation-triangle"></i> 누락된 정보
+                        </p>
+                        <p style="color: #495057; margin-bottom: 20px;">
+                            <strong>필요 이유:</strong> 사용자들이 선택 시 참고할 수 있는 실제 정보<br>
+                            <strong>예상 효과:</strong> 고객 신뢰도 증가 및 선택 유도
+                        </p>
+
+                        <p style="color: #ffc107; font-weight: 600; margin-bottom: 10px;">
+                            <i class="fas fa-exchange-alt"></i> 비교 분석 정보
+                        </p>
+                        <p style="color: #495057; margin-bottom: 20px;">
+                            <strong>필요 이유:</strong> 다른 보험사와의 비교를 통해 선택 기준 제공<br>
+                            <strong>예상 효과:</strong> 소비자가 더 쉽게 선택할 수 있음
+                        </p>
+
+                        <p style="color: #28a745; font-weight: 600; margin-bottom: 10px;">
+                            <i class="fas fa-running"></i> 실행 핵심
+                        </p>
+                        <p style="color: #495057;">
+                            <strong>필요 이유:</strong> 고객이 실제로 신청하는 방법을 단계별로 안내<br>
+                            <strong>예상 효과:</strong> 가입 전환율 상승
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-chart-line"></i> 예상 점수 증가</h4>
+                    <p>
+                        권고사항을 모두 반영하면 예상되는 점수 증가:
+                    </p>
+                    <ul>
+                        <li><strong>BM25:</strong> +5점 (더 많은 관련 키워드 포함)</li>
+                        <li><strong>시맨틱:</strong> +8점 (의미적으로 더 풍부한 내용)</li>
+                        <li><strong>FAQ:</strong> +3점 (질문-답변 추가)</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-weight: 600; color: #28a745;">
+                        → 총 +16점 향상 가능! (69.4점 → 85.4점)
+                    </p>
+                </div>
+            </div>
+
+            <!-- 8. AI 질문 리스트 -->
+            <div class="section" id="section-ai-questions">
+                <div class="section-title">
+                    <i class="fas fa-robot"></i>
+                    <span>8. AI 질문 리스트 (자주 묻는 질문 예측)</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> AI 질문 리스트란?</h3>
+                    <p>
+                        AI가 여러분의 페이지를 분석해서 <strong>사용자들이 자주 검색할 만한 질문 7~10개를 자동으로 생성</strong>해줍니다.
+                        이 질문들은 실제 검색 데이터와 콘텐츠 분석을 바탕으로 만들어집니다.
+                    </p>
+                </div>
+
+                <div class="example-box">
+                    <h4><i class="fas fa-list-ol"></i> AI가 생성한 질문 예시</h4>
+                    <ol style="margin-left: 20px; color: #495057;">
+                        <li>운전자보험 추천 비교 사이트는 어디인가요?</li>
+                        <li>운전자보험 가입 시 고려해야 할 사항은 무엇인가요?</li>
+                        <li>운전자보험과 자동차보험의 차이점은 무엇인가요?</li>
+                        <li>운전자보험 할인 혜택은 어떤 것이 있나요?</li>
+                        <li>간병인 로봇 활용이 가능한가요?</li>
+                        <li>운전자보험과 자동차보험의 차이점은 무엇인가요?</li>
+                        <li>운전자보험 기간 시 고려해야 할 보장은?</li>
+                        <li>DB손해보험 운전자보험의 특징은 무엇인가요?</li>
+                        <li>가족 단지 없는 운전자보험은 어떤 것이 있나요?</li>
+                        <li>운전자보험 할인이 어떤 것이 있나요?</li>
+                    </ol>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>💡 AI 질문 리스트의 활용 방법</h4>
+                    <ol class="step-list">
+                        <li><strong>현재 페이지 확인:</strong> 생성된 질문들에 대한 답변이 이미 있는지 확인</li>
+                        <li><strong>누락된 내용 파악:</strong> 답변이 없는 질문을 찾아냄</li>
+                        <li><strong>콘텐츠 추가:</strong> 누락된 질문에 대한 답변을 FAQ 형식으로 추가</li>
+                        <li><strong>재분석:</strong> 내용을 추가한 후 다시 분석해서 점수 향상 확인</li>
+                    </ol>
+                </div>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-star"></i> 효과적인 활용 팁</h4>
+                    <ul>
+                        <li><strong>우선순위 설정:</strong> 질문 리스트 중 가장 많이 검색될 것 같은 3~5개 선택</li>
+                        <li><strong>자연스러운 통합:</strong> 기존 내용에 자연스럽게 추가</li>
+                        <li><strong>구체적인 답변:</strong> 각 질문에 최소 2~3문장 이상의 답변 작성</li>
+                        <li><strong>정기 업데이트:</strong> 한 달에 한 번 새로운 질문 생성 및 추가</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 9. 처리 시간 -->
+            <div class="section" id="section-time">
+                <div class="section-title">
+                    <i class="fas fa-clock"></i>
+                    <span>9. 처리 시간</span>
+                </div>
+
+                <div class="what-is-it">
+                    <h3><i class="fas fa-question"></i> 처리 시간이란?</h3>
+                    <p>
+                        각 분석 항목을 처리하는 데 걸린 시간입니다. 참고 정보로만 활용하시면 됩니다.
+                    </p>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>분석 항목</th>
+                            <th>처리 시간</th>
+                            <th>설명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>전체</td>
+                            <td>37.9초</td>
+                            <td>전체 분석 소요 시간</td>
+                        </tr>
+                        <tr>
+                            <td>BM25 키워드</td>
+                            <td>12.2초</td>
+                            <td>키워드 분석 시간</td>
+                        </tr>
+                        <tr>
+                            <td>시맨틱 유사도</td>
+                            <td>6.6초</td>
+                            <td>의미 분석 시간</td>
+                        </tr>
+                        <tr>
+                            <td>FAQ 구조</td>
+                            <td>3.1초</td>
+                            <td>FAQ 분석 시간</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="tip-box">
+                    <h4><i class="fas fa-info-circle"></i> 처리 시간 참고사항</h4>
+                    <p>
+                        처리 시간은 페이지의 크기, 서버 상태, AI 응답 속도에 따라 달라질 수 있습니다.
+                        일반적으로 30초~60초 정도 소요됩니다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 종합 가이드 -->
+            <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                <div class="section-title" style="color: white; border-bottom-color: white;">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>📚 종합 활용 가이드</span>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 20px;">
+                        <i class="fas fa-route"></i> 단계별 개선 프로세스
+                    </h3>
+                    <ol class="step-list">
+                        <li style="color: white;"><strong>현재 상태 파악:</strong> 종합 점수와 각 항목별 점수를 확인하여 강점과 약점 파악</li>
+                        <li style="color: white;"><strong>우선순위 선정:</strong> 가장 낮은 점수의 항목부터 개선 (보통 FAQ 구조가 가장 낮음)</li>
+                        <li style="color: white;"><strong>AI 질문 리스트 활용:</strong> 생성된 질문 중 없는 내용을 FAQ로 추가</li>
+                        <li style="color: white;"><strong>권고사항 반영:</strong> 누락된 정보와 실행 핵심 내용 추가</li>
+                        <li style="color: white;"><strong>재분석 및 확인:</strong> 수정 후 다시 분석하여 점수 향상 확인</li>
+                    </ol>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 12px;">
+                    <h3 style="font-size: 1.6rem; margin-bottom: 20px;">
+                        <i class="fas fa-trophy"></i> 목표 점수 가이드
+                    </h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: rgba(255, 255, 255, 0.2);">
+                            <td style="padding: 15px; color: white; font-weight: 600;">초기 목표 (단기)</td>
+                            <td style="padding: 15px; color: white;">70점 이상</td>
+                            <td style="padding: 15px; color: white;">FAQ 추가로 달성 가능</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 15px; color: white; font-weight: 600;">중간 목표 (중기)</td>
+                            <td style="padding: 15px; color: white;">80점 이상</td>
+                            <td style="padding: 15px; color: white;">전체적인 콘텐츠 보강</td>
+                        </tr>
+                        <tr style="background: rgba(255, 255, 255, 0.2);">
+                            <td style="padding: 15px; color: white; font-weight: 600;">최종 목표 (장기)</td>
+                            <td style="padding: 15px; color: white;">90점 이상</td>
+                            <td style="padding: 15px; color: white;">지속적인 최적화</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-heart"></i> AEO 최적화로 더 많은 고객을 만나세요!</p>
+            <p style="margin-top: 10px; font-size: 0.95rem; opacity: 0.8;">
+                이 가이드는 AEO 분석 보고서를 쉽게 이해하고 활용하기 위해 제작되었습니다.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
