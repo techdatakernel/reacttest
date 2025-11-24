@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO 분석 보고서 이용 가이드 - 초보자도 쉽게 이해하기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .intro {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #667eea;
+        }
+
+        .intro h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .subsection {
+            margin-bottom: 35px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e8ecf7;
+        }
+
+        .subsection h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subsection-number {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .explanation h4 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .explanation p {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .example {
+            background: #fff8e6;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ffa726;
+            margin: 20px 0;
+        }
+
+        .example h5 {
+            color: #f57c00;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .good-example {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .good-example h5 {
+            color: #2e7d32;
+        }
+
+        .bad-example {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .bad-example h5 {
+            color: #c62828;
+        }
+
+        .score-guide {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .score-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+        }
+
+        .score-average {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+        }
+
+        .score-poor {
+            background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+        }
+
+        .score-card h4 {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .score-card p {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+
+        .tip-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+            margin: 20px 0;
+        }
+
+        .tip-box h5 {
+            color: #1565c0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tip-box p, .tip-box ul {
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .tip-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .tip-box li {
+            margin-bottom: 8px;
+        }
+
+        .keyword-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .keyword-table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .keyword-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .keyword-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .keyword-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        .highlight {
+            background: #fff176;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .action-steps {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .action-steps h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .action-steps ol {
+            margin-left: 25px;
+            line-height: 2;
+        }
+
+        .action-steps li {
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+
+        .visual-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-card {
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .comparison-card h5 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .comparison-before h5 {
+            color: #f44336;
+        }
+
+        .comparison-after h5 {
+            color: #4caf50;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .visual-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .score-guide {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 AEO 분석 보고서 이용 가이드</h1>
+            <p>IT 전문가가 아니어도 쉽게 이해하고 활용하는 방법</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>🎯 이 가이드는 누구를 위한 것인가요?</h2>
+                <p>
+                    마케팅 담당자, 콘텐츠 기획자, 사업 운영자 등 <strong>IT 전문가가 아닌 분들</strong>을 위해 만들어졌습니다. 
+                    AEO 분석 보고서에 나오는 각종 점수와 용어들을 실무에 바로 적용할 수 있도록 
+                    <strong>쉬운 말과 실제 사례</strong>로 설명합니다.
+                </p>
+            </div>
+
+            <!-- 종합 점수 이해하기 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🎯</span>
+                    종합 점수란? (가장 중요!)
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">1</span>종합 점수 이해하기</h3>
+                    
+                    <div class="explanation">
+                        <h4>🤔 종합 점수가 뭔가요?</h4>
+                        <p>
+                            여러분의 웹페이지가 <strong>ChatGPT, Perplexity, Google AI 같은 AI 검색엔진</strong>에서 
+                            얼마나 잘 노출될 수 있는지를 <strong>0~100점 사이</strong>로 보여주는 점수입니다.
+                        </p>
+                        <p style="margin-top: 10px;">
+                            쉽게 말해, <span class="highlight">AI가 여러분의 페이지를 추천할 확률</span>이 얼마나 되는지를 나타냅니다.
+                        </p>
+                    </div>
+
+                    <div class="score-guide">
+                        <div class="score-card score-excellent">
+                            <h4>90~100점</h4>
+                            <p>우수 - AI가 적극 추천</p>
+                        </div>
+                        <div class="score-card score-good">
+                            <h4>75~89점</h4>
+                            <p>양호 - 추천 가능성 높음</p>
+                        </div>
+                        <div class="score-card score-average">
+                            <h4>60~74점</h4>
+                            <p>보통 - 개선 필요</p>
+                        </div>
+                        <div class="score-card score-poor">
+                            <h4>0~59점</h4>
+                            <p>미흡 - 즉시 개선 필요</p>
+                        </div>
+                    </div>
+
+                    <div class="example">
+                        <h5>💡 실제 예시</h5>
+                        <p>
+                            <strong>상황:</strong> "운전자보험 어디가 좋은지 추천해줘"라고 ChatGPT에 질문했을 때<br>
+                            <strong>69.4점 페이지:</strong> 상위 5개 추천 중 3번째 정도로 나올 가능성<br>
+                            <strong>85점 페이지:</strong> 상위 5개 추천 중 1~2번째로 나올 가능성
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BM25 키워드 분석 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🔍</span>
+                    BM25 키워드 점수 이해하기
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">2</span>BM25가 뭔가요?</h3>
+                    
+                    <div class="explanation">
+                        <h4>🤔 어려운 용어는 잊으세요!</h4>
+                        <p>
+                            BM25는 <strong>"핵심 키워드가 얼마나 잘 들어가 있나?"</strong>를 측정하는 점수입니다.
+                        </p>
+                        <p style="margin-top: 10px;">
+                            예를 들어, "운전자보험"이라는 키워드로 검색했을 때, 여러분의 페이지에 
+                            <span class="highlight">이 단어가 적절하게 반복</span>되어 있는지 확인합니다.
+                        </p>
+                    </div>
+
+                    <div class="example">
+                        <h5>💡 음식점으로 비유하면?</h5>
+                        <p>
+                            <strong>메뉴판 점수</strong>라고 생각하면 됩니다.<br>
+                            <br>
+                            - 김치찌개 전문점 메뉴판에 "김치찌개"가 5번 나옴 → 높은 점수 ✅<br>
+                            - 김치찌개 전문점인데 "맛있는 음식"만 쓰여있음 → 낮은 점수 ❌
+                        </p>
+                    </div>
+
+                    <div class="visual-comparison">
+                        <div class="comparison-card comparison-before">
+                            <h5>❌ 낮은 점수 예시 (20점)</h5>
+                            <p style="color: #666; line-height: 1.8;">
+                                "저희는 최고의 보험을 제공합니다. 고객님께 가장 좋은 상품을 추천드립니다."
+                            </p>
+                        </div>
+                        <div class="comparison-card comparison-after">
+                            <h5>✅ 높은 점수 예시 (80점)</h5>
+                            <p style="color: #666; line-height: 1.8;">
+                                "운전자보험 추천을 찾으신다면 DB손해보험 운전자보험이 좋습니다. 운전자보험 가입 시 자동차사고와 보행사고 모두 보장받을 수 있습니다."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="tip-box">
+                        <h5>💡 개선 팁</h5>
+                        <p>보고서의 "BM25 키워드 분석" 테이블을 보세요:</p>
+                        <ul>
+                            <li><strong>빈도(TF)</strong>: 해당 키워드가 몇 번 나왔는지</li>
+                            <li><strong>위치</strong>: 제목, 본문 어디에 있는지</li>
+                            <li><strong>최소성</strong>: 문서 전체에서 얼마나 집중적으로 다뤄지는지</li>
+                        </ul>
+                        <p style="margin-top: 10px;">
+                            <strong>개선 방법:</strong> 점수가 낮은 키워드를 제목과 본문 초반부에 2~3번 더 추가하세요.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 시맨틱 유사도 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🧠</span>
+                    시맨틱 유사도 이해하기
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">3</span>시맨틱 유사도가 뭔가요?</h3>
+                    
+                    <div class="explanation">
+                        <h4>🤔 또 어려운 용어네요?</h4>
+                        <p>
+                            걱정마세요! <strong>"의미적으로 얼마나 관련있나?"</strong>를 측정하는 점수입니다.
+                        </p>
+                        <p style="margin-top: 10px;">
+                            단순히 단어가 있는지가 아니라, <span class="highlight">내용이 질문과 얼마나 잘 맞는지</span>를 봅니다.
+                        </p>
+                    </div>
+
+                    <div class="example">
+                        <h5>💡 실생활 비유</h5>
+                        <p>
+                            <strong>질문:</strong> "저렴한 가격에 맛있는 김치찌개집 추천해줘"<br>
+                            <br>
+                            <strong>낮은 점수 (40점):</strong><br>
+                            "우리 집은 김치찌개가 있습니다. 위치는 강남역입니다."<br>
+                            → 단어만 있고 실제 질문에 대한 답이 없음<br>
+                            <br>
+                            <strong>높은 점수 (85점):</strong><br>
+                            "1인분 7,000원의 합리적인 가격에 국내산 김치를 사용한 진한 국물 맛이 일품입니다. 김치찌개 단골 손님이 많은 이유죠."<br>
+                            → 가격, 맛, 이유까지 구체적으로 답변
+                        </p>
+                    </div>
+
+                    <table class="keyword-table">
+                        <thead>
+                            <tr>
+                                <th>항목</th>
+                                <th>의미</th>
+                                <th>점수 기준</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>주제 일치도</strong></td>
+                                <td>질문 주제와 얼마나 맞는지</td>
+                                <td>90점 이상: 완벽히 일치</td>
+                            </tr>
+                            <tr>
+                                <td><strong>의미적 관련성</strong></td>
+                                <td>연관된 개념을 다루는지</td>
+                                <td>85점 이상: 관련 개념 포함</td>
+                            </tr>
+                            <tr>
+                                <td><strong>맥락 이해도</strong></td>
+                                <td>질문 의도를 파악했는지</td>
+                                <td>80점 이상: 의도 정확히 파악</td>
+                            </tr>
+                            <tr>
+                                <td><strong>정보 충족도</strong></td>
+                                <td>필요한 정보를 제공하는지</td>
+                                <td>90점 이상: 정보 완벽 제공</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="tip-box">
+                        <h5>💡 개선 팁</h5>
+                        <p>시맨틱 점수를 높이려면:</p>
+                        <ul>
+                            <li>질문의 <strong>숨은 의도</strong>를 파악하세요 (예: "추천"은 장단점 비교가 필요)</li>
+                            <li>구체적인 <strong>숫자, 사례, 근거</strong>를 추가하세요</li>
+                            <li>관련된 <strong>유사 질문들</strong>도 함께 답변하세요</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 구조 분석 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">❓</span>
+                    FAQ 구조 점수 이해하기
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">4</span>FAQ가 왜 중요한가요?</h3>
+                    
+                    <div class="explanation">
+                        <h4>🤔 FAQ = Frequently Asked Questions (자주 묻는 질문)</h4>
+                        <p>
+                            AI는 <strong>질문-답변 형식</strong>으로 정리된 내용을 가장 선호합니다!
+                        </p>
+                        <p style="margin-top: 10px;">
+                            왜냐하면 사용자들도 AI에게 <span class="highlight">질문 형태로 물어보기</span> 때문이죠.
+                        </p>
+                    </div>
+
+                    <div class="example good-example">
+                        <h5>✅ AI가 좋아하는 FAQ 형식</h5>
+                        <p>
+                            <strong>Q: 운전자보험은 꼭 가입해야 하나요?</strong><br>
+                            A: 네, 자동차보험으로 커버되지 않는 벌금이나 형사합의금을 보장받을 수 있습니다.<br>
+                            <br>
+                            <strong>Q: 운전자보험 가입 시 고려할 점은?</strong><br>
+                            A: 보장 범위(벌금, 형사합의금)와 자기부담금을 꼭 확인하세요.
+                        </p>
+                    </div>
+
+                    <div class="example bad-example">
+                        <h5>❌ AI가 이해하기 어려운 형식</h5>
+                        <p>
+                            <strong>운전자보험 안내</strong><br>
+                            운전자보험은 좋은 상품입니다. 여러 혜택이 있으며 가입을 권장합니다. 
+                            자세한 내용은 상담을 통해 확인하세요.
+                        </p>
+                    </div>
+
+                    <div class="tip-box">
+                        <h5>💡 FAQ 개선 실전 팁</h5>
+                        <p>보고서에서 "AI 제안 질문 리스트"를 확인하세요:</p>
+                        <ul>
+                            <li>AI가 자동으로 <strong>고객들이 궁금해할 7~10개 질문</strong>을 생성했습니다</li>
+                            <li>각 질문에 대한 답변을 <strong>2~3문장</strong>으로 작성하세요</li>
+                            <li>제목에 <strong>"자주 묻는 질문"</strong> 또는 <strong>"FAQ"</strong>를 명시하세요</li>
+                        </ul>
+                    </div>
+
+                    <div class="visual-comparison">
+                        <div class="comparison-card comparison-before">
+                            <h5>❌ 개선 전 (FAQ 없음)</h5>
+                            <p style="color: #666; line-height: 1.8;">
+                                긴 설명문으로만 구성<br>
+                                → AI가 핵심 내용 파악 어려움<br>
+                                → FAQ 점수: 0/20점
+                            </p>
+                        </div>
+                        <div class="comparison-card comparison-after">
+                            <h5>✅ 개선 후 (FAQ 추가)</h5>
+                            <p style="color: #666; line-height: 1.8;">
+                                5개의 Q&A로 핵심 정리<br>
+                                → AI가 즉시 답변 가능<br>
+                                → FAQ 점수: 18/20점
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 관련성 증거 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">📌</span>
+                    관련성 증거 이해하기
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">5</span>관련성 증거가 뭔가요?</h3>
+                    
+                    <div class="explanation">
+                        <h4>🤔 AI에게 "근거"를 보여주는 것</h4>
+                        <p>
+                            "우리 페이지가 정말 이 주제에 대해 전문성이 있다"는 것을 
+                            <span class="highlight">객관적 데이터로 증명</span>하는 섹션입니다.
+                        </p>
+                    </div>
+
+                    <div class="example">
+                        <h5>💡 실제 적용 예시</h5>
+                        <p>
+                            <strong>키워드 관련성:</strong> "운전자보험" 단어가 본문에 10번, 메타 설명에 1번 포함<br>
+                            <strong>의미적 관련성:</strong> 질문과 85% 일치하는 내용 구성<br>
+                        </p>
+                    </div>
+
+                    <div class="tip-box">
+                        <h5>💡 이 점수를 높이려면?</h5>
+                        <ul>
+                            <li><strong>제목에 핵심 키워드</strong>를 반드시 넣으세요</li>
+                            <li><strong>첫 문단에 핵심 내용</strong>을 요약하세요</li>
+                            <li><strong>구체적 수치와 사례</strong>를 포함하세요 (예: "2024년 기준", "7,000원")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개선 권고사항 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🔧</span>
+                    개선 권고사항 활용하기
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">6</span>우선순위별 개선 방법</h3>
+                    
+                    <div class="explanation">
+                        <h4>🎯 가장 효과적인 개선 순서</h4>
+                        <p>보고서의 "개선 권고사항" 섹션은 <strong>우선순위별로 정렬</strong>되어 있습니다.</p>
+                    </div>
+
+                    <div class="action-steps">
+                        <h3>✅ 즉시 실행 가능한 개선 로드맵</h3>
+                        <ol>
+                            <li><strong>1단계 (오늘 당장!):</strong> FAQ 섹션 추가
+                                <ul style="margin-top: 8px; line-height: 1.6;">
+                                    <li>AI 제안 질문 리스트에서 5~7개 선택</li>
+                                    <li>각 질문에 2~3문장으로 답변 작성</li>
+                                    <li>페이지 하단에 "자주 묻는 질문" 섹션으로 추가</li>
+                                </ul>
+                            </li>
+                            <li><strong>2단계 (이번 주 내):</strong> 키워드 밀도 조정
+                                <ul style="margin-top: 8px; line-height: 1.6;">
+                                    <li>BM25 분석표에서 낮은 점수 키워드 확인</li>
+                                    <li>해당 키워드를 제목과 첫 문단에 추가</li>
+                                    <li>자연스럽게 2~3번 더 반복</li>
+                                </ul>
+                            </li>
+                            <li><strong>3단계 (이번 달 내):</strong> 구조화된 데이터 마크업
+                                <ul style="margin-top: 8px; line-height: 1.6;">
+                                    <li>FAQ Schema 마크업 추가 (개발팀 협조)</li>
+                                    <li>메타 태그 최적화</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="tip-box">
+                        <h5>💡 개선 전후 비교 예시</h5>
+                        <p><strong>개선 전 점수:</strong> 69.4점 (보통)</p>
+                        <ul>
+                            <li>FAQ 추가 → +8점</li>
+                            <li>키워드 최적화 → +5점</li>
+                            <li>의미적 관련성 강화 → +3점</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>개선 후 예상 점수:</strong> 85.4점 (양호) ✨</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 실전 활용 가이드 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">🚀</span>
+                    실전 활용 가이드
+                </h2>
+
+                <div class="subsection">
+                    <h3><span class="subsection-number">7</span>업무에 바로 적용하기</h3>
+                    
+                    <div class="example">
+                        <h5>📋 마케팅 담당자를 위한 체크리스트</h5>
+                        <p>
+                            <input type="checkbox"> 1. 종합 점수 확인 (목표: 75점 이상)<br>
+                            <input type="checkbox"> 2. AI 제안 FAQ 7개 작성 완료<br>
+                            <input type="checkbox"> 3. 핵심 키워드 제목에 포함 확인<br>
+                            <input type="checkbox"> 4. 첫 문단에 핵심 내용 요약<br>
+                            <input type="checkbox"> 5. 구체적 수치/사례 3개 이상 포함<br>
+                            <input type="checkbox"> 6. 1주일 후 재분석 실행
+                        </p>
+                    </div>
+
+                    <div class="example">
+                        <h5>📋 콘텐츠 기획자를 위한 체크리스트</h5>
+                        <p>
+                            <input type="checkbox"> 1. BM25 분석표에서 누락 키워드 확인<br>
+                            <input type="checkbox"> 2. 시맨틱 유사도 낮은 부분 보강<br>
+                            <input type="checkbox"> 3. FAQ 섹션 배치 위치 결정<br>
+                            <input type="checkbox"> 4. 관련 이미지/표 추가<br>
+                            <input type="checkbox"> 5. 메타 설명 최적화<br>
+                            <input type="checkbox"> 6. 경쟁 페이지 벤치마킹
+                        </p>
+                    </div>
+
+                    <div class="tip-box">
+                        <h5>💡 정기 모니터링 권장 주기</h5>
+                        <ul>
+                            <li><strong>신규 페이지:</strong> 발행 후 1주일 내 분석 → 즉시 개선</li>
+                            <li><strong>기존 페이지:</strong> 월 1회 정기 분석</li>
+                            <li><strong>중요 페이지:</strong> 주 1회 모니터링 (메인, 전환 페이지)</li>
+                            <li><strong>시즌 콘텐츠:</strong> 시즌 시작 2주 전 최적화</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 자주 묻는 질문 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-icon">💬</span>
+                    이용자들이 자주 묻는 질문
+                </h2>
+
+                <div class="subsection">
+                    <div class="explanation">
+                        <h4>Q1: 점수가 낮게 나왔는데 실제 트래픽은 많아요. 왜 그런가요?</h4>
+                        <p>
+                            <strong>A:</strong> 기존 SEO(네이버, 구글 검색)와 AEO(AI 검색)는 다른 기준입니다. 
+                            기존 검색에서는 인기가 많아도, AI 검색 최적화가 안 되어 있으면 AI가 추천하지 않을 수 있습니다. 
+                            향후 AI 검색 점유율이 증가하므로 지금부터 대비하세요.
+                        </p>
+                    </div>
+
+                    <div class="explanation">
+                        <h4>Q2: 개선 후 얼마나 지나야 효과가 나타나나요?</h4>
+                        <p>
+                            <strong>A:</strong> 
+                            - FAQ 추가: 즉시 효과 (1~3일 내)<br>
+                            - 키워드 최적화: 1~2주 후<br>
+                            - 구조적 변경: 2~4주 후<br>
+                            개선 후 1주일 뒤 재분석해서 점수 변화를 확인하세요.
+                        </p>
+                    </div>
+
+                    <div class="explanation">
+                        <h4>Q3: 모든 페이지를 분석해야 하나요?</h4>
+                        <p>
+                            <strong>A:</strong> 우선순위를 정하세요:
+                            <br>1순위: 메인 랜딩 페이지, 전환율 높은 페이지
+                            <br>2순위: 트래픽 많은 상위 10개 페이지
+                            <br>3순위: 신규 발행 페이지
+                        </p>
+                    </div>
+
+                    <div class="explanation">
+                        <h4>Q4: IT 개발 없이도 개선할 수 있나요?</h4>
+                        <p>
+                            <strong>A:</strong> 네! 80% 이상은 콘텐츠만 수정해도 됩니다:
+                            <br>- FAQ 추가 (복사+붙여넣기)
+                            <br>- 키워드 추가 (텍스트 편집)
+                            <br>- 내용 보강 (에디터에서 수정)
+                            <br>개발이 필요한 것은 Schema 마크업 정도입니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 마무리 -->
+            <div class="action-steps">
+                <h3>🎯 지금 바로 시작하기</h3>
+                <ol>
+                    <li>보고서 상단의 <strong>종합 점수</strong> 확인</li>
+                    <li><strong>AI 제안 질문 리스트</strong> 섹션에서 질문 복사</li>
+                    <li>각 질문에 대한 답변 2~3문장으로 작성</li>
+                    <li>페이지에 "자주 묻는 질문" 섹션 추가</li>
+                    <li>1주일 후 <strong>재분석</strong>으로 개선 효과 확인</li>
+                </ol>
+                <p style="margin-top: 20px; font-size: 1.1em; opacity: 0.95;">
+                    💡 <strong>Tip:</strong> 작은 변화부터 시작하세요. FAQ 추가만으로도 평균 +5~10점 향상됩니다!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
