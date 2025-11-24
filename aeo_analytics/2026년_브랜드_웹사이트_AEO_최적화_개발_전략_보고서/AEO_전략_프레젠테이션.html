@@ -2098,90 +2098,134 @@
     <script>
         let currentSlide = 0;
         const totalSlides = 11;
-        
+
         // Initialize slides
         function initSlides() {
+            console.log('=== Initializing slides ===');
             const slides = document.querySelectorAll('.slide');
             const indicators = document.getElementById('indicators');
-            
-            console.log('Found', slides.length, 'slides');
-            
+
+            console.log('Found', slides.length, 'slides (expected:', totalSlides, ')');
+
+            if (slides.length === 0) {
+                console.error('No slides found! Check if .slide class exists');
+                return;
+            }
+
             // Create indicators
             for (let i = 0; i < totalSlides; i++) {
                 const indicator = document.createElement('div');
                 indicator.className = 'indicator';
-                indicator.onclick = () => goToSlide(i);
+                indicator.onclick = () => {
+                    console.log('Indicator clicked:', i);
+                    goToSlide(i);
+                };
                 indicators.appendChild(indicator);
             }
-            
+
             // Show first slide
             showSlide(0);
+            console.log('=== Initialization complete ===');
         }
-        
+
         function showSlide(n) {
+            console.log('showSlide called with n =', n);
             const slides = document.querySelectorAll('.slide');
             const indicators = document.querySelectorAll('.indicator');
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             const currentSlideSpan = document.getElementById('current-slide');
-            
+
+            if (slides.length === 0) {
+                console.error('No slides found in showSlide!');
+                return;
+            }
+
             // Bounds checking
             if (n >= totalSlides) {
+                console.log('Reached end of slides');
                 currentSlide = totalSlides - 1;
                 return;
             }
             if (n < 0) {
+                console.log('Reached beginning of slides');
                 currentSlide = 0;
                 return;
             }
-            
+
             currentSlide = n;
-            
+            console.log('Setting current slide to:', currentSlide);
+
             // Hide all slides
-            slides.forEach(slide => {
+            slides.forEach((slide, index) => {
                 slide.classList.remove('active');
                 slide.style.display = 'none';
             });
             indicators.forEach(ind => ind.classList.remove('active'));
-            
+
             // Show current slide
             if (slides[currentSlide]) {
                 slides[currentSlide].classList.add('active');
-                slides[currentSlide].style.display = 'block';
+                slides[currentSlide].style.display = 'flex';
+                console.log('✓ Slide', currentSlide + 1, 'is now visible');
+            } else {
+                console.error('Slide', currentSlide, 'not found!');
             }
+
             if (indicators[currentSlide]) {
                 indicators[currentSlide].classList.add('active');
             }
-            
+
             // Update counter
-            currentSlideSpan.textContent = currentSlide + 1;
-            
+            if (currentSlideSpan) {
+                currentSlideSpan.textContent = currentSlide + 1;
+            }
+
             // Update button states
-            prevBtn.disabled = currentSlide === 0;
-            nextBtn.disabled = currentSlide === totalSlides - 1;
-            
-            console.log('Showing slide', currentSlide + 1);
+            if (prevBtn) {
+                prevBtn.disabled = currentSlide === 0;
+                console.log('Prev button disabled:', prevBtn.disabled);
+            }
+            if (nextBtn) {
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+                console.log('Next button disabled:', nextBtn.disabled);
+            }
         }
-        
+
         function changeSlide(direction) {
+            console.log('changeSlide called with direction:', direction);
             showSlide(currentSlide + direction);
         }
-        
+
         function goToSlide(n) {
+            console.log('goToSlide called with n:', n);
             showSlide(n);
         }
-        
+
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
+                console.log('← Left arrow pressed');
                 changeSlide(-1);
             } else if (e.key === 'ArrowRight') {
+                console.log('→ Right arrow pressed');
                 changeSlide(1);
             }
         });
-        
+
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', initSlides);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM Content Loaded event fired');
+            initSlides();
+        });
+
+        // Backup initialization in case DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            console.log('Document is still loading...');
+        } else {
+            console.log('Document already loaded, initializing immediately');
+            initSlides();
+        }
     </script>
 </body>
 </html>
