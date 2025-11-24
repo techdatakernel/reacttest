@@ -21,7 +21,7 @@
             height: 100vh;
             font-family: 'Noto Sans KR', sans-serif;
             overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
         }
         
         .presentation-container {
@@ -37,7 +37,8 @@
             width: 1280px;
             height: 720px;
             position: relative;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
             border-radius: 16px;
             overflow: hidden;
         }
@@ -65,7 +66,7 @@
             transform: translateY(-50%);
             width: 50px;
             height: 50px;
-            background: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 50%;
             cursor: pointer;
@@ -74,12 +75,14 @@
             justify-content: center;
             z-index: 1000;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: white;
         }
-        
+
         .nav-button:hover {
-            background: white;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
             transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
         }
         
         .nav-button.prev {
@@ -108,25 +111,25 @@
         .indicator {
             width: 10px;
             height: 10px;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(102, 126, 234, 0.3);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .indicator.active {
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             width: 30px;
             border-radius: 5px;
         }
-        
+
         .slide-counter {
             position: absolute;
             top: -40px;
             right: 0;
-            color: rgba(255, 255, 255, 0.7);
+            color: #667eea;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             z-index: 1001;
         }
     </style>
@@ -989,28 +992,48 @@
         document.addEventListener('DOMContentLoaded', function() {
             const width = document.getElementById('visibility-chart').clientWidth;
             const height = document.getElementById('visibility-chart').clientHeight;
-            
+
             const svg = d3.select('#visibility-chart')
                 .append('svg')
                 .attr('width', width)
                 .attr('height', height);
-                
+
+            // Define gradient FIRST before using it
+            const linearGradientId = 'linearGradient-1';
+
+            svg.append('defs')
+                .append('linearGradient')
+                .attr('id', linearGradientId)
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '100%')
+                .attr('y2', '0%')
+                .selectAll('stop')
+                .data([
+                    {offset: '0%', color: '#10b981'},
+                    {offset: '100%', color: '#8b5cf6'}
+                ])
+                .enter()
+                .append('stop')
+                .attr('offset', d => d.offset)
+                .attr('stop-color', d => d.color);
+
             // Create a visualization that represents brand visibility
             // We'll create a simple gauge chart to represent the concept
-            
+
             const margin = {top: 20, right: 30, bottom: 30, left: 30};
             const innerWidth = width - margin.left - margin.right;
             const innerHeight = height - margin.top - margin.bottom;
-            
+
             const g = svg.append('g')
                 .attr('transform', `translate(${margin.left},${margin.top})`);
-                
+
             // Create gauge background
             const gaugeWidth = innerWidth;
             const gaugeHeight = innerHeight * 0.5;
             const gaugeX = 0;
             const gaugeY = innerHeight * 0.25;
-            
+
             // Add gauge background
             g.append('rect')
                 .attr('x', gaugeX)
@@ -1020,7 +1043,7 @@
                 .attr('rx', gaugeHeight / 2)
                 .attr('ry', gaugeHeight / 2)
                 .attr('fill', '#e5e7eb');
-                
+
             // Add gauge fill (representing brand visibility)
             const fillWidth = gaugeWidth * 0.8; // 80% visibility as example
             g.append('rect')
@@ -1030,7 +1053,7 @@
                 .attr('height', gaugeHeight)
                 .attr('rx', gaugeHeight / 2)
                 .attr('ry', gaugeHeight / 2)
-                .attr('fill', linearGradient);
+                .attr('fill', `url(#${linearGradientId})`);
                 
             // Add gauge labels
             g.append('text')
@@ -1084,26 +1107,6 @@
                 .attr('fill', '#374151')
                 .attr('font-weight', 'bold')
                 .attr('text-anchor', 'middle');
-                
-            // Define gradient
-            const linearGradient = 'linearGradient-1';
-            
-            svg.append('defs')
-                .append('linearGradient')
-                .attr('id', linearGradient)
-                .attr('x1', '0%')
-                .attr('y1', '0%')
-                .attr('x2', '100%')
-                .attr('y2', '0%')
-                .selectAll('stop')
-                .data([
-                    {offset: '0%', color: '#10b981'},
-                    {offset: '100%', color: '#8b5cf6'}
-                ])
-                .enter()
-                .append('stop')
-                .attr('offset', d => d.offset)
-                .attr('stop-color', d => d.color);
         });
   </script>
 
