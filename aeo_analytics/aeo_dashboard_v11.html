@@ -229,6 +229,26 @@
             cursor: not-allowed;
         }
 
+        .btn-detail {
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 0.875rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -378,12 +398,8 @@
             font-size: 0.875rem;
         }
 
-        tr:hover {
+        tbody tr:hover {
             background: var(--gray-50);
-        }
-
-        tr {
-            cursor: pointer;
         }
 
         .pagination {
@@ -870,6 +886,7 @@
                         <th>점수</th>
                         <th>평가</th>
                         <th>모델</th>
+                        <th style="width: 120px; text-align: center;">액션</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -1092,14 +1109,18 @@
 
                 // 테이블 뷰
                 const row = document.createElement('tr');
-                row.onclick = () => openDetail(item.id);
                 row.innerHTML = `
                     <td>${item.timestamp}</td>
-                    <td>${item.query}</td>
-                    <td>${item.url}</td>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.query}</td>
+                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.url}</td>
                     <td><strong>${item.hybrid_score}</strong></td>
                     <td><span class="card-rating ${ratingClass}">${item.evaluation}</span></td>
                     <td>${item.model}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-detail" onclick="event.stopPropagation(); openDetail('${item.id}')">
+                            상세 보기
+                        </button>
+                    </td>
                 `;
 
                 tableBody.appendChild(row);
