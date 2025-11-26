@@ -116,22 +116,52 @@ function callClaudeAPI($systemPrompt, $userPrompt, $model = 'claude-3-5-sonnet-2
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
 
     $elapsedTime = round((microtime(true) - $startTime) * 1000, 2);
 
-    if (!$response || $httpCode !== 200) {
+    if (!$response) {
         if ($retryCount < 1) {
             sleep(1);
             return callClaudeAPI($systemPrompt, $userPrompt, $model, $temperature, $retryCount + 1);
         }
-        return ['error' => "API 오류 ($httpCode)", 'elapsed_time' => $elapsedTime];
+        return ['error' => 'API 연결 실패: ' . $curlError, 'elapsed_time' => $elapsedTime];
+    }
+
+    if ($httpCode !== 200) {
+        // JSON 에러 메시지 파싱 시도
+        $errorData = json_decode($response, true);
+        $errorMsg = "API 오류 (HTTP $httpCode)";
+
+        if ($errorData && isset($errorData['error'])) {
+            if (isset($errorData['error']['message'])) {
+                $errorMsg .= ': ' . $errorData['error']['message'];
+            } elseif (isset($errorData['error']['type'])) {
+                $errorMsg .= ': ' . $errorData['error']['type'];
+            }
+        }
+
+        if ($retryCount < 1 && $httpCode >= 500) {
+            sleep(1);
+            return callClaudeAPI($systemPrompt, $userPrompt, $model, $temperature, $retryCount + 1);
+        }
+
+        return ['error' => $errorMsg, 'elapsed_time' => $elapsedTime];
     }
 
     $data = json_decode($response, true);
 
+    if (!$data) {
+        return ['error' => 'JSON 파싱 실패. API가 HTML 또는 잘못된 형식을 반환했습니다.', 'elapsed_time' => $elapsedTime];
+    }
+
     if (!isset($data['content'][0]['text'])) {
-        return ['error' => '응답 파싱 실패', 'elapsed_time' => $elapsedTime];
+        $errorMsg = '응답 형식 오류';
+        if (isset($data['error'])) {
+            $errorMsg .= ': ' . (isset($data['error']['message']) ? $data['error']['message'] : json_encode($data['error']));
+        }
+        return ['error' => $errorMsg, 'elapsed_time' => $elapsedTime];
     }
 
     return [
@@ -562,11 +592,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     header('Content-Type: application/json; charset=utf-8');
 
-    // API 키 검증
-    $apiKeyErrors = validateApiKeys();
+    // API 키 검증 (Claude만)
+    $apiKeyErrors = validateApiKey('claude');
     if (!empty($apiKeyErrors)) {
         echo json_encode([
-            'error' => 'API 키 설정 오류: ' . implode(' ', $apiKeyErrors) . ' config.php 파일을 확인하세요.'
+            'error' => 'API 키 설정 오류: ' . implode(' ', $apiKeyErrors)
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
