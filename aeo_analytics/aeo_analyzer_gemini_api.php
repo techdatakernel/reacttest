@@ -15,7 +15,9 @@ set_time_limit(120);
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-define('GEMINI_API_KEY', 'your-gemini-api-key-here');
+// API 키 설정 파일 로드
+require_once __DIR__ . '/config.php';
+
 define('DATA_DIR', __DIR__ . '/aeo_data_gemini');
 define('CACHE_DIR', DATA_DIR . '/cache');
 define('MAX_TOKENS', 3000);
@@ -30,10 +32,9 @@ if (!is_dir(DATA_DIR)) mkdir(DATA_DIR, 0755, true);
 if (!is_dir(CACHE_DIR)) mkdir(CACHE_DIR, 0755, true);
 
 $models = [
-    'gemini-1.5-pro' => ['name' => 'Gemini 1.5 Pro', 'speed' => '빠름', 'cost' => '약 $2.50', 'quality' => '최고'],
-    'gemini-1.5-flash' => ['name' => 'Gemini 1.5 Flash', 'speed' => '매우 빠름', 'cost' => '약 $0.30', 'quality' => '우수'],
-    'gemini-1.5-flash-8b' => ['name' => 'Gemini 1.5 Flash-8B', 'speed' => '초고속', 'cost' => '약 $0.10', 'quality' => '양호'],
-    'gemini-2.0-flash-exp' => ['name' => 'Gemini 2.0 Flash (실험)', 'speed' => '매우 빠름', 'cost' => '무료', 'quality' => '최신']
+    'gemini-2.0-flash-thinking-exp-01-21' => ['name' => 'Gemini 2.0 Thinking', 'speed' => '보통', 'cost' => '무료(Exp)', 'quality' => '최상(추론형)'],
+    'gemini-1.5-pro' => ['name' => 'Gemini 1.5 Pro', 'speed' => '빠름', 'cost' => '유료', 'quality' => '우수'],
+    'gemini-2.0-flash-exp' => ['name' => 'Gemini 2.0 Flash', 'speed' => '매우 빠름', 'cost' => '무료(Exp)', 'quality' => '양호']
 ];
 
 // ========================================
@@ -558,10 +559,19 @@ PROMPT;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query = $_POST['query'] ?? '';
     $url = $_POST['url'] ?? '';
-    $model = $_POST['model'] ?? 'gemini-1.5-pro';
+    $model = $_POST['model'] ?? 'gemini-2.0-flash-thinking-exp-01-21';
     $temperature = (float)($_POST['temperature'] ?? 0.7);
 
     header('Content-Type: application/json; charset=utf-8');
+
+    // API 키 검증
+    $apiKeyErrors = validateApiKeys();
+    if (!empty($apiKeyErrors)) {
+        echo json_encode([
+            'error' => 'API 키 설정 오류: ' . implode(' ', $apiKeyErrors) . ' config.php 파일을 확인하세요.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
     if (empty($query) || empty($url)) {
         echo json_encode(['error' => '질문과 URL을 입력해주세요'], JSON_UNESCAPED_UNICODE);
@@ -1380,7 +1390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label>AI 모델 선택</label>
-                        <input type="hidden" name="model" id="selectedModel" value="gemini-1.5-pro">
+                        <input type="hidden" name="model" id="selectedModel" value="gemini-2.0-flash-thinking-exp-01-21">
                         <div class="model-grid">
                             <?php foreach ($models as $key => $info): ?>
                             <div class="model-card" data-model="<?= $key ?>">
@@ -1445,7 +1455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         // 초기 선택
-        document.querySelector('[data-model="gemini-1.5-pro"]').classList.add('selected');
+        document.querySelector('[data-model="gemini-2.0-flash-thinking-exp-01-21"]').classList.add('selected');
 
         // Temperature 슬라이더
         const temperatureSlider = document.getElementById('temperatureSlider');

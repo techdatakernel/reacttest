@@ -15,7 +15,9 @@ set_time_limit(120);
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-define('CLAUDE_API_KEY', 'your-claude-api-key-here');
+// API 키 설정 파일 로드
+require_once __DIR__ . '/config.php';
+
 define('DATA_DIR', __DIR__ . '/aeo_data_claude');
 define('CACHE_DIR', DATA_DIR . '/cache');
 define('MAX_TOKENS', 3000);
@@ -30,10 +32,10 @@ if (!is_dir(DATA_DIR)) mkdir(DATA_DIR, 0755, true);
 if (!is_dir(CACHE_DIR)) mkdir(CACHE_DIR, 0755, true);
 
 $models = [
-    'claude-3-5-sonnet-20241022' => ['name' => 'Claude 3.5 Sonnet', 'speed' => '빠름', 'cost' => '약 $3.00', 'quality' => '최고'],
+    'claude-sonnet-4-20250514' => ['name' => 'Claude Sonnet 4', 'speed' => '빠름', 'cost' => '약 $3.00', 'quality' => '최고'],
+    'claude-3-5-sonnet-20241022' => ['name' => 'Claude 3.5 Sonnet', 'speed' => '빠름', 'cost' => '약 $3.00', 'quality' => '우수'],
     'claude-3-5-haiku-20241022' => ['name' => 'Claude 3.5 Haiku', 'speed' => '매우 빠름', 'cost' => '약 $0.80', 'quality' => '우수'],
-    'claude-3-opus-20240229' => ['name' => 'Claude 3 Opus', 'speed' => '느림', 'cost' => '약 $15.00', 'quality' => '최상'],
-    'claude-3-sonnet-20240229' => ['name' => 'Claude 3 Sonnet', 'speed' => '보통', 'cost' => '약 $3.00', 'quality' => '우수']
+    'claude-3-opus-20240229' => ['name' => 'Claude 3 Opus', 'speed' => '느림', 'cost' => '약 $15.00', 'quality' => '최상']
 ];
 
 // ========================================
@@ -555,10 +557,19 @@ PROMPT;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query = $_POST['query'] ?? '';
     $url = $_POST['url'] ?? '';
-    $model = $_POST['model'] ?? 'claude-3-5-sonnet-20241022';
+    $model = $_POST['model'] ?? 'claude-sonnet-4-20250514';
     $temperature = (float)($_POST['temperature'] ?? 0.7);
 
     header('Content-Type: application/json; charset=utf-8');
+
+    // API 키 검증
+    $apiKeyErrors = validateApiKeys();
+    if (!empty($apiKeyErrors)) {
+        echo json_encode([
+            'error' => 'API 키 설정 오류: ' . implode(' ', $apiKeyErrors) . ' config.php 파일을 확인하세요.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
     if (empty($query) || empty($url)) {
         echo json_encode(['error' => '질문과 URL을 입력해주세요'], JSON_UNESCAPED_UNICODE);
@@ -1377,7 +1388,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div class="form-group">
                         <label>AI 모델 선택</label>
-                        <input type="hidden" name="model" id="selectedModel" value="claude-3-5-sonnet-20241022">
+                        <input type="hidden" name="model" id="selectedModel" value="claude-sonnet-4-20250514">
                         <div class="model-grid">
                             <?php foreach ($models as $key => $info): ?>
                             <div class="model-card" data-model="<?= $key ?>">
@@ -1442,7 +1453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         // 초기 선택
-        document.querySelector('[data-model="claude-3-5-sonnet-20241022"]').classList.add('selected');
+        document.querySelector('[data-model="claude-sonnet-4-20250514"]').classList.add('selected');
 
         // Temperature 슬라이더
         const temperatureSlider = document.getElementById('temperatureSlider');
