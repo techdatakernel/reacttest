@@ -1,0 +1,102 @@
+
+{
+    "id": "d3e16747909d73c0912f48710c2327f1",
+    "query": "여름에 한맥과 어울리는 장소는 어디야?",
+    "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/spring-flowers.php",
+    "model": "gemini-1.5-pro",
+    "temperature": 0.7,
+    "timestamp": "2025-11-26 08:59:38",
+    "date": "2025-11-26",
+    "scores": {
+        "bm25": 0,
+        "semantic": 0,
+        "faq": 0,
+        "total": 0,
+        "hybrid": 0,
+        "rating": "미흡"
+    },
+    "bm25_analysis": {
+        "keywords": [],
+        "total_score": 0,
+        "strengths": "분석 불가: API 오류 (404)",
+        "weaknesses": "분석 불가",
+        "api_metadata": {
+            "time_ms": 255.66
+        }
+    },
+    "semantic_analysis": {
+        "topic_match": {
+            "score": 0,
+            "reason": "분석 불가: API 오류 (404)"
+        },
+        "semantic_relevance": {
+            "score": 0,
+            "reason": "분석 불가"
+        },
+        "context_understanding": {
+            "score": 0,
+            "reason": "분석 불가"
+        },
+        "information_completeness": {
+            "score": 0,
+            "reason": "분석 불가"
+        },
+        "total_score": 0,
+        "strengths": "분석 불가",
+        "weaknesses": "분석 불가",
+        "api_metadata": {
+            "time_ms": 263.62
+        }
+    },
+    "faq_analysis": {
+        "has_faq_format": false,
+        "faq_score": 0,
+        "ai_friendliness_score": 0,
+        "structure_analysis": "분석 불가: API 오류 (404)",
+        "recommendation": "FAQ 형식 추가 권장",
+        "priority": "권장",
+        "api_metadata": {
+            "time_ms": 251.95
+        }
+    },
+    "query_expansion": {
+        "expansions": [],
+        "api_metadata": {
+            "time_ms": 247.77
+        }
+    },
+    "relevance_evidence": {
+        "evidence": [],
+        "api_metadata": {
+            "time_ms": 249.33
+        }
+    },
+    "recommendations": {
+        "missing_info": [],
+        "action_items": [],
+        "expected_score_increase": {
+            "bm25": 0,
+            "semantic": 0,
+            "faq": 0
+        },
+        "api_metadata": {
+            "time_ms": 269.61
+        }
+    },
+    "processing_time": {
+        "total_ms": 9113.61,
+        "bm25_ms": 255.66,
+        "semantic_ms": 263.62,
+        "faq_ms": 251.95,
+        "query_expansion_ms": 247.77,
+        "relevance_evidence_ms": 249.33,
+        "recommendations_ms": 269.61
+    },
+    "_optimization_notes": {
+        "api_provider": "Google Gemini",
+        "api_calls": "Sequential (stable method)",
+        "cache_enabled": true,
+        "cache_ttl": "86400 seconds",
+        "version": "Gemini API v1.0"
+    }
+}
