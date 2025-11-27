@@ -33,9 +33,8 @@ if (!is_dir(CACHE_DIR)) mkdir(CACHE_DIR, 0755, true);
 
 $models = [
     'claude-sonnet-4-20250514' => ['name' => 'Claude Sonnet 4', 'speed' => '빠름', 'cost' => '약 $3.00', 'quality' => '최고'],
-    'claude-3-5-sonnet-20241022' => ['name' => 'Claude 3.5 Sonnet', 'speed' => '빠름', 'cost' => '약 $3.00', 'quality' => '우수'],
     'claude-3-5-haiku-20241022' => ['name' => 'Claude 3.5 Haiku', 'speed' => '매우 빠름', 'cost' => '약 $0.80', 'quality' => '우수'],
-    'claude-3-opus-20240229' => ['name' => 'Claude 3 Opus', 'speed' => '느림', 'cost' => '약 $15.00', 'quality' => '최상']
+    'claude-opus-4-20250514' => ['name' => 'Claude Opus 4', 'speed' => '느림', 'cost' => '약 $15.00', 'quality' => '최상']
 ];
 
 // ========================================
@@ -78,7 +77,7 @@ function setCachedResult($cacheKey, $result) {
 // Claude API 호출
 // ========================================
 
-function callClaudeAPI($systemPrompt, $userPrompt, $model = 'claude-3-5-sonnet-20241022', $temperature = 0.7, $retryCount = 0) {
+function callClaudeAPI($systemPrompt, $userPrompt, $model = 'claude-sonnet-4-20250514', $temperature = 0.7, $retryCount = 0) {
     if ($retryCount > 1) {
         return ['error' => 'API 호출 실패', 'elapsed_time' => 0];
     }
