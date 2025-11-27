@@ -12,122 +12,67 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 
-// 데이터 소스 설정 (세 가지 AI 모델 통합)
-define('DATA_SOURCES', [
-    'openai' => [
-        'dir' => __DIR__ . '/aeo_data',
-        'name' => 'OpenAI',
-        'id_length' => 32
-    ],
-    'claude' => [
-        'dir' => __DIR__ . '/aeo_data_claude',
-        'name' => 'Claude',
-        'id_length' => 32
-    ],
-    'gemini' => [
-        'dir' => __DIR__ . '/aeo_data_gemini',
-        'name' => 'Gemini',
-        'id_length' => 8
-    ]
-]);
+// 데이터 디렉토리 설정 (절대 경로 우선, 없으면 상대 경로)
+if (file_exists(__DIR__ . '/aeo_data')) {
+    define('DATA_DIR', __DIR__ . '/aeo_data');
+} elseif (file_exists(__DIR__ . '/../aeo_data')) {
+    define('DATA_DIR', __DIR__ . '/../aeo_data');
+} else {
+    // 현재 디렉토리 기준
+    define('DATA_DIR', __DIR__ . '/aeo_data');
+}
 
+define('INDEX_FILE', DATA_DIR . '/index.json');
 define('DEBUG_MODE', isset($_GET['debug'])); // ?debug=1 로 디버그 모드 활성화
 define('OPENAI_API_KEY', 'xxx'); // OpenAI API Key
 define('API_TIMEOUT', 45);
 
-// 인덱스 파일 로드 (세 가지 데이터 소스 통합)
+// 인덱스 파일 로드
 function loadIndex() {
-    $allData = [];
-
-    foreach (DATA_SOURCES as $sourceKey => $source) {
-        $indexFile = $source['dir'] . '/index.json';
-
-        if (!file_exists($indexFile)) {
-            if (DEBUG_MODE) {
-                error_log("Index file not found for {$sourceKey}: {$indexFile}");
-            }
-            continue;
+    if (!file_exists(INDEX_FILE)) {
+        if (DEBUG_MODE) {
+            error_log('Index file not found: ' . INDEX_FILE);
         }
-
-        $content = file_get_contents($indexFile);
-        if ($content === false) {
-            if (DEBUG_MODE) {
-                error_log("Failed to read index file for {$sourceKey}: {$indexFile}");
-            }
-            continue;
-        }
-
-        $data = json_decode($content, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            if (DEBUG_MODE) {
-                error_log("JSON decode error for {$sourceKey}: " . json_last_error_msg());
-            }
-            continue;
-        }
-
-        // 각 데이터에 source 정보 추가
-        if (is_array($data)) {
-            foreach ($data as $id => $meta) {
-                $meta['source'] = $sourceKey;
-                $meta['source_name'] = $source['name'];
-                $allData[$id] = $meta;
-            }
-        }
+        return [];
     }
 
-    return $allData;
+    $content = file_get_contents(INDEX_FILE);
+    if ($content === false) {
+        if (DEBUG_MODE) {
+            error_log('Failed to read index file: ' . INDEX_FILE);
+        }
+        return [];
+    }
+
+    $data = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        if (DEBUG_MODE) {
+            error_log('JSON decode error: ' . json_last_error_msg());
+        }
+        return [];
+    }
+
+    return $data ?? [];
 }
 
-// 개별 JSON 파일 로드 (ID 길이에 따라 자동으로 데이터 소스 찾기)
-function loadDetailData($id, $date, $source = null) {
-    // source가 지정되지 않은 경우, ID 길이로 판단
-    if ($source === null) {
-        $idLength = strlen($id);
-        foreach (DATA_SOURCES as $sourceKey => $sourceInfo) {
-            if ($sourceInfo['id_length'] === $idLength) {
-                $source = $sourceKey;
-                break;
-            }
-        }
-
-        // 여전히 찾지 못한 경우, 모든 소스 검색
-        if ($source === null) {
-            foreach (DATA_SOURCES as $sourceKey => $sourceInfo) {
-                $result = loadDetailData($id, $date, $sourceKey);
-                if ($result !== null) {
-                    return $result;
-                }
-            }
-            return null;
-        }
-    }
-
-    // 데이터 소스 정보 가져오기
-    if (!isset(DATA_SOURCES[$source])) {
-        if (DEBUG_MODE) {
-            error_log("Unknown data source: {$source}");
-        }
-        return null;
-    }
-
-    $sourceInfo = DATA_SOURCES[$source];
-    $dateDir = $sourceInfo['dir'] . '/' . $date;
+// 개별 JSON 파일 로드
+function loadDetailData($id, $date) {
+    $dateDir = DATA_DIR . '/' . $date;
 
     if (!is_dir($dateDir)) {
         if (DEBUG_MODE) {
-            error_log("Date directory not found for {$source}: {$dateDir}");
+            error_log('Date directory not found: ' . $dateDir);
         }
         return null;
     }
 
-    // ID 길이에 따라 파일 패턴 결정
-    $idPrefix = substr($id, 0, min($sourceInfo['id_length'], strlen($id)));
-    $pattern = $dateDir . '/' . $date . '_' . $idPrefix . '.json';
+    // ID의 첫 8자로 파일 찾기
+    $pattern = $dateDir . '/' . $date . '_' . substr($id, 0, 8) . '.json';
     $files = glob($pattern);
 
     if (empty($files)) {
         if (DEBUG_MODE) {
-            error_log("Detail file not found for {$source} with pattern: {$pattern}");
+            error_log('Detail file not found with pattern: ' . $pattern);
             error_log('Available files: ' . print_r(glob($dateDir . '/*.json'), true));
         }
         return null;
@@ -136,7 +81,7 @@ function loadDetailData($id, $date, $source = null) {
     $content = file_get_contents($files[0]);
     if ($content === false) {
         if (DEBUG_MODE) {
-            error_log("Failed to read detail file for {$source}: {$files[0]}");
+            error_log('Failed to read detail file: ' . $files[0]);
         }
         return null;
     }
@@ -144,7 +89,7 @@ function loadDetailData($id, $date, $source = null) {
     $data = json_decode($content, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         if (DEBUG_MODE) {
-            error_log("JSON decode error in detail file for {$source}: " . json_last_error_msg());
+            error_log('JSON decode error in detail file: ' . json_last_error_msg());
         }
         return null;
     }
@@ -158,22 +103,15 @@ function getAllData($filters = []) {
     $results = [];
 
     foreach ($index as $id => $meta) {
-        // 소스 필터 (새로 추가)
-        if (!empty($filters['source']) && $meta['source'] !== $filters['source']) {
-            continue;
-        }
-
-        // 평가 필터
+        // 필터 적용
         if (!empty($filters['rating']) && $meta['evaluation'] !== $filters['rating']) {
             continue;
         }
 
-        // 모델 필터
         if (!empty($filters['model']) && $meta['model'] !== $filters['model']) {
             continue;
         }
 
-        // 검색 필터
         if (!empty($filters['search'])) {
             $search = strtolower($filters['search']);
             $query = strtolower($meta['query'] ?? '');
@@ -184,7 +122,6 @@ function getAllData($filters = []) {
             }
         }
 
-        // 점수 범위 필터
         if (!empty($filters['min_score']) && $meta['hybrid_score'] < $filters['min_score']) {
             continue;
         }
@@ -193,7 +130,6 @@ function getAllData($filters = []) {
             continue;
         }
 
-        // 날짜 범위 필터
         if (!empty($filters['date_from']) && $meta['date'] < $filters['date_from']) {
             continue;
         }
@@ -273,11 +209,6 @@ function getStatistics() {
 
     $stats = [
         'total_count' => count($index),
-        'source_distribution' => [
-            'openai' => 0,
-            'claude' => 0,
-            'gemini' => 0
-        ],
         'rating_distribution' => [
             '우수' => 0,
             '양호' => 0,
@@ -298,12 +229,6 @@ function getStatistics() {
     $totalScore = 0;
 
     foreach ($index as $meta) {
-        // 소스 분포 (새로 추가)
-        $source = $meta['source'] ?? 'unknown';
-        if (isset($stats['source_distribution'][$source])) {
-            $stats['source_distribution'][$source]++;
-        }
-
         // 평가 분포
         $rating = $meta['evaluation'] ?? '미흡';
         if (isset($stats['rating_distribution'][$rating])) {
@@ -500,32 +425,20 @@ try {
 
     // 디버그 모드
     if ($action === 'debug') {
-        $debugInfo = [
-            'php_version' => PHP_VERSION,
-            'current_dir' => __DIR__,
-            'script_name' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
-            'data_sources' => []
-        ];
-
-        // 각 데이터 소스 정보 추가
-        foreach (DATA_SOURCES as $sourceKey => $source) {
-            $indexFile = $source['dir'] . '/index.json';
-            $debugInfo['data_sources'][$sourceKey] = [
-                'name' => $source['name'],
-                'dir' => $source['dir'],
-                'dir_exists' => is_dir($source['dir']),
-                'dir_writable' => is_writable($source['dir']),
-                'index_file' => $indexFile,
-                'index_exists' => file_exists($indexFile),
-                'index_readable' => file_exists($indexFile) && is_readable($indexFile)
-            ];
-        }
-
-        $debugInfo['total_index_count'] = count(loadIndex());
-
         echo json_encode([
             'success' => true,
-            'debug_info' => $debugInfo
+            'debug_info' => [
+                'php_version' => PHP_VERSION,
+                'data_dir' => DATA_DIR,
+                'data_dir_exists' => is_dir(DATA_DIR),
+                'data_dir_writable' => is_writable(DATA_DIR),
+                'index_file' => INDEX_FILE,
+                'index_exists' => file_exists(INDEX_FILE),
+                'index_readable' => is_readable(INDEX_FILE),
+                'current_dir' => __DIR__,
+                'script_name' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
+                'index_count' => count(loadIndex())
+            ]
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         exit;
     }
@@ -533,7 +446,6 @@ try {
     switch ($action) {
         case 'list':
             $filters = [
-                'source' => $_GET['source'] ?? '',  // 새로 추가: openai, claude, gemini
                 'rating' => $_GET['rating'] ?? '',
                 'model' => $_GET['model'] ?? '',
                 'search' => $_GET['search'] ?? '',
