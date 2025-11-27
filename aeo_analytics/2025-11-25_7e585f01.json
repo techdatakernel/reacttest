@@ -1,0 +1,210 @@
+{
+    "id": "7e585f0140ef37c1e4f33f5ddb9d62ff",
+    "query": "어린이부터 성인까지 모두 좋은 유산균 제품 알려줘",
+    "url": "https:\/\/www.duolac.co.kr\/gd\/prdDtlView.do?pdtCd=NP00000050",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7,
+    "timestamp": "2025-11-25 04:16:34",
+    "date": "2025-11-25",
+    "scores": {
+        "bm25": 35,
+        "semantic": 37,
+        "faq": 5,
+        "total": 77,
+        "hybrid": 71.3,
+        "rating": "보통"
+    },
+    "bm25_analysis": {
+        "keywords": [
+            {
+                "keyword": "유산균",
+                "tf": "매우 높음",
+                "position": "최상단(제목, 첫 문단)",
+                "rarity": "중간",
+                "score": 10,
+                "reasoning": "유산균은 콘텐츠의 주요 주제로, 최상단에 여러 번 등장하여 TF가 매우 높음. 일반적으로 사용되는 단어이지만, 특정한 맥락에서의 중요성이 높아 점수 부여."
+            },
+            {
+                "keyword": "듀오락",
+                "tf": "매우 높음",
+                "position": "최상단(제목)",
+                "rarity": "중간",
+                "score": 10,
+                "reasoning": "듀오락은 브랜드명으로, 제목과 여러 소제목에서 반복적으로 사용되어 TF가 매우 높음. 브랜드 이름으로서의 희소성은 중간."
+            },
+            {
+                "keyword": "제품",
+                "tf": "높음",
+                "position": "중간",
+                "rarity": "낮음",
+                "score": 6,
+                "reasoning": "제품이라는 단어는 콘텐츠 내에서 여러 번 등장하지만 일반적으로 사용되는 단어이므로 희소성은 낮음. TF는 높음."
+            },
+            {
+                "keyword": "골드",
+                "tf": "중간",
+                "position": "중간",
+                "rarity": "중간",
+                "score": 5,
+                "reasoning": "골드는 듀오락 제품 중 하나를 설명하는 키워드로, 중간 정도의 TF를 보이며, 브랜드의 특정 제품에 대한 언급으로 점수를 부여."
+            },
+            {
+                "keyword": "가족",
+                "tf": "중간",
+                "position": "하단",
+                "rarity": "낮음",
+                "score": 4,
+                "reasoning": "가족은 리뷰 부분에서 언급되지만, 일반적인 단어로 사용되어 희소성이 낮음. TF는 중간."
+            }
+        ],
+        "total_score": 35,
+        "strengths": "유산균과 듀오락 키워드가 최상단에 집중되어 있어 가시성이 높음. 제품 관련 정보와 리뷰가 풍부하여 사용자의 관심을 끌 수 있는 내용으로 구성됨.",
+        "weaknesses": "다양한 키워드의 활용이 부족하여 SEO 최적화 기회가 제한적임. 추가적인 관련 키워드를 포함하여 콘텐츠를 더욱 풍부하게 만드는 것이 필요함.",
+        "api_metadata": {
+            "time_ms": 11184.96
+        }
+    },
+    "semantic_analysis": {
+        "topic_match": {
+            "score": 10,
+            "reason": "질문은 유산균 제품을 찾고 있으며, 콘텐츠는 듀오락이라는 특정 유산균 제품을 다루고 있어 주제적으로 잘 일치합니다."
+        },
+        "semantic_relevance": {
+            "score": 9,
+            "reason": "콘텐츠 내에서 유산균 관련 용어와 개념이 잘 연결되어 있으며, 듀오락의 다양한 장점이 언급되어 있어 의미적 연관성이 높습니다."
+        },
+        "context_understanding": {
+            "score": 8,
+            "reason": "질문이 어린이부터 성인까지 모두에게 적합한 유산균 제품을 요청하고 있지만, 콘텐츠는 특정 제품(듀오락)에 집중하고 있어 전체적인 맥락을 완벽히 이해하지 못한 것으로 보입니다."
+        },
+        "information_completeness": {
+            "score": 10,
+            "reason": "콘텐츠는 듀오락 제품에 대한 정보와 리뷰가 포함되어 있어, 질문에 대한 정보 충족도가 매우 높습니다."
+        },
+        "total_score": 37,
+        "strengths": "주제 일치도와 정보 충족도가 높아 질문에 대한 직접적인 답변을 제공하며, 유산균 제품에 대한 긍정적인 사용자 리뷰가 포함되어 있어 신뢰성을 높입니다.",
+        "weaknesses": "어린이와 성인 모두에게 적합한 유산균 제품을 포괄적으로 다루지 않고, 특정 제품에만 집중하고 있어 다양한 선택지를 제시하지 못하는 점이 아쉽습니다.",
+        "api_metadata": {
+            "time_ms": 9398.93
+        }
+    },
+    "faq_analysis": {
+        "has_faq_format": false,
+        "faq_score": 5,
+        "ai_friendliness_score": 6,
+        "structure_analysis": "콘텐츠 내에 명확한 FAQ\/Q&A 구조가 존재하지 않으며, 질문에 대한 직접적인 답변이 부족합니다. 제품 정보와 리뷰는 있으나, Q&A 형식이 아닌 일반적인 정보 제공에 그치고 있습니다.",
+        "recommendation": "제품에 대한 구체적인 질문과 그에 대한 명확한 답변을 포함하여 FAQ 섹션을 추가하는 것이 필요합니다. 예를 들어, '어린이와 성인이 함께 사용할 수 있는 유산균은 무엇인가요?'와 같은 질문을 추가하고, 해당 제품에 대한 정보를 명시적으로 제공해야 합니다.",
+        "priority": "필수",
+        "api_metadata": {
+            "time_ms": 3894.9
+        }
+    },
+    "query_expansion": {
+        "expansions": [
+            {
+                "query": "어린이 유산균 추천 제품",
+                "relevance": "높음"
+            },
+            {
+                "query": "성인 유산균 추천 제품",
+                "relevance": "높음"
+            },
+            {
+                "query": "가족 모두가 먹을 수 있는 유산균",
+                "relevance": "중간"
+            },
+            {
+                "query": "유산균의 효능과 효과",
+                "relevance": "중간"
+            },
+            {
+                "query": "DUOLAC 제품 비교 및 리뷰",
+                "relevance": "높음"
+            }
+        ],
+        "api_metadata": {
+            "time_ms": 3599.06
+        }
+    },
+    "relevance_evidence": {
+        "evidence": [
+            {
+                "passage": "최고의 유산균 듀오락골드 !!",
+                "keyword_relevance": 10,
+                "semantic_relevance": 10
+            },
+            {
+                "passage": "계속 구매중인 유산균 가족들도 이제는 듀오락으로 갈아타고 있는중임",
+                "keyword_relevance": 9,
+                "semantic_relevance": 9
+            },
+            {
+                "passage": "다른 유산균들 먹었을때는 거부감도 있고 꾸준히먹기 힘들었는데 듀오락은 맛도 있고 먹기도 편해서 좋았습니다!",
+                "keyword_relevance": 8,
+                "semantic_relevance": 8
+            }
+        ],
+        "api_metadata": {
+            "time_ms": 4003.21
+        }
+    },
+    "recommendations": {
+        "missing_info": [
+            {
+                "item": "연령대별 유산균 추천",
+                "reason": "어린이, 성인 등 연령대에 맞는 제품을 추천하여 사용자 맞춤형 정보를 제공하기 위해 필요함.",
+                "effect": "사용자의 구매 결정에 도움을 주고, 사이트의 유용성을 높일 수 있음."
+            },
+            {
+                "item": "제품 성분 상세 정보",
+                "reason": "소비자가 성분에 대한 정보를 요구할 수 있으며, 알레르기 유발 성분에 대한 정보가 필수적임.",
+                "effect": "소비자의 신뢰를 얻고, 구매 전환율을 높일 수 있음."
+            },
+            {
+                "item": "사용자 리뷰의 세부 분류",
+                "reason": "리뷰를 연령대별, 사용 목적별로 분류하여 더욱 쉽게 접근할 수 있도록 함.",
+                "effect": "소비자가 필요로 하는 정보를 빠르게 찾을 수 있어, 사용 경험을 향상시킬 수 있음."
+            }
+        ],
+        "action_items": [
+            {
+                "action": "연령대별 유산균 제품 카테고리 추가",
+                "reason": "각 연령대에 적합한 유산균 제품을 쉽게 찾을 수 있도록 하기 위함.",
+                "expected_result": "사용자의 선택 폭이 넓어지고, 구매율이 증가할 것으로 예상됨."
+            },
+            {
+                "action": "제품 성분에 대한 정보 페이지 보강",
+                "reason": "성분에 대한 정보는 소비자의 신뢰를 높이고, 구매 결정을 도와줌.",
+                "expected_result": "소비자가 제품을 신뢰하고 구매할 가능성이 높아질 것으로 기대됨."
+            },
+            {
+                "action": "리뷰 필터링 기능 강화",
+                "reason": "사용자가 필요로 하는 리뷰를 쉽게 찾을 수 있도록 하기 위함.",
+                "expected_result": "리뷰 접근성이 향상되어, 소비자의 구매 결정에 긍정적인 영향을 미칠 것임."
+            }
+        ],
+        "expected_score_increase": {
+            "bm25": 5,
+            "semantic": 8,
+            "faq": 3
+        },
+        "api_metadata": {
+            "time_ms": 9730.24
+        }
+    },
+    "processing_time": {
+        "total_ms": 44774.93,
+        "bm25_ms": 11184.96,
+        "semantic_ms": 9398.93,
+        "faq_ms": 3894.9,
+        "query_expansion_ms": 3599.06,
+        "relevance_evidence_ms": 4003.21,
+        "recommendations_ms": 9730.24
+    },
+    "_optimization_notes": {
+        "api_calls": "Sequential (stable v10 method)",
+        "cache_enabled": true,
+        "cache_ttl": "86400 seconds",
+        "version": "v11.1 (optimized + stable)"
+    }
+}
