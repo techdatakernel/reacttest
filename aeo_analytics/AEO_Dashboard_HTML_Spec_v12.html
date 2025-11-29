@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEO Analytics Dashboard v12 - HTML Specification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2563eb;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #1e40af;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #2563eb;
+            font-size: 2em;
+        }
+
+        h3 {
+            color: #374151;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        h4 {
+            color: #4b5563;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        tr:hover {
+            background-color: #f3f4f6;
+        }
+
+        code {
+            background-color: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #ef4444;
+        }
+
+        pre {
+            background-color: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: #f9fafb;
+            padding: 0;
+        }
+
+        .info-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background-color: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #e5e7eb;
+            margin: 40px 0;
+        }
+
+        .file-tree {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 20px 0;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .toc {
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style-type: none;
+            margin-left: 0;
+        }
+
+        .toc a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AEO Analytics Dashboard v12 - HTML Specification</h1>
+
+        <div class="info-box">
+            <p><strong>버전</strong>: v12 (Multi-API Integration)</p>
+            <p><strong>작성일</strong>: 2025-11-28</p>
+            <p><strong>대상</strong>: aeo_dashboard_1127_v2.html + aeo_data_manager_v12.php</p>
+            <p><strong>목적</strong>: OpenAI, Claude, Gemini 3개 API 데이터 통합 관리 및 시각화</p>
+        </div>
+
+        <hr>
+
+        <h2>1. 시스템 개요</h2>
+
+        <h3>1.1 목적</h3>
+        <p>Answer Engine Optimization (AEO) 분석 결과를 3개의 AI 제공자(OpenAI, Claude, Gemini)로부터 수집하여 통합 관리하고, 사용자에게 시각화된 대시보드를 제공하는 웹 애플리케이션</p>
+
+        <h3>1.2 주요 기능</h3>
+        <ul>
+            <li><strong>멀티 API 데이터 통합</strong>: OpenAI, Claude, Gemini 3개 API 분석 결과 통합</li>
+            <li><strong>ID 형식 호환</strong>: 8자리(Gemini) / 32자리(OpenAI, Claude) ID 자동 인식</li>
+            <li><strong>API별 필터링</strong>: 특정 AI 제공자 데이터만 선택 조회</li>
+            <li><strong>통합 통계</strong>: 전체 또는 API별 통계 제공</li>
+            <li><strong>상세 분석 리포트</strong>: BM25, 시맨틱, FAQ 분석 결과 시각화</li>
+            <li><strong>질문 리스트 생성</strong>: AI 기반 검색 질문 자동 생성</li>
+            <li><strong>PDF 내보내기</strong>: 분석 결과 PDF 다운로드</li>
+        </ul>
+
+        <h3>1.3 기술 스택</h3>
+        <ul>
+            <li><strong>Frontend</strong>: HTML5, CSS3, Vanilla JavaScript</li>
+            <li><strong>Backend</strong>: PHP 7.4+</li>
+            <li><strong>데이터 저장</strong>: JSON 파일 기반</li>
+            <li><strong>외부 라이브러리</strong>:
+                <ul>
+                    <li>html2canvas (v1.4.1)</li>
+                    <li>jsPDF (v2.5.1)</li>
+                    <li>Google Fonts (Inter, JetBrains Mono)</li>
+                </ul>
+            </li>
+        </ul>
+
+        <hr>
+
+        <h2>2. 아키텍처</h2>
+
+        <h3>2.1 파일 구조</h3>
+        <div class="file-tree">
+<pre>aeo_analytics/
+├── aeo_dashboard_1127_v2.html       # 대시보드 UI
+├── aeo_data_manager_v12.php         # 백엔드 API
+├── aeo_data/                        # OpenAI 데이터
+│   ├── index.json                   # OpenAI 인덱스
+│   └── YYYY-MM-DD/                  # 날짜별 폴더
+│       └── YYYY-MM-DD_[32자리ID].json
+├── aeo_data_claude/                 # Claude 데이터
+│   ├── index.json                   # Claude 인덱스
+│   └── YYYY-MM-DD/                  # 날짜별 폴더
+│       └── YYYY-MM-DD_[32자리ID].json
+└── aeo_data_gemini/                 # Gemini 데이터
+    ├── index.json                   # Gemini 인덱스
+    └── YYYY-MM-DD/                  # 날짜별 폴더
+        └── YYYY-MM-DD_[8자리ID].json</pre>
+        </div>
+
+        <h3>2.2 데이터 소스 설정</h3>
+<pre><code class="language-php">$DATA_SOURCES = [
+    'openai' => [
+        'dir' => '/aeo_data',
+        'name' => 'OpenAI',
+        'icon' => '🤖',
+        'color' => '#10a37f'
+    ],
+    'claude' => [
+        'dir' => '/aeo_data_claude',
+        'name' => 'Claude',
+        'icon' => '🧠',
+        'color' => '#8b5cf6'
+    ],
+    'gemini' => [
+        'dir' => '/aeo_data_gemini',
+        'name' => 'Gemini',
+        'icon' => '✨',
+        'color' => '#4285f4'
+    ]
+];</code></pre>
+
+        <h3>2.3 ID 형식 호환</h3>
+        <ul>
+            <li><strong>Gemini</strong>: 8자리 ID (예: <code>a1b2c3d4</code>)</li>
+            <li><strong>OpenAI/Claude</strong>: 32자리 MD5 해시 (예: <code>a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6</code>)</li>
+            <li><strong>자동 인식</strong>: 파일 검색 시 3가지 패턴 시도
+                <ol>
+                    <li>짧은 ID: <code>YYYY-MM-DD_[8자리].json</code></li>
+                    <li>전체 ID: <code>YYYY-MM-DD_[32자리].json</code></li>
+                    <li>Glob 매칭: <code>YYYY-MM-DD_[8자리]*.json</code></li>
+                </ol>
+            </li>
+        </ul>
+
+        <hr>
+
+        <h2>3. API 엔드포인트</h2>
+
+        <h3>3.1 전체 데이터 목록 조회</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=list</code></p>
+
+        <p><strong>Query Parameters</strong>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>파라미터</th>
+                    <th>타입</th>
+                    <th>기본값</th>
+                    <th>설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>api_provider</code></td>
+                    <td>string</td>
+                    <td><code>all</code></td>
+                    <td>API 제공자 필터 (<code>all</code>, <code>openai</code>, <code>claude</code>, <code>gemini</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>rating</code></td>
+                    <td>string</td>
+                    <td><code>""</code></td>
+                    <td>평가 필터 (<code>우수</code>, <code>양호</code>, <code>보통</code>, <code>미흡</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>model</code></td>
+                    <td>string</td>
+                    <td><code>""</code></td>
+                    <td>모델명 필터 (예: <code>gpt-4o-mini</code>, <code>claude-sonnet-4-20250514</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>search</code></td>
+                    <td>string</td>
+                    <td><code>""</code></td>
+                    <td>질문/URL 검색어</td>
+                </tr>
+                <tr>
+                    <td><code>min_score</code></td>
+                    <td>int</td>
+                    <td><code>""</code></td>
+                    <td>최소 점수</td>
+                </tr>
+                <tr>
+                    <td><code>max_score</code></td>
+                    <td>int</td>
+                    <td><code>""</code></td>
+                    <td>최대 점수</td>
+                </tr>
+                <tr>
+                    <td><code>date_from</code></td>
+                    <td>string</td>
+                    <td><code>""</code></td>
+                    <td>시작 날짜 (YYYY-MM-DD)</td>
+                </tr>
+                <tr>
+                    <td><code>date_to</code></td>
+                    <td>string</td>
+                    <td><code>""</code></td>
+                    <td>종료 날짜 (YYYY-MM-DD)</td>
+                </tr>
+                <tr>
+                    <td><code>sort_by</code></td>
+                    <td>string</td>
+                    <td><code>timestamp</code></td>
+                    <td>정렬 기준 (<code>timestamp</code>, <code>hybrid_score</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>sort_order</code></td>
+                    <td>string</td>
+                    <td><code>desc</code></td>
+                    <td>정렬 순서 (<code>asc</code>, <code>desc</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>page</code></td>
+                    <td>int</td>
+                    <td><code>1</code></td>
+                    <td>페이지 번호</td>
+                </tr>
+                <tr>
+                    <td><code>per_page</code></td>
+                    <td>int</td>
+                    <td><code>20</code></td>
+                    <td>페이지당 항목 수</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><strong>Response</strong>:</p>
+<pre><code class="language-json">{
+  "success": true,
+  "data": [
+    {
+      "id": "a1b2c3d4e5f6g7h8",
+      "id_short": "a1b2c3d4",
+      "query": "검색 질문",
+      "url": "https://example.com",
+      "hybrid_score": 85,
+      "evaluation": "양호",
+      "model": "gpt-4o-mini",
+      "timestamp": "2025-11-28 14:30:00",
+      "date": "2025-11-28",
+      "api_provider": "openai",
+      "api_name": "OpenAI",
+      "api_icon": "🤖",
+      "api_color": "#10a37f"
+    }
+  ],
+  "pagination": {
+    "total": 150,
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 8
+  }
+}</code></pre>
+
+        <h3>3.2 상세 데이터 조회</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=detail&id={ID}</code></p>
+
+        <p><strong>Query Parameters</strong>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>파라미터</th>
+                    <th>타입</th>
+                    <th>필수</th>
+                    <th>설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>id</code></td>
+                    <td>string</td>
+                    <td>✓</td>
+                    <td>데이터 ID (8자리 또는 32자리)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.3 통계 데이터 조회</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=stats&api_provider={PROVIDER}</code></p>
+
+        <p><strong>Query Parameters</strong>:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>파라미터</th>
+                    <th>타입</th>
+                    <th>기본값</th>
+                    <th>설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>api_provider</code></td>
+                    <td>string</td>
+                    <td><code>all</code></td>
+                    <td>API 제공자 (<code>all</code>, <code>openai</code>, <code>claude</code>, <code>gemini</code>)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.4 질문 리스트 생성</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=generate_questions&id={ID}</code></p>
+
+        <h3>3.5 API 소스 목록 조회</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=sources</code></p>
+
+        <h3>3.6 모델 목록 조회</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=models</code></p>
+
+        <h3>3.7 디버그 정보</h3>
+        <p><strong>Endpoint</strong>: <code>aeo_data_manager_v12.php?action=debug</code></p>
+
+        <hr>
+
+        <h2>4. UI 구성 요소</h2>
+
+        <h3>4.1 Top Bar</h3>
+        <ul>
+            <li><strong>로고</strong>: ⚡ AEO Analytics Dashboard</li>
+            <li><strong>버전 뱃지</strong>: v12</li>
+            <li><strong>연결 테스트 버튼</strong>: PHP 연결 및 데이터 디렉토리 확인</li>
+        </ul>
+
+        <h3>4.2 통계 카드 (Stats Grid)</h3>
+        <p>4개의 통계 카드를 그리드 레이아웃으로 표시:</p>
+        <ol>
+            <li><strong>총 분석 건수</strong> (Primary 스타일)</li>
+            <li><strong>평균 점수</strong></li>
+            <li><strong>우수 (90+)</strong> 건수</li>
+            <li><strong>양호 (75+)</strong> 건수</li>
+        </ol>
+
+        <h3>4.3 필터 섹션</h3>
+        <p>다중 필터 지원:</p>
+        <ul>
+            <li><strong>🔌 API 제공자</strong>: 전체 / OpenAI 🤖 / Claude 🧠 / Gemini ✨</li>
+            <li><strong>평가</strong>: 전체 / 우수 / 양호 / 보통 / 미흡</li>
+            <li><strong>모델</strong>: 전체 / 각 API별 모델 목록
+                <ul>
+                    <li>OpenAI: gpt-4o-mini, gpt-4-turbo-preview, gpt-3.5-turbo, gpt-4</li>
+                    <li>Claude: claude-sonnet-4-20250514</li>
+                    <li>Gemini: gemini-2.0-flash-thinking-exp-01-21, gemini-2.0-flash-exp, gemini-2.0-flash</li>
+                </ul>
+            </li>
+            <li><strong>검색</strong>: 질문 또는 URL 텍스트 검색</li>
+            <li><strong>최소 점수</strong>: 숫자 입력 (0-100)</li>
+        </ul>
+
+        <p><strong>필터 액션 버튼</strong>:</p>
+        <ul>
+            <li>필터 적용 (Primary)</li>
+            <li>초기화 (Secondary)</li>
+        </ul>
+
+        <h3>4.4 뷰 컨트롤</h3>
+        <ul>
+            <li><strong>뷰 전환</strong>: 카드 뷰 / 테이블 뷰</li>
+            <li><strong>정렬 옵션</strong>:
+                <ul>
+                    <li>정렬 기준: 날짜순 / 점수순</li>
+                    <li>정렬 순서: 내림차순 / 오름차순</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h3>4.5 데이터 표시</h3>
+
+        <h4>카드 뷰 (Card View)</h4>
+        <ul>
+            <li><strong>그리드 레이아웃</strong>: 반응형 (최소 350px)</li>
+            <li><strong>카드 구성</strong>:
+                <ul>
+                    <li>헤더: 점수 (큰 숫자) + 평가 뱃지</li>
+                    <li>질문 (2줄 말줄임)</li>
+                    <li>URL (1줄 말줄임)</li>
+                    <li>메타 정보: API 아이콘 + 모델명 | 날짜</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4>테이블 뷰 (Table View)</h4>
+        <p>고정 열 너비 테이블:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>열</th>
+                    <th>너비</th>
+                    <th>설명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>날짜</td>
+                    <td>140px</td>
+                    <td>YYYY-MM-DD HH:MM:SS</td>
+                </tr>
+                <tr>
+                    <td>질문</td>
+                    <td>auto</td>
+                    <td>줄바꿈 허용</td>
+                </tr>
+                <tr>
+                    <td>URL</td>
+                    <td>200px</td>
+                    <td>말줄임</td>
+                </tr>
+                <tr>
+                    <td>점수</td>
+                    <td>60px</td>
+                    <td>숫자</td>
+                </tr>
+                <tr>
+                    <td>평가</td>
+                    <td>60px</td>
+                    <td>뱃지</td>
+                </tr>
+                <tr>
+                    <td>모델</td>
+                    <td>100px</td>
+                    <td>API 아이콘 + 모델명 (축약)</td>
+                </tr>
+                <tr>
+                    <td>액션</td>
+                    <td>80px</td>
+                    <td>상세 보기 버튼</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>4.6 페이지네이션</h3>
+        <ul>
+            <li>이전/다음 버튼</li>
+            <li>페이지 번호 (현재 ±2 범위)</li>
+            <li>첫/마지막 페이지 항상 표시</li>
+            <li>... (ellipsis) 생략 표시</li>
+        </ul>
+
+        <h3>4.7 상세보기 모달</h3>
+        <p>전체 화면 오버레이 모달:</p>
+
+        <h4>모달 헤더</h4>
+        <ul>
+            <li>제목: 질문 텍스트</li>
+            <li>PDF 다운로드 버튼</li>
+            <li>닫기 버튼 (×)</li>
+        </ul>
+
+        <h4>모달 본문 섹션</h4>
+        <ol>
+            <li><strong>📋 기본 정보</strong> - URL, 모델, Temperature, 분석 시간</li>
+            <li><strong>📋 AI 질문 리스트 생성</strong> - 질문 리스트 생성 버튼, 접을 수 있는 설명 상자, 생성된 질문 리스트 표시, 복사하기 기능</li>
+            <li><strong>📊 점수</strong> - BM25 키워드 (40점), 시맨틱 유사도 (48점), FAQ 구조 (20점), 종합 점수 + 평가</li>
+            <li><strong>🔤 BM25 키워드 분석</strong> - 접을 수 있는 설명 상자, 키워드 테이블, 강점/개선 필요 분석</li>
+            <li><strong>🧠 시맨틱 유사도 분석</strong> - 접을 수 있는 설명 상자, 4가지 차원 카드, 강점/개선 필요 분석</li>
+            <li><strong>❓ FAQ 구조 분석</strong> - 접을 수 있는 설명 상자, FAQ 점수 / AI 친화성, 구조 분석, 개선 권고 + 우선순위</li>
+            <li><strong>🔍 쿼리 확장 결과</strong> (선택적) - 접을 수 있는 설명 상자, 확장된 질문 리스트 + 관련성</li>
+            <li><strong>📌 관련성 증거</strong> (선택적) - 접을 수 있는 설명 상자, 인용 구절 + 키워드/의미 관련성 점수</li>
+            <li><strong>💡 AEO 개선 권고사항</strong> - 접을 수 있는 설명 상자, 누락된 정보 리스트, 실행 액션 리스트, 예상 점수 증가</li>
+            <li><strong>⏱️ 처리 시간</strong> - 접을 수 있는 설명 상자 (기본 접힘), 전체/BM25/시맨틱/FAQ 처리 시간</li>
+        </ol>
+
+        <hr>
+
+        <h2>5. 주요 JavaScript 함수</h2>
+
+        <h3>5.1 데이터 로딩</h3>
+<pre><code class="language-javascript">loadStatistics()
+// API 제공자별 통계 로드 및 화면 업데이트
+
+loadData()
+// 필터 조건에 맞는 데이터 목록 로드
+// 카드/테이블 렌더링</code></pre>
+
+        <h3>5.2 필터링 및 정렬</h3>
+<pre><code class="language-javascript">applyFilters()
+// 현재 필터 설정으로 데이터 재로드
+
+resetFilters()
+// 모든 필터 초기화 및 데이터 재로드</code></pre>
+
+        <h3>5.3 뷰 전환</h3>
+<pre><code class="language-javascript">switchView(view)
+// 카드 뷰 <-> 테이블 뷰 전환</code></pre>
+
+        <h3>5.4 상세보기</h3>
+<pre><code class="language-javascript">openDetail(id)
+// ID로 상세 데이터 조회 및 모달 표시
+
+renderDetail(data)
+// 상세 데이터를 모달에 렌더링
+
+closeModal()
+// 모달 닫기</code></pre>
+
+        <h3>5.5 질문 리스트 생성</h3>
+<pre><code class="language-javascript">generateQuestions(id)
+// OpenAI API로 질문 리스트 생성 요청
+
+displayQuestions(data)
+// 생성된 질문 리스트 표시
+
+copyQuestionList()
+// 질문 리스트를 클립보드에 복사</code></pre>
+
+        <h3>5.6 PDF 내보내기</h3>
+<pre><code class="language-javascript">exportToPDF()
+// html2canvas로 모달 캡처
+// jsPDF로 PDF 생성 및 다운로드</code></pre>
+
+        <h3>5.7 연결 테스트</h3>
+<pre><code class="language-javascript">testConnection()
+// PHP 백엔드 및 데이터 디렉토리 상태 확인</code></pre>
+
+        <hr>
+
+        <h2>6. 데이터 흐름</h2>
+
+        <h3>6.1 초기 로딩 시퀀스</h3>
+        <ol>
+            <li>DOM 로딩 완료 (<code>DOMContentLoaded</code>)</li>
+            <li><code>loadStatistics()</code> 호출 → 통계 카드 업데이트</li>
+            <li><code>loadData()</code> 호출 → 데이터 목록 로딩 및 렌더링</li>
+        </ol>
+
+        <h3>6.2 필터 적용 흐름</h3>
+        <ol>
+            <li>사용자 필터 설정 변경</li>
+            <li>"필터 적용" 버튼 클릭</li>
+            <li><code>applyFilters()</code> 호출</li>
+            <li><code>currentPage = 1</code> 리셋</li>
+            <li><code>loadStatistics()</code> 호출 (API 제공자 필터 반영)</li>
+            <li><code>loadData()</code> 호출 (모든 필터 반영)</li>
+        </ol>
+
+        <h3>6.3 상세보기 흐름</h3>
+        <ol>
+            <li>카드/테이블 행 클릭 또는 "상세 보기" 버튼 클릭</li>
+            <li><code>openDetail(id)</code> 호출</li>
+            <li>모달 표시 + 로딩 스피너</li>
+            <li><code>aeo_data_manager_v12.php?action=detail&id={ID}</code> 요청</li>
+            <li>응답 데이터로 <code>renderDetail(data)</code> 호출</li>
+            <li>모달 본문에 상세 내용 렌더링</li>
+        </ol>
+
+        <h3>6.4 질문 생성 흐름</h3>
+        <ol>
+            <li>상세보기 모달에서 "질문 리스트 생성하기" 버튼 클릭</li>
+            <li><code>generateQuestions(id)</code> 호출</li>
+            <li>버튼 비활성화 + "생성 중..." 상태</li>
+            <li><code>aeo_data_manager_v12.php?action=generate_questions&id={ID}</code> 요청</li>
+            <li>OpenAI API 호출 (서버 측)</li>
+            <li>응답 받아 <code>displayQuestions(data)</code> 호출</li>
+            <li>질문 리스트 표시 + 버튼 "생성 완료" 상태</li>
+        </ol>
+
+        <hr>
+
+        <h2>7. 스타일링 (CSS 변수)</h2>
+
+        <h3>7.1 색상 팔레트</h3>
+<pre><code class="language-css">--primary: #2563eb       /* 주 색상 (파랑) */
+--primary-dark: #1e40af  /* 어두운 주 색상 */
+--secondary: #8b5cf6     /* 보조 색상 (보라) */
+--success: #10b981       /* 성공 (녹색) */
+--warning: #f59e0b       /* 경고 (주황) */
+--danger: #ef4444        /* 위험 (빨강) */
+--gray-50: #f9fafb       /* 가장 밝은 회색 */
+--gray-100: #f3f4f6
+--gray-200: #e5e7eb
+--gray-300: #d1d5db
+--gray-600: #4b5563
+--gray-700: #374151
+--gray-800: #1f2937
+--gray-900: #111827      /* 가장 어두운 회색 */</code></pre>
+
+        <h3>7.2 평가 뱃지 색상</h3>
+<pre><code class="language-css">.rating-excellent  /* 우수 (90+): 녹색 */
+.rating-good       /* 양호 (75+): 파랑 */
+.rating-fair       /* 보통 (60+): 주황 */
+.rating-poor       /* 미흡 (<60): 빨강 */</code></pre>
+
+        <h3>7.3 반응형 브레이크포인트</h3>
+        <ul>
+            <li><strong>모바일</strong>: 768px 이하
+                <ul>
+                    <li>데이터 그리드: 1열</li>
+                    <li>필터 그리드: 1열</li>
+                    <li>뷰 컨트롤: 세로 정렬</li>
+                </ul>
+            </li>
+        </ul>
+
+        <hr>
+
+        <h2>8. 에러 처리</h2>
+
+        <h3>8.1 연결 오류</h3>
+        <ul>
+            <li>HTTP 오류 시 alert 표시</li>
+            <li>"연결 테스트" 버튼으로 상세 진단</li>
+            <li>Empty State UI로 오류 메시지 표시</li>
+        </ul>
+
+        <h3>8.2 JSON 파싱 오류</h3>
+        <ul>
+            <li>서버 응답 JSON 파싱 실패 시 콘솔 로그</li>
+            <li>사용자에게 "연결 테스트" 안내</li>
+        </ul>
+
+        <h3>8.3 데이터 없음</h3>
+        <ul>
+            <li>Empty State UI 표시</li>
+            <li>필터 변경 안내</li>
+        </ul>
+
+        <hr>
+
+        <h2>9. 성능 최적화</h2>
+
+        <h3>9.1 인덱스 기반 조회</h3>
+        <ul>
+            <li>전체 JSON 파일 로드 없이 <code>index.json</code> 활용</li>
+            <li>페이지네이션으로 대량 데이터 처리</li>
+        </ul>
+
+        <h3>9.2 필터링 최적화</h3>
+        <ul>
+            <li>API 제공자 필터는 데이터 로드 시점에 적용</li>
+            <li>나머지 필터는 PHP에서 처리</li>
+        </ul>
+
+        <h3>9.3 캐싱</h3>
+        <ul>
+            <li>분석 결과 JSON 파일로 캐싱</li>
+            <li>중복 요청 최소화</li>
+        </ul>
+
+        <hr>
+
+        <h2>10. 보안 고려사항</h2>
+
+        <h3>10.1 CORS 설정</h3>
+<pre><code class="language-php">header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST');</code></pre>
+
+        <h3>10.2 입력 검증</h3>
+        <ul>
+            <li>ID 형식 검증 (8자리 또는 32자리)</li>
+            <li>파일 경로 traversal 방지</li>
+        </ul>
+
+        <h3>10.3 API 키 보호</h3>
+        <ul>
+            <li><code>OPENAI_API_KEY</code> 상수로 관리</li>
+            <li>프론트엔드에 노출 안됨</li>
+        </ul>
+
+        <hr>
+
+        <h2>11. 확장 가능성</h2>
+
+        <h3>11.1 신규 API 제공자 추가</h3>
+        <ol>
+            <li><code>$DATA_SOURCES</code> 배열에 추가</li>
+            <li>데이터 디렉토리 생성</li>
+            <li>HTML 필터 옵션에 추가</li>
+        </ol>
+
+        <h3>11.2 신규 필터 추가</h3>
+        <ol>
+            <li>HTML에 필터 UI 추가</li>
+            <li><code>getAllData()</code> 함수에 필터 로직 추가</li>
+            <li><code>loadData()</code> 파라미터에 반영</li>
+        </ol>
+
+        <h3>11.3 신규 모델 지원</h3>
+        <ul>
+            <li><code>index.json</code>에 모델명 추가되면 자동 인식</li>
+            <li>HTML <code>&lt;optgroup&gt;</code>에 수동 추가 권장</li>
+        </ul>
+
+        <hr>
+
+        <h2>12. 주요 제약사항</h2>
+
+        <ol>
+            <li><strong>JSON 파일 기반</strong>: 대량 데이터 시 성능 저하 가능</li>
+            <li><strong>동기 처리</strong>: PHP 백엔드는 동기 처리만 지원</li>
+            <li><strong>브라우저 호환성</strong>: ES6+ 필요 (Internet Explorer 미지원)</li>
+            <li><strong>PDF 생성</strong>: 클라이언트 측 캡처 방식 (긴 콘텐츠 시 제한적)</li>
+        </ol>
+
+        <hr>
+
+        <h2>13. 개발자 가이드</h2>
+
+        <h3>13.1 로컬 테스트</h3>
+        <ol>
+            <li>PHP 7.4+ 웹서버 실행</li>
+            <li><code>aeo_data/</code>, <code>aeo_data_claude/</code>, <code>aeo_data_gemini/</code> 디렉토리 생성</li>
+            <li>각 디렉토리에 <code>index.json</code> 생성</li>
+            <li>브라우저에서 <code>aeo_dashboard_1127_v2.html</code> 열기</li>
+            <li>"연결 테스트" 버튼으로 확인</li>
+        </ol>
+
+        <h3>13.2 디버깅</h3>
+        <ul>
+            <li><code>?debug</code> 파라미터로 디버그 정보 조회</li>
+            <li>브라우저 개발자 도구 콘솔 확인</li>
+            <li>PHP 에러 로그 확인 (<code>error_log()</code>)</li>
+        </ul>
+
+        <h3>13.3 데이터 추가</h3>
+        <ol>
+            <li>분석 스크립트로 JSON 생성</li>
+            <li>날짜별 폴더에 저장</li>
+            <li><code>index.json</code> 업데이트</li>
+            <li>대시보드 새로고침</li>
+        </ol>
+
+        <hr>
+
+        <h2>14. 변경 이력</h2>
+
+        <h3>v12 (2025-11-28)</h3>
+        <div class="success-box">
+            <ul>
+                <li>✨ 멀티 API 데이터 소스 지원 (OpenAI, Claude, Gemini)</li>
+                <li>✨ API 제공자별 필터링 기능</li>
+                <li>✨ ID 형식 호환 (8자리/32자리 자동 인식)</li>
+                <li>✨ 통합 통계 및 API별 통계</li>
+                <li>🔧 데이터 로드 로직 개선</li>
+            </ul>
+        </div>
+
+        <hr>
+
+        <h2>15. 부록</h2>
+
+        <h3>15.1 샘플 index.json 구조</h3>
+<pre><code class="language-json">{
+  "a1b2c3d4e5f6g7h8": {
+    "id": "a1b2c3d4e5f6g7h8",
+    "query": "샘플 질문",
+    "url": "https://example.com",
+    "hybrid_score": 85,
+    "evaluation": "양호",
+    "model": "gpt-4o-mini",
+    "timestamp": "2025-11-28 14:30:00",
+    "date": "2025-11-28",
+    "api_provider": "openai",
+    "api_name": "OpenAI",
+    "api_icon": "🤖",
+    "api_color": "#10a37f"
+  }
+}</code></pre>
+
+        <h3>15.2 지원 모델 목록</h3>
+
+        <h4>OpenAI</h4>
+        <ul>
+            <li><code>gpt-4o-mini</code></li>
+            <li><code>gpt-4-turbo-preview</code></li>
+            <li><code>gpt-3.5-turbo</code></li>
+            <li><code>gpt-4</code></li>
+        </ul>
+
+        <h4>Claude</h4>
+        <ul>
+            <li><code>claude-sonnet-4-20250514</code></li>
+        </ul>
+
+        <h4>Gemini</h4>
+        <ul>
+            <li><code>gemini-2.0-flash-thinking-exp-01-21</code></li>
+            <li><code>gemini-2.0-flash-exp</code></li>
+            <li><code>gemini-2.0-flash</code></li>
+        </ul>
+
+        <hr>
+
+        <div class="info-box" style="margin-top: 40px;">
+            <p style="text-align: center; margin: 0;"><strong>문서 끝</strong></p>
+        </div>
+    </div>
+</body>
+</html>

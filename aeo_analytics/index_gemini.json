@@ -1,0 +1,25 @@
+
+{
+    "d164b6af": {
+        "id": "d164b6af",
+        "query": "겨울에 한맥에 어울리는 음식 알려줘",
+        "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/cheese-pretzel.php",
+        "hybrid_score": 54.6,
+        "evaluation": "보통",
+        "timestamp": "2025-11-26 17:18:31",
+        "date": "2025-11-26",
+        "model": "gemini-2.0-flash-thinking-exp-01-21",
+        "temperature": 0.7
+    },
+    "74714d16": {
+        "id": "74714d16",
+        "query": "겨울에 한맥에 어울리는 음식 알려줘",
+        "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/cheese-pretzel.php",
+        "hybrid_score": 62.1,
+        "evaluation": "보통",
+        "timestamp": "2025-11-26 17:19:50",
+        "date": "2025-11-26",
+        "model": "gemini-2.0-flash",
+        "temperature": 0.7
+    }
+}

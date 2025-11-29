@@ -1,0 +1,25 @@
+{
+
+    "112f4dab8c6cc2ba5ac3d51ca8dc3986": {
+        "id": "112f4dab8c6cc2ba5ac3d51ca8dc3986",
+        "query": "한맥과 어울리는 장소는 어디야?",
+        "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/summer-beach.php",
+        "hybrid_score": 76.9,
+        "evaluation": "양호",
+        "timestamp": "2025-11-26 09:33:26",
+        "date": "2025-11-26",
+        "model": "claude-sonnet-4-20250514",
+        "temperature": 0.7
+    },
+    "004e4071fcefda4ec0d8a09415a43638": {
+        "id": "004e4071fcefda4ec0d8a09415a43638",
+        "query": "한맥과 브런치는 어울릴까?",
+        "url": "https:\/\/hanmac.miraepmp.co.kr\/smoothdiscovery\/smore.php",
+        "hybrid_score": 58.3,
+        "evaluation": "미흡",
+        "timestamp": "2025-11-26 14:58:20",
+        "date": "2025-11-26",
+        "model": "claude-sonnet-4-20250514",
+        "temperature": 0.7
+    }
+}

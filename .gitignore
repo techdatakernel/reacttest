@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# AEO Analytics - API keys (보안)
+aeo_analytics/config.php

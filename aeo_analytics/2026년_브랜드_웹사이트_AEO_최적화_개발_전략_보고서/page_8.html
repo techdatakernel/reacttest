@@ -1,0 +1,290 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   AEO Analytics v11.1 솔루션
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://d3js.org/d3.v7.min.js">
+  </script>
+  <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com">
+  </script>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            
+            background-size: 40px 40px;
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 80px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .process-arrow {
+            position: relative;
+            height: 2px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            margin: 0 15px;
+        }
+        
+        .process-arrow:after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -9px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #8b5cf6;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 2px solid #e4e8eb;
+        }
+    
+html {
+    overflow: hidden;
+}
+  </style>
+ </head>
+ <body>
+  <div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     AEO Analytics v11.1 솔루션
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Left Column: Solution Description -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-3">
+       AI 검색 엔진 분석 전문 도구
+      </h2>
+      <p class="text-gray-600 mb-5">
+       AEO 전략은 정밀한 데이터 분석에서 시작됩니다. AI 검색 엔진의 복잡한 알고리즘에 대응하기 위해 개발한 전문 분석 솔루션 &#39;AEO Analytics v11.1&#39;은 웹사이트 콘텐츠를 과학적으로 진단하고 최적화 방향을 제시합니다.
+      </p>
+      <div class="flex-1 flex flex-col justify-between">
+       <div class="mb-5">
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">
+         주요 기능
+        </h3>
+        <ul class="space-y-2">
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-search text-purple-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            AI 검색 엔진 평가 분석
+           </span>
+           <p class="text-gray-600 text-sm">
+            ChatGPT, Gemini, Perplexity 등 주요 AI 검색 엔진이 콘텐츠를 어떻게 평가하는지를 분석
+           </p>
+          </div>
+         </li>
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-chart-bar text-green-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            정량적 AEO 점수화
+           </span>
+           <p class="text-gray-600 text-sm">
+            정보 검색 알고리즘, 자연어 처리 기술을 기반으로 콘텐츠의 AEO 잠재력을 108점 만점으로 평가
+           </p>
+          </div>
+         </li>
+         <li class="flex items-start">
+          <div class="feature-icon mr-4 flex-shrink-0">
+           <i class="fas fa-lightbulb text-purple-500">
+           </i>
+          </div>
+          <div>
+           <span class="font-medium text-gray-700">
+            개선 방안 도출
+           </span>
+           <p class="text-gray-600 text-sm">
+            콘텐츠의 강점과 약점을 분석하여 구체적인 최적화 방안을 제안
+           </p>
+          </div>
+         </li>
+        </ul>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Right Column: Process and Score Visualization -->
+    <div class="w-1/2">
+     <div class="flex flex-col h-full space-y-5">
+      <!-- Analysis Process -->
+      <div class="card p-6 flex-1">
+       <h3 class="text-xl font-semibold text-gray-700 mb-3">
+        분석 프로세스
+       </h3>
+       <div class="flex items-center justify-between mt-4">
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-file-alt text-green-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          웹사이트 콘텐츠
+         </span>
+        </div>
+        <div class="process-arrow flex-grow">
+        </div>
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-cogs text-purple-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          알고리즘 분석
+         </span>
+        </div>
+        <div class="process-arrow flex-grow">
+        </div>
+        <div class="flex flex-col items-center w-1/4">
+         <div class="feature-icon mb-3">
+          <i class="fas fa-chart-line text-green-500 text-xl">
+          </i>
+         </div>
+         <span class="text-center text-gray-700 font-medium">
+          AEO 점수
+         </span>
+        </div>
+       </div>
+      </div>
+      <!-- Score Visualization -->
+      <div class="card p-6 flex-1 flex flex-col items-center justify-center">
+       <h3 class="text-xl font-semibold text-gray-700 mb-4">
+        AEO 점수 시스템
+       </h3>
+       <div class="flex items-center justify-center w-full">
+        <div class="score-circle mr-6">
+         <div class="text-3xl font-bold text-gray-800">
+          108
+         </div>
+         <div class="text-sm text-gray-600">
+          최고 점수
+         </div>
+        </div>
+        <div class="flex flex-col justify-center flex-1">
+         <div class="mb-3">
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            정보 검색
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-green-500 rounded-full" style="width: 90%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            90%
+           </span>
+          </div>
+         </div>
+         <div class="mb-3">
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            natural language
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-purple-500 rounded-full" style="width: 85%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            85%
+           </span>
+          </div>
+         </div>
+         <div>
+          <div class="flex items-center mb-1">
+           <span class="text-sm text-gray-600 w-24">
+            데이터 구조화
+           </span>
+           <div class="h-2 bg-gray-200 rounded-full flex-grow mx-2">
+            <div class="h-2 bg-green-500 rounded-full" style="width: 80%">
+            </div>
+           </div>
+           <span class="text-sm font-medium text-gray-700">
+            80%
+           </span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     8 / 10
+    </div>
+   </div>
+  </div>
+ 
+
+</body></html>

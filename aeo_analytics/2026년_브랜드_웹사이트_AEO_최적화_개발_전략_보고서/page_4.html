@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   시장 변화와 새로운 목표
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://d3js.org/d3.v7.min.js">
+  </script>
+  <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com">
+  </script>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            
+            background-size: 40px 40px;
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 80px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .arrow-path {
+            stroke: #6b7280;
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 5, 5;
+        }
+        
+        .highlight-text {
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+  </style>
+ </head>
+ <body>
+  <div class="slide gradient-bg grid-pattern flex flex-col p-16 relative">
+   <!-- Header -->
+   <div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     시장 변화와 새로운 목표
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-8">
+    <!-- Market Changes Section -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-5">
+       <div class="icon-box mr-4">
+        <i class="fas fa-chart-line text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        시장 변화
+       </h2>
+      </div>
+      <div class="mb-6">
+       <p class="text-gray-600 mb-4">
+        글로벌 IT 자문기관 가트너(Gartner)는 2026년까지 전통적인 검색 엔진의 검색량이
+        <span class="font-bold text-red-500">
+         25% 감소
+        </span>
+        할 것으로 예측했습니다.
+       </p>
+       <p class="text-gray-600">
+        AI 챗봇과 가상 에이전트가 사용자 질의를 더 많이 처리하기 때문입니다.
+       </p>
+      </div>
+      <!-- Traffic Visualization -->
+      <div class="flex-1">
+       <h3 class="text-xl font-medium text-gray-700 mb-3">
+        검색 엔진 트래픽 감소 추세
+       </h3>
+       <div class="h-52 w-full" id="traffic-chart">
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- New Goals Section -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-5">
+       <div class="icon-box mr-4">
+        <i class="fas fa-bullseye text-2xl text-green-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        새로운 목표
+       </h2>
+      </div>
+      <div class="mb-6">
+       <p class="text-gray-600">
+        사용자는 이제 질문에 대한 직접적이고 종합적인 답변을 즉시 제공받기를 기대합니다.
+       </p>
+      </div>
+      <!-- AEO Strategy -->
+      <div class="flex-1 flex flex-col">
+       <h3 class="text-xl font-medium text-gray-700 mb-4">
+        AEO를 통한 브랜드 디지털 권위 확립
+       </h3>
+       <div class="flex items-center mb-4">
+        <div class="w-1/2 flex items-center">
+         <div class="icon-box mr-3">
+          <i class="fas fa-search text-xl text-gray-600">
+          </i>
+         </div>
+         <div>
+          <h4 class="text-lg font-medium text-gray-700">
+           전통적 SEO
+          </h4>
+          <p class="text-sm text-gray-500">
+           키워드 중심 최적화
+          </p>
+         </div>
+        </div>
+        <div class="w-1/2 flex items-center">
+         <div class="icon-box mr-3">
+          <i class="fas fa-robot text-xl text-gray-600">
+          </i>
+         </div>
+         <div>
+          <h4 class="text-lg font-medium text-gray-700">
+           AEO
+          </h4>
+          <p class="text-sm text-gray-500">
+           답변 엔진 중심 최적화
+          </p>
+         </div>
+        </div>
+       </div>
+       <div class="flex-1 flex items-center justify-center">
+        <div class="w-full">
+         <div class="flex justify-between items-center mb-2">
+          <div class="w-5/12 text-right pr-4">
+           <div class="text-lg font-medium text-gray-700">
+            답변 생성 시
+           </div>
+           <div class="text-sm text-gray-500">
+            출처 인용
+           </div>
+          </div>
+          <div class="w-2/12 flex justify-center">
+           <i class="fas fa-arrow-right text-2xl text-purple-400">
+           </i>
+          </div>
+          <div class="w-5/12 pl-4">
+           <div class="text-lg font-medium text-gray-700">
+            AI 검색 결과
+           </div>
+           <div class="text-sm text-gray-500">
+            브랜드 노출
+           </div>
+          </div>
+         </div>
+         <div class="text-center mt-4">
+          <p class="text-lg font-medium">
+           <span class="highlight-text">
+            AEO(답변 엔진 최적화)
+           </span>
+           를 통해 브랜드의 디지털 권위를 확립하는 것이 새로운 시대의 핵심 목표
+          </p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-6 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     4 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Traffic chart visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('traffic-chart').clientWidth;
+            const height = document.getElementById('traffic-chart').clientHeight;
+            
+            const svg = d3.select('#traffic-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Data based on the 25% decrease mentioned in the document
+            const data = [
+                {year: '2023', value: 100},
+                {year: '2024', value: 85},
+                {year: '2025', value: 70},
+                {year: '2026', value: 55}
+            ];
+            
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.year))
+                .range([0, innerWidth])
+                .padding(0.3);
+                
+            const y = d3.scaleLinear()
+                .domain([0, 100])
+                .range([innerHeight, 0]);
+                
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+            // Add X axis
+            g.append('g')
+                .attr('transform', `translate(0,${innerHeight})`)
+                .call(d3.axisBottom(x))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis
+            g.append('g')
+                .call(d3.axisLeft(y).ticks(5))
+                .selectAll('text')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR');
+                
+            // Add Y axis label
+            g.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 0 - margin.left)
+                .attr('x', 0 - (innerHeight / 2))
+                .attr('dy', '1em')
+                .style('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .text('검색 엔진 트래픽 (%)');
+                
+            // Add the line
+            g.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('d', d3.line()
+                    .x(d => x(d.year) + x.bandwidth()/2)
+                    .y(d => y(d.value))
+                );
+                
+            // Add the points
+            g.selectAll('dot')
+                .data(data)
+                .enter()
+                .append('circle')
+                .attr('cx', d => x(d.year) + x.bandwidth()/2)
+                .attr('cy', d => y(d.value))
+                .attr('r', 5)
+                .attr('fill', '#8b5cf6');
+                
+            // Add the bars
+            g.selectAll('rect')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('x', d => x(d.year))
+                .attr('y', d => y(d.value))
+                .attr('width', x.bandwidth())
+                .attr('height', d => innerHeight - y(d.value))
+                .attr('fill', (d, i) => {
+                    const colors = ['#10b981', '#34d399', '#6ee7b7', '#8b5cf6'];
+                    return colors[i];
+                });
+                
+            // Add value labels
+            g.selectAll('.text')
+                .data(data)
+                .enter()
+                .append('text')
+                .attr('class', 'label')
+                .attr('x', d => x(d.year) + x.bandwidth()/2)
+                .attr('y', d => y(d.value) - 10)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('font-family', 'Noto Sans KR')
+                .style('font-weight', 'bold')
+                .text(d => d.value + '%');
+        });
+  </script>
+ 
+
+</body></html>

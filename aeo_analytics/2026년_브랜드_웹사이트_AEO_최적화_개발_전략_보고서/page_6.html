@@ -1,0 +1,328 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   브랜드 가시성
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://d3js.org/d3.v7.min.js">
+  </script>
+  <script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com">
+  </script>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 50%, #d1d9e2 100%);
+        }
+        
+        .grid-pattern {
+            
+            background-size: 40px 40px;
+        }
+        
+        .accent-line {
+            height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+            width: 80px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background-color: rgba(243, 244, 246, 0.8);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .highlight {
+            color: #8b5cf6;
+            font-weight: bold;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    
+html {
+    overflow: hidden;
+}
+  </style>
+ </head>
+ <body>
+  <div class="slide gradient-bg grid-pattern flex flex-col p-16 relative" style=" overflow: hidden;">
+   <!-- Header -->
+   <div class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+     브랜드 가시성
+    </h1>
+    <div class="accent-line">
+    </div>
+   </div>
+   <!-- Main Content -->
+   <div class="flex flex-1 space-x-6">
+    <!-- Left Column -->
+    <div class="w-1/2">
+     <div class="card p-6 h-full flex flex-col">
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-eye text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        정의
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-4">
+       브랜드 가시성은 사용자 질문에 대한 AI 답변에서 귀사의 브랜드가 얼마나 자주 언급되는지를 측정하는 지표입니다.
+      </p>
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-star text-2xl text-green-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        중요성
+       </h2>
+      </div>
+      <p class="text-gray-600 mb-4">
+       AI 검색 결과 최상단 노출을 통한 잠재 고객 초기 인식 단계에서의 영향력 확보를 통해 브랜드 인지도를 높입니다.
+      </p>
+      <div class="flex items-center mb-3">
+       <div class="icon-circle mr-4">
+        <i class="fas fa-bullseye text-2xl text-purple-500">
+        </i>
+       </div>
+       <h2 class="text-2xl font-semibold text-gray-700">
+        목표
+       </h2>
+      </div>
+      <p class="text-gray-600">
+       100점에 가까울수록, 관련된 질문에 대해 AI가 귀사 브랜드를 최소 1회 이상 언급하여 압도적 인지도를 확보했음을 의미합니다.
+      </p>
+     </div>
+    </div>
+    <!-- Right Column -->
+    <div class="w-1/2">
+     <div class="flex flex-col h-full space-y-4">
+      <!-- Formula Section -->
+      <div class="card p-5">
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-calculator text-2xl text-green-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         계산식
+        </h2>
+       </div>
+       <div class="formula text-lg">
+        브랜드 가시성 (%) =
+        <span class="block mt-1 text-center">
+         <span class="highlight">
+          (귀사 브랜드를 1번이라도 언급한 답변의 수 / 분석 기간 동안 수집된 총 답변의 수)
+         </span>
+         × 100
+        </span>
+       </div>
+      </div>
+      <!-- Visualization Section -->
+      <div class="card p-5 flex-1">
+       <div class="flex items-center mb-3">
+        <div class="icon-circle mr-4">
+         <i class="fas fa-chart-bar text-2xl text-purple-500">
+         </i>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-700">
+         브랜드 가시성 시각화
+        </h2>
+       </div>
+       <div class="h-40 w-full" id="visibility-chart">
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm text-gray-500">
+     2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서
+    </div>
+    <div class="text-sm text-gray-500" style="visibility: hidden;">
+     6 / 10
+    </div>
+   </div>
+  </div>
+  <script>
+   // Brand visibility chart visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('visibility-chart').clientWidth;
+            const height = document.getElementById('visibility-chart').clientHeight;
+            
+            const svg = d3.select('#visibility-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+                
+            // Create a visualization that represents brand visibility
+            // We'll create a simple gauge chart to represent the concept
+            
+            const margin = {top: 20, right: 30, bottom: 30, left: 30};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+            
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+                
+            // Create gauge background
+            const gaugeWidth = innerWidth;
+            const gaugeHeight = innerHeight * 0.5;
+            const gaugeX = 0;
+            const gaugeY = innerHeight * 0.25;
+            
+            // Add gauge background
+            g.append('rect')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY)
+                .attr('width', gaugeWidth)
+                .attr('height', gaugeHeight)
+                .attr('rx', gaugeHeight / 2)
+                .attr('ry', gaugeHeight / 2)
+                .attr('fill', '#e5e7eb');
+                
+            // Add gauge fill (representing brand visibility)
+            const fillWidth = gaugeWidth * 0.8; // 80% visibility as example
+            g.append('rect')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY)
+                .attr('width', fillWidth)
+                .attr('height', gaugeHeight)
+                .attr('rx', gaugeHeight / 2)
+                .attr('ry', gaugeHeight / 2)
+                .attr('fill', linearGradient);
+                
+            // Add gauge labels
+            g.append('text')
+                .attr('x', gaugeX)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('0%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('50%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280')
+                .attr('text-anchor', 'middle');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth)
+                .attr('y', gaugeY + gaugeHeight + 20)
+                .text('100%')
+                .attr('font-size', '12px')
+                .attr('fill', '#6b7280')
+                .attr('text-anchor', 'end');
+                
+            // Add brand icon in the middle
+            g.append('circle')
+                .attr('cx', gaugeX + gaugeWidth / 2)
+                .attr('cy', gaugeY + gaugeHeight / 2)
+                .attr('r', gaugeHeight / 2 - 10)
+                .attr('fill', 'white')
+                .attr('stroke', '#8b5cf6')
+                .attr('stroke-width', 2)
+                .attr('class', 'pulse');
+                
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY + gaugeHeight / 2 + 5)
+                .text('品牌')
+                .attr('font-size', '14px')
+                .attr('fill', '#8b5cf6')
+                .attr('text-anchor', 'middle')
+                .attr('font-weight', 'bold');
+                
+            // Add title
+            g.append('text')
+                .attr('x', gaugeX + gaugeWidth / 2)
+                .attr('y', gaugeY - 10)
+                .text('브랜드 가시성 지표')
+                .attr('font-size', '16px')
+                .attr('fill', '#374151')
+                .attr('font-weight', 'bold')
+                .attr('text-anchor', 'middle');
+                
+            // Define gradient
+            const linearGradient = 'linearGradient-1';
+            
+            svg.append('defs')
+                .append('linearGradient')
+                .attr('id', linearGradient)
+                .attr('x1', '0%')
+                .attr('y1', '0%')
+                .attr('x2', '100%')
+                .attr('y2', '0%')
+                .selectAll('stop')
+                .data([
+                    {offset: '0%', color: '#10b981'},
+                    {offset: '100%', color: '#8b5cf6'}
+                ])
+                .enter()
+                .append('stop')
+                .attr('offset', d => d.offset)
+                .attr('stop-color', d => d.color);
+        });
+  </script>
+ 
+
+</body></html>

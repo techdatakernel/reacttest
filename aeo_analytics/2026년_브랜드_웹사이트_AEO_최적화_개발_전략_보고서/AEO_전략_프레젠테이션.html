@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>2026년 브랜드 웹사이트 AEO 최적화 개발 전략 보고서</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .presentation-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .slide-wrapper {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            padding: 48px;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Grid pattern overlay */
+        .grid-pattern {
+            position: relative;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 51px);
+        }
+
+        /* Geometric shapes */
+        .geometric-shape {
+            position: absolute;
+            border-radius: 20px;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            top: -100px;
+            left: -100px;
+            transform: rotate(45deg);
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            bottom: -80px;
+            right: -80px;
+            transform: rotate(-30deg);
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            top: 50%;
+            right: -50px;
+            transform: translateY(-50%) rotate(20deg);
+        }
+
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Flex utilities */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: 16px; }
+        .gap-6 { gap: 24px; }
+
+        /* Grid utilities */
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+        /* Spacing */
+        .p-4 { padding: 16px; }
+        .p-6 { padding: 24px; }
+        .p-8 { padding: 32px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mb-6 { margin-bottom: 24px; }
+        .mt-4 { margin-top: 16px; }
+        .mt-6 { margin-top: 24px; }
+        .mt-8 { margin-top: 32px; }
+        .mt-16 { margin-top: 64px; }
+        .mr-2 { margin-right: 8px; }
+        .mr-3 { margin-right: 12px; }
+        .mr-4 { margin-right: 16px; }
+
+        /* Text */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-sm { font-size: 14px; }
+        .text-lg { font-size: 18px; }
+        .text-xl { font-size: 20px; }
+        .text-2xl { font-size: 24px; }
+        .text-3xl { font-size: 30px; }
+        .text-4xl { font-size: 36px; }
+        .text-5xl { font-size: 48px; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+
+        /* Colors */
+        .text-white { color: white; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .bg-white { background-color: white; }
+        .bg-gray-50 { background-color: #f9fafb; }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .badge-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .badge-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .badge-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+
+        /* Section title */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        /* Space utilities */
+        .space-y-2 > * + * { margin-top: 8px; }
+        .space-y-3 > * + * { margin-top: 12px; }
+        .space-y-4 > * + * { margin-top: 16px; }
+        .space-y-6 > * + * { margin-top: 24px; }
+        .space-x-3 > * + * { margin-left: 12px; }
+        .space-x-4 > * + * { margin-left: 16px; }
+
+        /* Rounded */
+        .rounded-lg { border-radius: 12px; }
+        .rounded-xl { border-radius: 16px; }
+        .rounded-full { border-radius: 9999px; }
+
+        /* Shadow */
+        .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+
+        /* Z-index */
+        .z-10 { position: relative; z-index: 10; }
+
+        /* Width/Height */
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .max-w-4xl { max-width: 896px; }
+        
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+        
+        .nav-button.prev {
+            left: -70px;
+        }
+        
+        .nav-button.next {
+            right: -70px;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .slide-indicators {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+        
+        .indicator {
+            width: 10px;
+            height: 10px;
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1001;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Gradient backgrounds for cards */
+        .bg-gradient-blue { background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%); }
+        .bg-gradient-green { background: linear-gradient(135deg, #d1fae5 0%, #dcfce7 100%); }
+        .bg-gradient-purple { background: linear-gradient(135deg, #ede9fe 0%, #f3e8ff 100%); }
+        .bg-gradient-orange { background: linear-gradient(135deg, #fed7aa 0%, #fecaca 100%); }
+        .bg-gradient-pink { background: linear-gradient(135deg, #fce7f3 0%, #fae8ff 100%); }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-wrapper">
+            <div class="slide-counter">
+                <span id="current-slide">1</span> / <span id="total-slides">11</span>
+            </div>
+
+<!-- Slide 1 -->
+<div class="slide gradient-bg grid-pattern active">
+    <div class="geometric-shape shape-1"></div>
+    <div class="geometric-shape shape-2"></div>
+    <div class="geometric-shape shape-3"></div>
+    
+    <div class="z-10" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
+        <div style="opacity: 0.9; margin-bottom: 16px; font-size: 18px;">2025년 11월 22일</div>
+        
+        <h1 style="font-size: 48px; font-weight: 700; margin-bottom: 16px;">
+            2026년 브랜드 웹사이트<br>
+            <span style="color: #fbbf24;">AEO</span> 최적화 개발 전략 보고서
+        </h1>
+        
+        <div style="width: 150px; height: 4px; background: #fbbf24; margin: 24px auto; border-radius: 2px;"></div>
+        
+        <p style="font-size: 24px; opacity: 0.95; margin-top: 24px;">
+            AI 검색 시대를 선도하는 웹사이트 개발 전략 제안서
+        </p>
+        
+        <p style="font-size: 20px; opacity: 0.85; margin-top: 16px;">
+            AEO(Answer Engine Optimization) 기반의 데이터 중심 개발 패러다임 전환
+        </p>
+        
+        <div style="margin-top: 64px; font-size: 20px; font-weight: 500;">
+            제안사: [귀사명]
+        </div>
+        
+        <div style="position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.5);"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #fbbf24;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <div class="text-gray-500 text-xl font-medium">2026년 전략 발표</div>
+        <div class="text-gray-500 text-xl">Page 2/11</div>
+    </div>
+    
+    <div class="flex gap-6" style="height: calc(100% - 80px);">
+        <div class="flex-1">
+            <img alt="AEO 전략 이미지" class="rounded-lg shadow-lg" src="https://skyagent-artifacts.skywork.ai/ppt_images/2025-11-22/1992132952463593472/ae6af63f_1763839975.webp" style="width: 100%; height: 100%; object-fit: cover;"/>
+        </div>
+        
+        <div class="flex-1 flex flex-col justify-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                <span class="section-title">클라이언트 포트폴리오</span>
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <i class="fas fa-chart-line mr-4 mt-1" style="font-size: 32px; color: #8b5cf6;"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">수익 성장 전략</h3>
+                        <p class="text-gray-600">데이터 기반의 수익 최적화 전략 수립</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <i class="fas fa-users mr-4 mt-1" style="font-size: 32px; color: #3b82f6;"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">고객 경험 혁신</h3>
+                        <p class="text-gray-600">AI 기반 개인화된 사용자 경험 제공</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <i class="fas fa-globe mr-4 mt-1" style="font-size: 32px; color: #10b981;"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">글로벌 확장</h3>
+                        <p class="text-gray-600">다국어 AEO 최적화로 글로벌 시장 진출</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <i class="fas fa-cogs mr-4 mt-1" style="font-size: 32px; color: #f59e0b;"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">기술 혁신</h3>
+                        <p class="text-gray-600">최신 AI 검색 엔진 대응 기술 적용</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">검색 환경의 변화</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 3/11</div>
+    </div>
+    
+    <div class="flex gap-6" style="height: calc(100% - 80px);">
+        <div class="flex-1 bg-gray-50 rounded-xl p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-search mr-3" style="font-size: 32px; color: #3b82f6;"></i>
+                <h3 class="text-2xl font-semibold text-gray-800">기존 검색 (SEO)</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-white p-4 rounded-lg">
+                    <p class="text-gray-700"><i class="fas fa-link mr-2" style="color: #3b82f6;"></i>링크 리스트 제공</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <p class="text-gray-700"><i class="fas fa-mouse-pointer mr-2" style="color: #3b82f6;"></i>사용자가 직접 클릭</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <p class="text-gray-700"><i class="fas fa-file-alt mr-2" style="color: #3b82f6;"></i>여러 페이지 탐색 필요</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                    <p class="text-gray-700"><i class="fas fa-clock mr-2" style="color: #3b82f6;"></i>정보 수집 시간 소요</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center">
+            <i class="fas fa-arrow-right" style="font-size: 48px; color: #8b5cf6;"></i>
+        </div>
+
+        <div class="flex-1 rounded-xl p-6" style="background: linear-gradient(135deg, #ede9fe 0%, #dbeafe 100%);">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-robot mr-3" style="font-size: 32px; color: #8b5cf6;"></i>
+                <h3 class="text-2xl font-semibold text-gray-800">AI 검색 (AEO)</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="text-gray-700"><i class="fas fa-comments mr-2" style="color: #8b5cf6;"></i>직접 답변 제공</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="text-gray-700"><i class="fas fa-brain mr-2" style="color: #8b5cf6;"></i>맥락 이해 및 종합</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="text-gray-700"><i class="fas fa-lightbulb mr-2" style="color: #8b5cf6;"></i>즉각적인 인사이트</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <p class="text-gray-700"><i class="fas fa-bolt mr-2" style="color: #8b5cf6;"></i>시간 절약 및 효율성</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">주요 AI 검색 엔진</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 4/11</div>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-6" style="height: calc(100% - 80px);">
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <div class="rounded-lg flex items-center justify-center mr-4" style="width: 48px; height: 48px; background: #d1fae5;">
+                    <i class="fas fa-comment-dots" style="font-size: 24px; color: #10b981;"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">ChatGPT Search</h3>
+            </div>
+            <div class="space-y-2">
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>대화형 검색 인터페이스</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>실시간 웹 정보 통합</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>맥락 기반 답변 생성</p>
+            </div>
+            <div class="mt-4 pt-4" style="border-top: 1px solid #e5e7eb;">
+                <span class="badge badge-success">출시: 2024년 10월</span>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <div class="rounded-lg flex items-center justify-center mr-4" style="width: 48px; height: 48px; background: #dbeafe;">
+                    <i class="fas fa-search" style="font-size: 24px; color: #3b82f6;"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Perplexity</h3>
+            </div>
+            <div class="space-y-2">
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #3b82f6;"></i>AI 기반 검색 엔진</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #3b82f6;"></i>출처 명시 답변</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #3b82f6;"></i>실시간 정보 업데이트</p>
+            </div>
+            <div class="mt-4 pt-4" style="border-top: 1px solid #e5e7eb;">
+                <span class="badge badge-primary">선두 주자</span>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <div class="rounded-lg flex items-center justify-center mr-4" style="width: 48px; height: 48px; background: #fecaca;">
+                    <i class="fab fa-google" style="font-size: 24px; color: #ef4444;"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Google AI Overview</h3>
+            </div>
+            <div class="space-y-2">
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #ef4444;"></i>검색 결과 상단 요약</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #ef4444;"></i>기존 SEO와 통합</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #ef4444;"></i>방대한 사용자 기반</p>
+            </div>
+            <div class="mt-4 pt-4" style="border-top: 1px solid #e5e7eb;">
+                <span class="badge badge-warning">한국: 2024년 10월</span>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <div class="rounded-lg flex items-center justify-center mr-4" style="width: 48px; height: 48px; background: #d1fae5;">
+                    <i class="fas fa-newspaper" style="font-size: 24px; color: #10b981;"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Naver AI Briefing</h3>
+            </div>
+            <div class="space-y-2">
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>한국형 AI 검색</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>네이버 생태계 연동</p>
+                <p class="text-gray-600"><i class="fas fa-check mr-2" style="color: #10b981;"></i>로컬 최적화</p>
+            </div>
+            <div class="mt-4 pt-4" style="border-top: 1px solid #e5e7eb;">
+                <span class="badge badge-success">국내 1위</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">AI 검색의 핵심 가치</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 5/11</div>
+    </div>
+    
+    <div class="grid grid-cols-3 gap-6 mb-6">
+        <div class="card p-6 text-center">
+            <div class="text-4xl font-bold mb-2" style="color: #8b5cf6;">4.4배</div>
+            <div class="text-gray-600">평균 페이지 조회수</div>
+            <div class="text-sm text-gray-500 mt-2">일반 검색 대비</div>
+        </div>
+        <div class="card p-6 text-center">
+            <div class="text-4xl font-bold mb-2" style="color: #3b82f6;">23배</div>
+            <div class="text-gray-600">구매 전환율</div>
+            <div class="text-sm text-gray-500 mt-2">일반 검색 대비</div>
+        </div>
+        <div class="card p-6 text-center">
+            <div class="text-4xl font-bold mb-2" style="color: #10b981;">80%</div>
+            <div class="text-gray-600">정보 탐색 시간 절감</div>
+            <div class="text-sm text-gray-500 mt-2">사용자 만족도 향상</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6">
+        <div class="rounded-xl p-6 bg-gradient-purple">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-bolt mr-3" style="font-size: 32px; color: #8b5cf6;"></i>
+                <h3 class="text-xl font-bold text-gray-800">즉각적인 답변</h3>
+            </div>
+            <p class="text-gray-700">사용자 질문에 대해 즉시 정확한 답변을 제공하여 검색 시간을 대폭 단축</p>
+        </div>
+
+        <div class="rounded-xl p-6 bg-gradient-green">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-brain mr-3" style="font-size: 32px; color: #10b981;"></i>
+                <h3 class="text-xl font-bold text-gray-800">맥락 이해</h3>
+            </div>
+            <p class="text-gray-700">질문의 의도를 파악하고 관련 정보를 종합하여 최적의 답변 생성</p>
+        </div>
+
+        <div class="rounded-xl p-6 bg-gradient-blue">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-user-friends mr-3" style="font-size: 32px; color: #3b82f6;"></i>
+                <h3 class="text-xl font-bold text-gray-800">개인화 경험</h3>
+            </div>
+            <p class="text-gray-700">사용자의 검색 패턴과 선호도를 학습하여 맞춤형 정보 제공</p>
+        </div>
+
+        <div class="rounded-xl p-6 bg-gradient-pink">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-line mr-3" style="font-size: 32px; color: #ec4899;"></i>
+                <h3 class="text-xl font-bold text-gray-800">높은 전환율</h3>
+            </div>
+            <p class="text-gray-700">정확한 정보 제공으로 구매 결정까지의 시간 단축 및 전환율 향상</p>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 6 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">AEO 최적화 4대 핵심 요소</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 6/11</div>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-6" style="height: calc(100% - 80px);">
+        <div class="card p-8">
+            <div class="flex items-center mb-6">
+                <div class="rounded-full flex items-center justify-center mr-4" style="width: 64px; height: 64px; background: #dbeafe;">
+                    <span class="text-3xl font-bold" style="color: #3b82f6;">1</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">E-E-A-T 원칙</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <i class="fas fa-star mr-3 mt-1" style="color: #fbbf24;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Experience (경험)</p>
+                        <p class="text-gray-600 text-sm">실제 경험에 기반한 콘텐츠</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-graduation-cap mr-3 mt-1" style="color: #3b82f6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Expertise (전문성)</p>
+                        <p class="text-gray-600 text-sm">해당 분야의 전문 지식</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-shield-alt mr-3 mt-1" style="color: #10b981;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Authoritativeness (권위성)</p>
+                        <p class="text-gray-600 text-sm">업계 내 인정받는 신뢰도</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-check-circle mr-3 mt-1" style="color: #8b5cf6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Trustworthiness (신뢰성)</p>
+                        <p class="text-gray-600 text-sm">정확하고 검증된 정보</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <div class="flex items-center mb-6">
+                <div class="rounded-full flex items-center justify-center mr-4" style="width: 64px; height: 64px; background: #d1fae5;">
+                    <span class="text-3xl font-bold" style="color: #10b981;">2</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">구조화된 데이터</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <i class="fas fa-code mr-3 mt-1" style="color: #8b5cf6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Schema Markup</p>
+                        <p class="text-gray-600 text-sm">표준화된 데이터 형식</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-sitemap mr-3 mt-1" style="color: #3b82f6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">계층적 구조</p>
+                        <p class="text-gray-600 text-sm">명확한 정보 계층화</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-tags mr-3 mt-1" style="color: #f59e0b;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">메타 데이터</p>
+                        <p class="text-gray-600 text-sm">정확한 메타 정보 제공</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-link mr-3 mt-1" style="color: #10b981;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">내부 링크 구조</p>
+                        <p class="text-gray-600 text-sm">논리적인 페이지 연결</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <div class="flex items-center mb-6">
+                <div class="rounded-full flex items-center justify-center mr-4" style="width: 64px; height: 64px; background: #ede9fe;">
+                    <span class="text-3xl font-bold" style="color: #8b5cf6;">3</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Q&A 콘텐츠</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <i class="fas fa-question-circle mr-3 mt-1" style="color: #3b82f6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">자주 묻는 질문</p>
+                        <p class="text-gray-600 text-sm">사용자 질문 데이터 기반</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-comments mr-3 mt-1" style="color: #10b981;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">대화형 답변</p>
+                        <p class="text-gray-600 text-sm">자연스러운 답변 형식</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-list-ol mr-3 mt-1" style="color: #8b5cf6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">단계별 가이드</p>
+                        <p class="text-gray-600 text-sm">상세한 실행 방법 제공</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-lightbulb mr-3 mt-1" style="color: #fbbf24;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">실용적 예시</p>
+                        <p class="text-gray-600 text-sm">구체적인 사용 사례</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <div class="flex items-center mb-6">
+                <div class="rounded-full flex items-center justify-center mr-4" style="width: 64px; height: 64px; background: #fed7aa;">
+                    <span class="text-3xl font-bold" style="color: #f59e0b;">4</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">사용자 중심</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <i class="fas fa-bullseye mr-3 mt-1" style="color: #ef4444;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">검색 의도 파악</p>
+                        <p class="text-gray-600 text-sm">사용자가 원하는 정보</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-mobile-alt mr-3 mt-1" style="color: #3b82f6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">모바일 최적화</p>
+                        <p class="text-gray-600 text-sm">반응형 디자인 필수</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-tachometer-alt mr-3 mt-1" style="color: #10b981;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">빠른 로딩 속도</p>
+                        <p class="text-gray-600 text-sm">페이지 성능 최적화</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-universal-access mr-3 mt-1" style="color: #8b5cf6;"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">접근성 향상</p>
+                        <p class="text-gray-600 text-sm">모든 사용자 고려</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 7 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">개발 프로세스 로드맵</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 7/11</div>
+    </div>
+    
+    <div class="flex flex-col justify-center" style="height: calc(100% - 80px);">
+        <div style="position: relative;">
+            <div style="position: absolute; top: 96px; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);"></div>
+            
+            <div class="grid grid-cols-4 gap-8" style="position: relative;">
+                <div class="text-center">
+                    <div class="rounded-full flex items-center justify-center mb-4 shadow-lg" style="position: relative; z-index: 10; width: 96px; height: 96px; background: #3b82f6; margin: 0 auto;">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">분석 단계</h3>
+                    <p class="text-gray-600 text-sm mb-3">1-2주</p>
+                    <div class="text-left text-gray-600 text-sm space-y-1">
+                        <div>• 현황 분석</div>
+                        <div>• 경쟁사 조사</div>
+                        <div>• 키워드 연구</div>
+                        <div>• 사용자 질문 수집</div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="rounded-full flex items-center justify-center mb-4 shadow-lg" style="position: relative; z-index: 10; width: 96px; height: 96px; background: #8b5cf6; margin: 0 auto;">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">전략 수립</h3>
+                    <p class="text-gray-600 text-sm mb-3">1-2주</p>
+                    <div class="text-left text-gray-600 text-sm space-y-1">
+                        <div>• AEO 전략 설계</div>
+                        <div>• 콘텐츠 계획</div>
+                        <div>• 기술 스택 결정</div>
+                        <div>• 일정 수립</div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="rounded-full flex items-center justify-center mb-4 shadow-lg" style="position: relative; z-index: 10; width: 96px; height: 96px; background: #10b981; margin: 0 auto;">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">개발 단계</h3>
+                    <p class="text-gray-600 text-sm mb-3">4-6주</p>
+                    <div class="text-left text-gray-600 text-sm space-y-1">
+                        <div>• 웹사이트 구축</div>
+                        <div>• Q&A 콘텐츠 작성</div>
+                        <div>• Schema 마크업</div>
+                        <div>• 성능 최적화</div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="rounded-full flex items-center justify-center mb-4 shadow-lg" style="position: relative; z-index: 10; width: 96px; height: 96px; background: #f59e0b; margin: 0 auto;">
+                        <span class="text-2xl font-bold text-white">4</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">모니터링</h3>
+                    <p class="text-gray-600 text-sm mb-3">지속적</p>
+                    <div class="text-left text-gray-600 text-sm space-y-1">
+                        <div>• 노출 분석</div>
+                        <div>• 트래픽 추적</div>
+                        <div>• 최적화 개선</div>
+                        <div>• 정기 리포트</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <div class="rounded-xl shadow-lg" style="display: inline-block; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: white; padding: 16px 32px;">
+                <p class="text-sm font-medium mb-1">전체 프로젝트 기간</p>
+                <p class="text-3xl font-bold">8-12주</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 8 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">기술 스택 및 도구</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 8/11</div>
+    </div>
+    
+    <div class="grid grid-cols-3 gap-6" style="height: calc(100% - 80px);">
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-desktop mr-3" style="font-size: 32px; color: #3b82f6;"></i>
+                <h3 class="text-xl font-bold text-gray-800">프론트엔드</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">React / Next.js</p>
+                    <p class="text-gray-600 text-sm">모던 웹 프레임워크</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Tailwind CSS</p>
+                    <p class="text-gray-600 text-sm">유틸리티 기반 스타일링</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">TypeScript</p>
+                    <p class="text-gray-600 text-sm">타입 안정성 확보</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-server mr-3" style="font-size: 32px; color: #10b981;"></i>
+                <h3 class="text-xl font-bold text-gray-800">백엔드</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Node.js</p>
+                    <p class="text-gray-600 text-sm">서버 사이드 런타임</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">API Gateway</p>
+                    <p class="text-gray-600 text-sm">API 관리 및 보안</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Headless CMS</p>
+                    <p class="text-gray-600 text-sm">유연한 콘텐츠 관리</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-search mr-3" style="font-size: 32px; color: #8b5cf6;"></i>
+                <h3 class="text-xl font-bold text-gray-800">AEO 도구</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Schema Generator</p>
+                    <p class="text-gray-600 text-sm">구조화된 데이터 생성</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Analytics Suite</p>
+                    <p class="text-gray-600 text-sm">AI 검색 노출 추적</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Q&A Generator</p>
+                    <p class="text-gray-600 text-sm">AI 기반 콘텐츠 생성</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-cloud mr-3" style="font-size: 32px; color: #f59e0b;"></i>
+                <h3 class="text-xl font-bold text-gray-800">인프라</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Cloud Hosting</p>
+                    <p class="text-gray-600 text-sm">AWS / GCP / Vercel</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">CDN</p>
+                    <p class="text-gray-600 text-sm">전 세계 빠른 배포</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">CI/CD</p>
+                    <p class="text-gray-600 text-sm">자동화된 배포</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-tachometer-alt mr-3" style="font-size: 32px; color: #ef4444;"></i>
+                <h3 class="text-xl font-bold text-gray-800">성능 최적화</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Image Optimization</p>
+                    <p class="text-gray-600 text-sm">자동 이미지 최적화</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Code Splitting</p>
+                    <p class="text-gray-600 text-sm">효율적 코드 분할</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Lazy Loading</p>
+                    <p class="text-gray-600 text-sm">필요시에만 로드</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-chart-bar mr-3" style="font-size: 32px; color: #6366f1;"></i>
+                <h3 class="text-xl font-bold text-gray-800">분석 도구</h3>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Search Console</p>
+                    <p class="text-gray-600 text-sm">검색 성능 모니터링</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">GA4</p>
+                    <p class="text-gray-600 text-sm">사용자 행동 분석</p>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <p class="font-semibold text-gray-800">Heat Map</p>
+                    <p class="text-gray-600 text-sm">사용자 인터랙션 추적</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 9 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">예상 성과 및 KPI</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 9/11</div>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-6 mb-6">
+        <div class="card p-6 bg-gradient-blue">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">오가닉 트래픽</h3>
+                <i class="fas fa-chart-line" style="font-size: 32px; color: #3b82f6;"></i>
+            </div>
+            <div class="text-4xl font-bold mb-2" style="color: #3b82f6;">증가 예상</div>
+            <p class="text-gray-600">AI 검색을 통한 신규 유입 확대</p>
+            <div class="mt-4 flex items-center">
+                <div class="progress-bar flex-1">
+                    <div class="progress-fill" style="width: 75%; background: #3b82f6;"></div>
+                </div>
+                <span class="ml-3 text-sm text-gray-600">6개월 내</span>
+            </div>
+        </div>
+
+        <div class="card p-6 bg-gradient-green">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">전환율</h3>
+                <i class="fas fa-chart-pie" style="font-size: 32px; color: #10b981;"></i>
+            </div>
+            <div class="text-4xl font-bold mb-2" style="color: #10b981;">향상 예상</div>
+            <p class="text-gray-600">정확한 정보 제공으로 전환율 개선</p>
+            <div class="mt-4 flex items-center">
+                <div class="progress-bar flex-1">
+                    <div class="progress-fill" style="width: 65%; background: #10b981;"></div>
+                </div>
+                <span class="ml-3 text-sm text-gray-600">3개월 내</span>
+            </div>
+        </div>
+
+        <div class="card p-6 bg-gradient-purple">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">AI 검색 노출</h3>
+                <i class="fas fa-eye" style="font-size: 32px; color: #8b5cf6;"></i>
+            </div>
+            <div class="text-4xl font-bold mb-2" style="color: #8b5cf6;">증가 예상</div>
+            <p class="text-gray-600">주요 AI 플랫폼 답변 인용 확대</p>
+            <div class="mt-4 flex items-center">
+                <div class="progress-bar flex-1">
+                    <div class="progress-fill" style="width: 85%; background: #8b5cf6;"></div>
+                </div>
+                <span class="ml-3 text-sm text-gray-600">3개월 내</span>
+            </div>
+        </div>
+
+        <div class="card p-6 bg-gradient-orange">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">브랜드 권위</h3>
+                <i class="fas fa-award" style="font-size: 32px; color: #f59e0b;"></i>
+            </div>
+            <div class="text-4xl font-bold mb-2" style="color: #f59e0b;">강화 예상</div>
+            <p class="text-gray-600">AI 검색에서 신뢰도 향상</p>
+            <div class="mt-4 flex items-center">
+                <div class="progress-bar flex-1">
+                    <div class="progress-fill" style="width: 70%; background: #f59e0b;"></div>
+                </div>
+                <span class="ml-3 text-sm text-gray-600">6개월 내</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">핵심 성공 지표 (KPI)</h3>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <i class="fas fa-search mb-2" style="font-size: 32px; color: #3b82f6;"></i>
+                <p class="text-sm text-gray-600 mb-1">AI 검색 노출 수</p>
+                <p class="text-lg font-bold text-gray-800">월별 추적</p>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <i class="fas fa-users mb-2" style="font-size: 32px; color: #10b981;"></i>
+                <p class="text-sm text-gray-600 mb-1">신규 방문자</p>
+                <p class="text-lg font-bold text-gray-800">주별 분석</p>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <i class="fas fa-star mb-2" style="font-size: 32px; color: #fbbf24;"></i>
+                <p class="text-sm text-gray-600 mb-1">사용자 만족도</p>
+                <p class="text-lg font-bold text-gray-800">분기별 조사</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 10 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">투자 대비 기대 효과 (ROI)</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 10/11</div>
+    </div>
+    
+    <div class="flex gap-6 mb-6" style="height: calc(100% - 200px);">
+        <div class="flex-1">
+            <div class="card p-6 h-full">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-coins mr-3" style="font-size: 32px; color: #f59e0b;"></i>
+                    <h3 class="text-2xl font-bold text-gray-800">투자 항목</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-gray-800">초기 개발</span>
+                            <span class="text-gray-600">40%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%; background: #f59e0b;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-gray-800">콘텐츠 제작</span>
+                            <span class="text-gray-600">30%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%; background: #3b82f6;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-gray-800">유지 보수</span>
+                            <span class="text-gray-600">20%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%; background: #10b981;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-gray-800">마케팅</span>
+                            <span class="text-gray-600">10%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 10%; background: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1">
+            <div class="card p-6 h-full">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-chart-line mr-3" style="font-size: 32px; color: #10b981;"></i>
+                    <h3 class="text-2xl font-bold text-gray-800">기대 효과</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="p-4 rounded-lg bg-gradient-green">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-gray-800">매출 증가</span>
+                            <span class="badge badge-success">향상</span>
+                        </div>
+                        <p class="text-sm text-gray-600">AI 검색 트래픽 유입으로 매출 증대</p>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg bg-gradient-blue">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-gray-800">고객 확보 비용 감소</span>
+                            <span class="badge badge-primary">절감</span>
+                        </div>
+                        <p class="text-sm text-gray-600">오가닉 트래픽 증가로 광고비 절감</p>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg bg-gradient-purple">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-gray-800">브랜드 가치 상승</span>
+                            <span class="badge badge-warning">증가</span>
+                        </div>
+                        <p class="text-sm text-gray-600">AI 검색 노출로 브랜드 신뢰도 향상</p>
+                    </div>
+                    
+                    <div class="p-4 rounded-lg" style="background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-semibold text-gray-800">경쟁 우위 확보</span>
+                            <span class="badge badge-success">선점</span>
+                        </div>
+                        <p class="text-sm text-gray-600">조기 진입으로 시장 선점 효과</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">ROI 달성 타임라인</h3>
+        <div class="flex items-center justify-between">
+            <div class="text-center flex-1">
+                <div class="text-3xl font-bold mb-2" style="color: #9ca3af;">0-3개월</div>
+                <p class="text-sm text-gray-600">투자 집중 기간</p>
+            </div>
+            <i class="fas fa-arrow-right" style="font-size: 24px; color: #9ca3af;"></i>
+            <div class="text-center flex-1">
+                <div class="text-3xl font-bold mb-2" style="color: #3b82f6;">3-6개월</div>
+                <p class="text-sm text-gray-600">초기 성과 가시화</p>
+            </div>
+            <i class="fas fa-arrow-right" style="font-size: 24px; color: #9ca3af;"></i>
+            <div class="text-center flex-1">
+                <div class="text-3xl font-bold mb-2" style="color: #10b981;">6-12개월</div>
+                <p class="text-sm text-gray-600">ROI 목표 달성</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 11 -->
+<div class="slide bg-white">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-3xl font-bold text-gray-800">
+            <span class="section-title">Q&A 콘텐츠 개발 예시</span>
+        </h2>
+        <div class="text-gray-500 text-xl">Page 11/11</div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4" style="height: calc(100% - 140px);">
+        <div class="flex flex-col gap-4">
+            <div class="card p-4 flex-1">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #dbeafe;">
+                        <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-700">분석 결과</h2>
+                </div>
+                <div class="bg-gradient-blue p-4 rounded-lg" style="height: calc(100% - 60px); overflow-y: auto;">
+                    <div class="space-y-2 text-sm">
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #3b82f6; font-weight: 600;">• </span>
+                            <span class="text-gray-700">한맥 브랜드 인지도 부족</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #3b82f6; font-weight: 600;">• </span>
+                            <span class="text-gray-700">여름 시즌 특화 콘텐츠 필요</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #3b82f6; font-weight: 600;">• </span>
+                            <span class="text-gray-700">해변 장소별 정보 부재</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #3b82f6; font-weight: 600;">• </span>
+                            <span class="text-gray-700">가격 정보 투명성 개선 필요</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4 flex-1">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #fed7aa;">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-700">주요 문제점</h2>
+                </div>
+                <div class="bg-gradient-orange p-4 rounded-lg" style="height: calc(100% - 60px); overflow-y: auto;">
+                    <div class="space-y-2 text-sm">
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #f59e0b; font-weight: 600;">1. </span>
+                            <span class="text-gray-700">AI 검색 최적화 미흡</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #f59e0b; font-weight: 600;">2. </span>
+                            <span class="text-gray-700">구조화된 Q&A 부재</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #f59e0b; font-weight: 600;">3. </span>
+                            <span class="text-gray-700">사용자 질문 대응 부족</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow-sm">
+                            <span style="color: #f59e0b; font-weight: 600;">4. </span>
+                            <span class="text-gray-700">계절별 맞춤 콘텐츠 없음</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="flex items-center gap-2 mb-3">
+                <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #d1fae5;">
+                    <i class="fas fa-list-ul" style="color: #10b981;"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-700">질문 리스트 예시</h2>
+            </div>
+            <div class="bg-gradient-green p-4 rounded-lg" style="height: calc(100% - 60px); overflow-y: auto;">
+                <div class="space-y-2">
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">1.</span>
+                        <span class="text-gray-700"> 여름에 한맥 마시기 좋은 해변 추천해줘</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">2.</span>
+                        <span class="text-gray-700"> 한맥과 잘 어울리는 여름 해변 음식 뭐가 있을까?</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">3.</span>
+                        <span class="text-gray-700"> 한맥 즐기기 좋은 해변의 위치는 어디야?</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">4.</span>
+                        <span class="text-gray-700"> 해변에서 한맥 마시려면 어떤 시설이 필요해?</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">5.</span>
+                        <span class="text-gray-700"> 부드러운 한맥과 어울리는 해변 활동 추천해줘</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">6.</span>
+                        <span class="text-gray-700"> 여름 해변에서 한맥 가격대는 어떤지 알려줘</span>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                        <span style="color: #8b5cf6; font-weight: 600;">7.</span>
+                        <span class="text-gray-700"> 한맥과 함께하기 좋은 여름 해변 명소는 어디야?</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="card p-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #dbeafe;">
+                        <i class="fas fa-chart-line" style="color: #3b82f6;"></i>
+                    </div>
+                    <span class="text-gray-700 font-medium">분석</span>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #9ca3af;"></i>
+                <div class="flex items-center space-x-4">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #fed7aa;">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                    </div>
+                    <span class="text-gray-700 font-medium">문제점 파악</span>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #9ca3af;"></i>
+                <div class="flex items-center space-x-4">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #ede9fe;">
+                        <i class="fas fa-list-ul" style="color: #8b5cf6;"></i>
+                    </div>
+                    <span class="text-gray-700 font-medium">질문 리스트 생성</span>
+                </div>
+                <i class="fas fa-arrow-right" style="color: #9ca3af;"></i>
+                <div class="flex items-center space-x-4">
+                    <div class="rounded-lg flex items-center justify-center" style="width: 32px; height: 32px; background: #d1fae5;">
+                        <i class="fas fa-code" style="color: #10b981;"></i>
+                    </div>
+                    <span class="text-gray-700 font-medium">콘텐츠 개발</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Navigation Buttons -->
+            <button class="nav-button prev" id="prevBtn" onclick="changeSlide(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-button next" id="nextBtn" onclick="changeSlide(1)">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <!-- Slide Indicators -->
+            <div class="slide-indicators" id="indicators"></div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 11;
+
+        function initSlides() {
+            const indicators = document.getElementById('indicators');
+            
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator';
+                if (i === 0) indicator.classList.add('active');
+                indicator.onclick = () => goToSlide(i);
+                indicators.appendChild(indicator);
+            }
+            
+            updateButtons();
+        }
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.indicator');
+            const currentSlideSpan = document.getElementById('current-slide');
+
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+                return;
+            }
+            if (n < 0) {
+                currentSlide = 0;
+                return;
+            }
+
+            currentSlide = n;
+
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+            });
+            indicators.forEach(ind => ind.classList.remove('active'));
+
+            if (slides[currentSlide]) {
+                slides[currentSlide].classList.add('active');
+            }
+
+            if (indicators[currentSlide]) {
+                indicators[currentSlide].classList.add('active');
+            }
+
+            if (currentSlideSpan) {
+                currentSlideSpan.textContent = currentSlide + 1;
+            }
+
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (prevBtn) {
+                prevBtn.disabled = currentSlide === 0;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = currentSlide === totalSlides - 1;
+            }
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSlides);
+        } else {
+            initSlides();
+        }
+    </script>
+</body>
+</html>
